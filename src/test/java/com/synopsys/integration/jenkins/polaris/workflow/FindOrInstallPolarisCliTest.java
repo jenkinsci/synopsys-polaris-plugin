@@ -1,6 +1,7 @@
 package com.synopsys.integration.jenkins.polaris.workflow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.util.Collection;
@@ -28,10 +29,8 @@ public class FindOrInstallPolarisCliTest {
     public void testInstall() throws IntegrationException {
 
         final String polarisServerUrl = System.getenv(POLARIS_URL_ENVVAR_NAME);
-        if (StringUtils.isBlank(polarisServerUrl)) {
-            System.out.println("Environment variable TEST_POLARIS_URL is not set. Skipping FindOrInstallPolarisCliTest.testInstall().");
-            return;
-        }
+        assumeTrue(StringUtils.isNotBlank(polarisServerUrl), "Environment variable TEST_POLARIS_URL is not set. Skipping FindOrInstallPolarisCliTest.testInstall().");
+
         System.out.printf("Attempting to download Polaris CLI from %s\n", polarisServerUrl);
         final JenkinsIntLogger jenkinsIntLogger = Mockito.mock(JenkinsIntLogger.class);
         final File requestedInstallationDirParent = new File(INSTALLATION_DIR_PARENT_PATH);
