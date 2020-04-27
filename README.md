@@ -16,3 +16,4 @@ All plugin releases are also available on the [Synopsys public artifactory](http
 
 # Documentation
 The documentation is located [here](https://synopsys-sig.github.io/synopsys-polaris-plugin/latest/).
+
