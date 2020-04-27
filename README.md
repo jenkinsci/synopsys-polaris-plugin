@@ -9,6 +9,7 @@ Synopsys Polaris for Jenkins simplifies implementing Polaris static analysis in 
 
 # Where can I get the latest release?
 You can download the latest artifact from the plugin site at: https://plugins.jenkins.io/synopsys-polaris/
+
 Or other releases at: https://updates.jenkins-ci.org/download/plugins/synopsys-polaris/
 
 # Documentation
