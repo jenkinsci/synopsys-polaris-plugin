@@ -8,9 +8,11 @@ Synopsys Polaris for Jenkins simplifies implementing Polaris static analysis in 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.jenkins-ci.plugins%3Asynopsys-polaris&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.jenkins-ci.plugins%3Asynopsys-polaris)
 
 # Where can I get the latest release?
-You can download the latest artifact from the plugin site at: https://plugins.jenkins.io/synopsys-polaris/
+You can download the latest artifact from the [Synopsys Polaris plugin site](https://plugins.jenkins.io/synopsys-polaris/)
 
-Or any release at: https://updates.jenkins-ci.org/download/plugins/synopsys-polaris/
+Additional releases are available here: https://updates.jenkins-ci.org/download/plugins/synopsys-polaris/
+
+All plugin releases are also available on the [Synopsys Public Artifactory](https://artifactory.internal.synopsys.com/artifactory/webapp/#/artifacts/browse/tree/General/bds-integrations-release/org/jenkins-ci/plugins/synopsys-polaris)
 
 # Documentation
 The documentation is located [here](https://synopsys-sig.github.io/synopsys-polaris-plugin/latest/).
