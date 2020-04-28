@@ -23,31 +23,36 @@
 package com.synopsys.integration.jenkins.polaris.extensions.pipeline;
 
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.jenkins.polaris.workflow.PolarisJenkinsStepWorkflow;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.stepworkflow.StepWorkflow;
 import com.synopsys.integration.stepworkflow.StepWorkflowResponse;
 
-public class PolarisIssueCheckStepWorkflow {
+import hudson.AbortException;
+
+public class PolarisIssueCheckStepWorkflow extends PolarisJenkinsStepWorkflow<Integer> {
     private final Integer jobTimeoutInMinutes;
     private final Boolean returnIssueCount;
     private final PolarisWorkflowStepFactory polarisWorkflowStepFactory;
 
-    public PolarisIssueCheckStepWorkflow(final Integer jobTimeoutInMinutes, final Boolean returnIssueCount, final PolarisWorkflowStepFactory polarisWorkflowStepFactory) {
+    public PolarisIssueCheckStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger logger, final PolarisServicesFactory polarisServicesFactory, final Integer jobTimeoutInMinutes,
+        final Boolean returnIssueCount) {
+        super(logger, polarisServicesFactory);
         this.jobTimeoutInMinutes = jobTimeoutInMinutes;
         this.returnIssueCount = returnIssueCount;
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
     }
 
-    public Integer perform() throws Exception {
-        final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+    @Override
+    public StepWorkflow<Integer> buildWorkflow() throws AbortException {
         return StepWorkflow.first(polarisWorkflowStepFactory.createStepGetPolarisCliResponseContent())
                    .then(polarisWorkflowStepFactory.createStepGetTotalIssueCount(jobTimeoutInMinutes))
-                   .run()
-                   .handleResponse(response -> afterPerform(logger, response));
+                   .build();
     }
 
-    private Integer afterPerform(final JenkinsIntLogger logger, final StepWorkflowResponse<Integer> stepWorkflowResponse) throws Exception {
+    public Integer handleResponse(final JenkinsIntLogger logger, final StepWorkflowResponse<Integer> stepWorkflowResponse) throws Exception {
         final Integer numberOfIssues = stepWorkflowResponse.getDataOrThrowException();
         if (numberOfIssues > 0) {
             final String defectMessage = String.format("[Polaris] Found %s total issues.", numberOfIssues);
@@ -59,5 +64,10 @@ public class PolarisIssueCheckStepWorkflow {
         }
 
         return numberOfIssues;
+    }
+
+    @Override
+    protected void validate() throws AbortException {
+        // nothing to validate
     }
 }

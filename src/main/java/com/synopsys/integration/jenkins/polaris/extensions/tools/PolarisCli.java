@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -53,7 +54,14 @@ public class PolarisCli extends ToolInstallation implements NodeSpecific<Polaris
         super(Util.fixEmptyAndTrim(name), Util.fixEmptyAndTrim(home), properties);
     }
 
-    public static Optional<PolarisCli> findInstanceWithName(final String polarisCliName) {
+    public static boolean installationsExist() {
+        return Optional.ofNullable(ToolInstallation.all().get(PolarisCli.DescriptorImpl.class))
+                   .map(PolarisCli.DescriptorImpl::getInstallations)
+                   .filter(ArrayUtils::isNotEmpty)
+                   .isPresent();
+    }
+
+    public static Optional<PolarisCli> findInstallationWithName(final String polarisCliName) {
         final ToolDescriptor<PolarisCli> toolDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
 
         if (toolDescriptor == null) {

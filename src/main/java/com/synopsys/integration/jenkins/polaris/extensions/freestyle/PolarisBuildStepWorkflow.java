@@ -20,57 +20,67 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.extensions.buildstep;
+package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 
-import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.jenkins.polaris.workflow.PolarisJenkinsStepWorkflow;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.stepworkflow.StepWorkflow;
 import com.synopsys.integration.stepworkflow.StepWorkflowResponse;
 
+import hudson.AbortException;
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
 
-public class PolarisBuildStepWorkflow {
+public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object> {
     private final String polarisCLiName;
     private final String polarisArguments;
-    private final WaitForIssues waitForIssues;
     private final PolarisWorkflowStepFactory polarisWorkflowStepFactory;
     private final AbstractBuild<?, ?> build;
+    private final WaitForIssues waitForIssues;
 
-    public PolarisBuildStepWorkflow(final String polarisCLiName, final String polarisArguments, final WaitForIssues waitForIssues, final PolarisWorkflowStepFactory polarisWorkflowStepFactory,
-        final AbstractBuild<?, ?> build) {
+    private final JenkinsIntLogger logger;
+    private Integer jobTimeoutInMinutes;
+
+    public PolarisBuildStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger logger, final PolarisServicesFactory polarisServicesFactory, final String polarisCLiName, final String polarisArguments,
+        final WaitForIssues waitForIssues, final AbstractBuild<?, ?> build) {
+        super(logger, polarisServicesFactory);
         this.polarisCLiName = polarisCLiName;
         this.polarisArguments = polarisArguments;
-        this.waitForIssues = waitForIssues;
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
         this.build = build;
+        this.waitForIssues = waitForIssues;
+        this.logger = logger;
+        this.jobTimeoutInMinutes = waitForIssues == null ? null : waitForIssues.getJobTimeoutInMinutes();
     }
 
-    public boolean perform() throws InterruptedException, IOException {
-        final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-        final int jobTimeoutInMinutes = Optional.ofNullable(waitForIssues)
-                                            .map(WaitForIssues::getJobTimeoutInMinutes)
-                                            .orElse(0);
+    protected void validate() throws AbortException {
+        if (build.getWorkspace() == null) {
+            throw new AbortException("Polaris cannot be executed: The workspace could not be determined.");
+        }
+        if (build.getBuiltOn() == null) {
+            throw new AbortException("Polaris cannot be executed: The node that it was executed on no longer exists.");
+        }
+    }
 
+    protected StepWorkflow<Object> buildWorkflow() throws AbortException {
         return StepWorkflow
                    .first(polarisWorkflowStepFactory.createStepCreatePolarisEnvironment())
                    .then(polarisWorkflowStepFactory.createStepFindPolarisCli(polarisCLiName))
                    .then(polarisWorkflowStepFactory.createStepExecutePolarisCli(polarisArguments))
                    .andSometimes(polarisWorkflowStepFactory.createStepGetPolarisCliResponseContent())
                    .then(polarisWorkflowStepFactory.createStepGetTotalIssueCount(jobTimeoutInMinutes))
-                   .then(polarisWorkflowStepFactory.createStepWithConsumer(issueCount -> setBuildStatusOnIssues(logger, issueCount, build)))
+                   .then(polarisWorkflowStepFactory.createStepWithConsumer(this::setBuildStatusOnIssues))
                    .butOnlyIf(waitForIssues, Objects::nonNull)
-                   .run()
-                   .handleResponse(response -> afterPerform(logger, response));
+                   .build();
     }
 
-    private boolean afterPerform(final JenkinsIntLogger logger, final StepWorkflowResponse<Object> stepWorkflowResponse) {
+    public Boolean handleResponse(final StepWorkflowResponse<Object> stepWorkflowResponse) {
         final boolean wasSuccessful = stepWorkflowResponse.wasSuccessful();
         try {
             if (!wasSuccessful) {
@@ -89,7 +99,7 @@ public class PolarisBuildStepWorkflow {
         return stepWorkflowResponse.wasSuccessful();
     }
 
-    private void setBuildStatusOnIssues(final JenkinsIntLogger logger, final Integer issueCount, final AbstractBuild<?, ?> build) {
+    private void setBuildStatusOnIssues(final Integer issueCount) {
         final ChangeBuildStatusTo buildStatusToSet;
         if (waitForIssues == null || waitForIssues.getBuildStatusForIssues() == null) {
             buildStatusToSet = ChangeBuildStatusTo.SUCCESS;

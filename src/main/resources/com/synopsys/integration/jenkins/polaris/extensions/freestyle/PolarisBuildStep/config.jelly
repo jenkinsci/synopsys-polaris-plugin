@@ -14,7 +14,7 @@
         </f:entry>
         <f:advanced>
             <f:entry field="jobTimeoutInMinutes" title="Job timeout in minutes">
-                <f:textbox clazz="number" default="30" checkmethod="post"/>
+                <f:number clazz="positive-number" default="30" checkmethod="post"/>
             </f:entry>
         </f:advanced>
     </f:optionalBlock>

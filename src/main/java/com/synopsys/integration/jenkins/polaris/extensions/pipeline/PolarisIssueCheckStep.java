@@ -41,7 +41,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -60,12 +62,12 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
     private Boolean returnIssueCount;
 
     @Nullable
-    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete.")
+    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete when the Polaris CLI is executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
     private Integer jobTimeoutInMinutes;
 
     @DataBoundConstructor
     public PolarisIssueCheckStep() {
-        // Nothing to do-- we generally want to only use DataBoundSetters if we can avoid it, but having no DataBoundConstructor can cause issues.
+        // Nothing to do-- we generally want to only use DataBoundSetters if we can, but having no DataBoundConstructor can cause issues.
         // -- rotte FEB 2020
     }
 
@@ -143,8 +145,11 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
         @Override
         protected Integer run() throws Exception {
             final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(node, workspace, envVars, launcher, listener);
-            final PolarisIssueCheckStepWorkflow polarisIssueCheckStepWorkflow = new PolarisIssueCheckStepWorkflow(jobTimeoutInMinutes, returnIssueCount, polarisWorkflowStepFactory);
-            return polarisIssueCheckStepWorkflow.perform();
+            final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+            final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+            final PolarisIssueCheckStepWorkflow polarisIssueCheckStepWorkflow = new PolarisIssueCheckStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, jobTimeoutInMinutes, returnIssueCount);
+            return polarisIssueCheckStepWorkflow.perform()
+                       .handleResponse(response -> polarisIssueCheckStepWorkflow.handleResponse(logger, response));
         }
     }
 }

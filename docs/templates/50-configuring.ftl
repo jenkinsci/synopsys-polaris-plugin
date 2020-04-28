@@ -1,6 +1,6 @@
-# Configuring
+# Configuration
 
-Once the ${solution_name} plugin is installed, and before you use it in a job, you must configure the following:
+After the ${solution_name} plugin is installed, and before you use it in a job, you must configure the following:
 
 1. ${polaris_cli_name}
 1. ${solution_name}
@@ -29,5 +29,5 @@ Use the following process to configure ${solution_name}:
 for a response from the ${polaris_product_name} server, click *Advanced*
 and enter the timeout in seconds in the *Polaris connection timeout* field.
     * *Test connection to Polaris*: To test that ${solution_name} can connect to ${polaris_product_name}
-with the configuration data you have entered, click *Test connection to Polaris*.
+using the configuration data you have entered, click *Test connection to Polaris*.
 1. Click *Save*.

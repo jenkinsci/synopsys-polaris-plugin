@@ -27,7 +27,7 @@ import hudson.tools.ZipExtractionInstaller;
 import jenkins.model.Jenkins;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ToolLocationNodeProperty.class, ToolInstallation.class, Jenkins.class, PolarisCli.DescriptorImpl.class})
+@PrepareForTest({ ToolLocationNodeProperty.class, ToolInstallation.class, Jenkins.class, PolarisCli.DescriptorImpl.class })
 public class PolarisCliTest {
 
     public static final String INSTALLER_URL = "https://nodejs.org/dist/v4.2.4/node-v4.2.4-linux-x64.tar.gz";
@@ -57,8 +57,8 @@ public class PolarisCliTest {
         // Verify
         assertEquals(CLI_NAME, createdPolarisCli.getName());
         assertEquals(CLI_HOME, createdPolarisCli.getHome());
-        final InstallSourceProperty installSourceProperty = (InstallSourceProperty)createdPolarisCli.getProperties().get(0);
-        final ZipExtractionInstaller zipExtractionInstaller = (ZipExtractionInstaller)installSourceProperty.installers.get(0);
+        final InstallSourceProperty installSourceProperty = (InstallSourceProperty) createdPolarisCli.getProperties().get(0);
+        final ZipExtractionInstaller zipExtractionInstaller = (ZipExtractionInstaller) installSourceProperty.installers.get(0);
         assertEquals(INSTALLER_URL, zipExtractionInstaller.getUrl());
         assertEquals(CLI_LABEL, zipExtractionInstaller.getLabel());
     }
@@ -83,7 +83,7 @@ public class PolarisCliTest {
         Mockito.when(descriptorExtensionList.get(PolarisCli.DescriptorImpl.class)).thenReturn(polarisCliToolDescriptor);
 
         // Test
-        final Optional<PolarisCli> maybeFoundPolarisCli = polarisCli.findInstanceWithName(CLI_NAME);
+        final Optional<PolarisCli> maybeFoundPolarisCli = polarisCli.findInstallationWithName(CLI_NAME);
 
         // Verify
         final PolarisCli foundPolarisCli = maybeFoundPolarisCli.get();

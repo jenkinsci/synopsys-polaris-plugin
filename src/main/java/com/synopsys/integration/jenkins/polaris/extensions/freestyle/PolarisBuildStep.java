@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.extensions.buildstep;
+package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,8 +34,10 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 
 import hudson.Extension;
 import hudson.Launcher;
@@ -112,9 +114,11 @@ public class PolarisBuildStep extends Builder {
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
         final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(build.getBuiltOn(), build.getWorkspace(), build.getEnvironment(listener), launcher, listener);
-        final PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisCliName, polarisArguments, waitForIssues, polarisWorkflowStepFactory, build);
-        final boolean result = polarisBuildStepWorkflow.perform();
-        return result;
+        final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+        final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+        final PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, polarisCliName, polarisArguments, waitForIssues, build);
+        return polarisBuildStepWorkflow.perform()
+                   .handleResponse(polarisBuildStepWorkflow::handleResponse);
     }
 
     @Extension

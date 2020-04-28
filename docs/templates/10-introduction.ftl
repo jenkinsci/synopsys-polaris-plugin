@@ -7,8 +7,8 @@ You can use ${solution_name} in both freestyle and pipeline jobs.
 
 When the ${solution_name} plugin runs, it checks the configured
 ${polaris_product_name} server and the Jenkins node to see if the correct version
-of the ${polaris_product_name} Command Line Interpreter (CLI) is already installed
-on the node. If it is not installed, the plugin
-installs the ${polaris_product_name} CLI. In either case, ${solution_name}
+of the ${polaris_product_name} Command Line Interpreter (CLI) is installed
+on the node. If the ${polaris_product_name} CLI is not installed, the plugin
+installs the CLI. In either case, ${solution_name}
 then executes the ${polaris_cli_name}, which
 analyzes your project, and uploads results to ${polaris_product_name}.

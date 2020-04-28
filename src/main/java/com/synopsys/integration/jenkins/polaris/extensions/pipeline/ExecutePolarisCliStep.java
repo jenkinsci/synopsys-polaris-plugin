@@ -43,8 +43,10 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
+import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -149,8 +151,10 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         @Override
         protected Integer run() throws Exception {
             final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(node, workspace, envVars, launcher, listener);
-            final ExecutePolarisCliStepWorkflow executePolarisCliStepWorkflow = new ExecutePolarisCliStepWorkflow(polarisCli, arguments, polarisWorkflowStepFactory);
-            return executePolarisCliStepWorkflow.perform();
+            final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+            final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+            final ExecutePolarisCliStepWorkflow executePolarisCliStepWorkflow = new ExecutePolarisCliStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, polarisCli, arguments, node, workspace);
+            return executePolarisCliStepWorkflow.perform().getDataOrThrowException();
         }
     }
 }

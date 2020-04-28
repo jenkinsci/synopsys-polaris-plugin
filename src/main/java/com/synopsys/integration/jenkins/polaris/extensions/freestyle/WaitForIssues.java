@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.extensions.buildstep;
+package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 
 import javax.annotation.Nullable;
 
@@ -41,8 +41,10 @@ public class WaitForIssues extends AbstractDescribableImpl<WaitForIssues> {
     @HelpMarkdown("The build status to set the project to if there are issues")
     private ChangeBuildStatusTo buildStatusForIssues;
 
+    // jobTimeoutInMinutes must be a Number to guarantee identical functionality between Freestyle and Pipeline StepWorkflows that use GetTotalIssueCount.
+    // -- rotte APR 2020
     @Nullable
-    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete.")
+    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete when the Polaris CLI is executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
     private Integer jobTimeoutInMinutes;
 
     @DataBoundConstructor

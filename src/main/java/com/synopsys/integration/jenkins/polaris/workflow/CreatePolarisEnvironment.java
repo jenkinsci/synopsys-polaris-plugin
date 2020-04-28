@@ -64,8 +64,10 @@ public class CreatePolarisEnvironment extends AbstractExecutingSubStep {
             return SubStepResponse.FAILURE(new PolarisIntegrationException("There is a problem with your Polaris system configuration", ex));
         }
 
-        final String pluginVersion = JenkinsVersionHelper.getPluginVersion("synopsys-polaris");
-        logger.info("Running Synopsys Polaris for Jenkins version: " + pluginVersion);
+        final String logMessage = JenkinsVersionHelper.getPluginVersion("synopsys-polaris")
+                                      .map(version -> String.format("Running Synopsys Polaris for Jenkins version %s", version))
+                                      .orElse("Running Synopsys Polaris for Jenkins");
+        logger.info(logMessage);
 
         return SubStepResponse.SUCCESS();
     }

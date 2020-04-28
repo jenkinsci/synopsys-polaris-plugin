@@ -33,8 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -51,7 +49,6 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
@@ -196,23 +193,19 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
         }
     }
 
-    private void updateByXml(final Source source) throws IOException, ParserConfigurationException {
+    private void updateByXml(final Source source) throws IOException {
         final Document doc;
-        try (final StringWriter out = new StringWriter()) {
+        try (final StringWriter writer = new StringWriter()) {
             // this allows us to use UTF-8 for storing data,
             // plus it checks any well-formedness issue in the submitted
             // data
-            XMLUtils.safeTransform(source, new StreamResult(out));
-
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(out.toString()));
-
-            doc = builder.parse(is);
-        } catch (TransformerException | SAXException e) {
+            XMLUtils.safeTransform(source, new StreamResult(writer));
+            try (final StringReader reader = new StringReader(writer.toString())) {
+                doc = XMLUtils.parse(reader);
+            }
+        } catch (final TransformerException | SAXException e) {
             throw new IOException("Failed to persist configuration.xml", e);
         }
-
         final String polarisUrl = getNodeValue(doc, "polarisUrl").orElse(StringUtils.EMPTY);
         final String polarisCredentialsId = getNodeValue(doc, "polarisCredentialsId").orElse(StringUtils.EMPTY);
         final int polarisTimeout = getNodeIntegerValue(doc, "polarisTimeout").orElse(120);

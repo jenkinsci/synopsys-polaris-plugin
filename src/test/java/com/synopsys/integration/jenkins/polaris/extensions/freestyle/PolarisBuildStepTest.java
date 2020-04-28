@@ -1,4 +1,4 @@
-package com.synopsys.integration.jenkins.polaris.extensions.buildstep;
+package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +22,7 @@ import com.synopsys.integration.function.ThrowingFunction;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.workflow.ExecutePolarisCli;
+import com.synopsys.integration.jenkins.polaris.workflow.FindPolarisCli;
 import com.synopsys.integration.jenkins.polaris.workflow.GetTotalIssueCount;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
@@ -92,12 +93,9 @@ public class PolarisBuildStepTest {
         Mockito.when(launcher.getChannel()).thenReturn(channel);
 
         final PolarisCli polarisCli = PowerMockito.mock(PolarisCli.class);
-        Mockito.when(polarisCli.getHome()).thenReturn("polarisCliHome");
-        Mockito.when(polarisCli.forEnvironment(Mockito.any(EnvVars.class))).thenReturn(polarisCli);
-        Mockito.when(polarisCli.forNode(Mockito.any(Node.class), Mockito.any(TaskListener.class))).thenReturn(polarisCli);
-
         PowerMockito.mockStatic(PolarisCli.class);
-        Mockito.when(PolarisCli.findInstanceWithName("testPolarisCliName")).thenReturn(Optional.of(polarisCli));
+        Mockito.when(PolarisCli.findInstallationWithName("testPolarisCliName")).thenReturn(Optional.of(polarisCli));
+        Mockito.when(PolarisCli.installationsExist()).thenReturn(true);
 
         final PolarisGlobalConfig polarisGlobalConfig = Mockito.mock(PolarisGlobalConfig.class);
         final ExtensionList extensionList = Mockito.mock(ExtensionList.class);
@@ -124,8 +122,10 @@ public class PolarisBuildStepTest {
         Mockito.when(conditionalBuilder.then(Mockito.any(SubStep.class))).thenReturn(conditionalBuilder);
         Mockito.when(conditionalBuilder.butOnlyIf(Mockito.any(Object.class), Mockito.any(Predicate.class))).thenReturn(stepWorkflowBuilder);
 
+        final StepWorkflow stepWorkflow = Mockito.mock(StepWorkflow.class);
         final StepWorkflowResponse stepWorkflowResponse = Mockito.mock(StepWorkflowResponse.class);
-        Mockito.when(stepWorkflowBuilder.run()).thenReturn(stepWorkflowResponse);
+        Mockito.when(stepWorkflowBuilder.build()).thenReturn(stepWorkflow);
+        Mockito.when(stepWorkflow.run()).thenReturn(stepWorkflowResponse);
         Mockito.when(stepWorkflowResponse.handleResponse(Mockito.any(ThrowingFunction.class))).thenReturn(true);
 
         final WaitForIssues waitForIssues = Mockito.mock(WaitForIssues.class);
@@ -139,16 +139,15 @@ public class PolarisBuildStepTest {
 
         // Verify
         assertTrue(result);
-        Mockito.verify(polarisCli).forEnvironment(envVars);
-        Mockito.verify(polarisCli).forNode(node, buildListener);
         // The objects passed to the methods verified below are created within PolarisBuildStep (see TODO above),
         // so all we can verify is that the methods get called (with something).
-        Mockito.verify(stepWorkflowBuilder).then(Mockito.any(RemoteSubStep.class));
+        Mockito.verify(stepWorkflowBuilder).then(Mockito.any(FindPolarisCli.class));
         Mockito.verify(stepWorkflowBuilder).then(Mockito.any(ExecutePolarisCli.class));
         Mockito.verify(stepWorkflowBuilder).andSometimes(Mockito.any(RemoteSubStep.class));
         Mockito.verify(conditionalBuilder).then(Mockito.any(GetTotalIssueCount.class));
         Mockito.verify(conditionalBuilder).butOnlyIf(Mockito.any(WaitForIssues.class), Mockito.any(Predicate.class));
-        Mockito.verify(stepWorkflowBuilder).run();
+        Mockito.verify(stepWorkflowBuilder).build();
+        Mockito.verify(stepWorkflow).run();
         Mockito.verify(stepWorkflowResponse).handleResponse(Mockito.any(ThrowingFunction.class));
     }
 }

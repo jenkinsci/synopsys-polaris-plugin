@@ -29,7 +29,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
-import com.synopsys.integration.jenkins.polaris.workflow.FindOrInstallPolarisCli;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
 import hudson.AbortException;

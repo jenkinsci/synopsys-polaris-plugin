@@ -1,11 +1,9 @@
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
-        maven { url 'https://sig-repo.synopsys.com/bds-integrations-release' }
-    }
-    dependencies { classpath 'com.synopsys.integration:common-gradle-plugin:1.2.3' }
+    apply from: "https://raw.githubusercontent.com/blackducksoftware/integration-resources/master/gradle_common/buildscript-repositories.gradle", to: buildscript
+    ////////// START BUILDSCRIPT DEPENDENCY //////////
+dependencies { classpath "com.synopsys.integration:common-gradle-plugin:1.6.1" }
+
+////////// END BUILDSCRIPT DEPENDENCY //////////
 }
 
 plugins {
@@ -13,7 +11,7 @@ plugins {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '1.0.0-SIGQA5-SNAPSHOT'
+version = '1.0.0'
 description = 'Allows users to run Polaris static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
@@ -36,11 +34,6 @@ project.afterEvaluate {
     }
 }
 
-repositories {
-    maven { url 'https://sig-repo.synopsys.com/bds-integrations-release' }
-}
-
-
 artifactory {
     publish {
         defaults { publications('mavenJpi') }
@@ -58,17 +51,25 @@ jenkinsPlugin {
     compatibleSinceVersion = '1.0.0'
     pluginFirstClassLoader = false
 
+    // "maskClasses" masks classes from the above specified coreVersion of Jenkins, not whatever the runtime Jenkins is. If the above version uses commons-compress 1.10 and runtime uses 1.18,
+    // masking commons-compress here will have no effect.
+    // -rotte MAR 2020
     // As of 0.14.1 of polaris-common, methods we use to unpack the Polaris CLI utilize a version of commons-compress that is incompatible with version 2.197 of Jenkins and earlier.
     // Once we no longer depend on commons compress, no longer use those methods, or we update our minimum supported version past 2.197, we should unmask those classes.
     // -rotte FEB 2020
     maskClasses = 'org.apache.commons.compress'
 }
 
+repositories {
+    maven { url 'https://artifactory.internal.synopsys.com/artifactory/bds-integrations-release/' }
+}
+
 dependencies {
     annotationProcessor 'com.synopsys.integration:jenkins-annotation-processor:0.0.1'
 
-    implementation 'com.synopsys.integration:jenkins-common:0.1.5'
-    implementation 'com.synopsys.integration:polaris-common:0.15.0'
+    implementation 'com.synopsys.integration:jenkins-common:0.1.8'
+    implementation 'com.synopsys.integration:polaris-common:0.20.0'
+    implementation 'com.synopsys.integration:phone-home-client:2.0.0'
 
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'

@@ -34,7 +34,6 @@ public class ExecutePolarisCliTest {
 
     @Test
     public void testRun() throws IOException, InterruptedException {
-
         final JenkinsIntLogger logger = Mockito.mock(JenkinsIntLogger.class);
         final Launcher launcher = PowerMockito.mock(Launcher.class);
 
