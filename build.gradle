@@ -42,7 +42,7 @@ jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
     coreVersion = '2.60.1'
     displayName = 'Synopsys Polaris Plugin'
-    url = 'https://wiki.jenkins.io/display/JENKINS/Synopsys+Polaris+Plugin'
+    url = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
     gitHubUrl = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
 
     compatibleSinceVersion = '1.0.0'
