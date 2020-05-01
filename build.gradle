@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.0-HelpUpdate01'
 description = 'Allows users to run Polaris static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
