@@ -9,4 +9,4 @@ The requirements for ${solution_name} are as follows:
 * Polaris configuration file.
     * Ensure that the ${polaris_cli_name} can run successfully from the command line on the project that you are building,
 and that the Polaris configuration file is included in the project source that is checked into the source code control system.
-    * More information on creating and maintaining a Polaris configuration file can be found in the [Polaris Configuration Reference](https://sig-docs.synopsys.com/polaris/docs/c_conf-overview).
+    * Refer to the [Polaris Configuration Reference](https://sig-docs.synopsys.com/polaris/docs/c_conf-overview) for more information about creating and maintaining a Polaris configuration file.

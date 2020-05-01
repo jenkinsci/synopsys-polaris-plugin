@@ -5,7 +5,7 @@ After the ${solution_name} plugin is installed, and before you use it in a job, 
 1. ${solution_name} system configuration
 1. ${polaris_cli_name} tool installation
 
-## Configuring ${solution_name} system configuration
+## ${solution_name} system configuration
 
 Use the following process to configure ${solution_name}:
 

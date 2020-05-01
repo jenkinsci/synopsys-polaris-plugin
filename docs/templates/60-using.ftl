@@ -1,7 +1,7 @@
 # Using plugin in a build
 
 You can use ${solution_name} in either freestyle or pipeline jobs to invoke the ${polaris_cli_name} as part of your Jenkins build.
-For more details regarding the Polaris CLI, see the [Polaris Command Line Reference](https://sig-docs.synopsys.com/polaris/docs/c_cli-overview)
+Refer to the [Polaris Command Line Reference](https://sig-docs.synopsys.com/polaris/docs/c_cli-overview) for information about the Polaris CLI.
 
 ## Freestyle job
 
@@ -21,7 +21,7 @@ The ${solution_name} plugin provides two pipeline steps:
 
 * *polaris*: Runs the ${polaris_cli_name} to initiate ${polaris_product_name} analysis of your project.
 * *polarisIssueCheck*: Waits until ${polaris_product_name} has completed analysis of your project, and determines the number of issues found.
-    * Note that for polarisIssueCheck, the *timeout in minutes* field requires a positive integer. Values that are not integers may be truncated by Jenkins before being passed on to the plugin.
+    * Note that for polarisIssueCheck, the *timeout in minutes* field requires a positive integer. Non-integer values may be truncated by Jenkins before being passed on to the plugin.
 
 Documentation on using these pipeline steps can be found in the [Jenkins pipeline steps documentation](https://jenkins.io/doc/pipeline/steps/synopsys-polaris/).
 
@@ -30,14 +30,14 @@ Documentation on using these pipeline steps can be found in the [Jenkins pipelin
 Whether using ${solution_name} in a freestyle or pipeline job, ${polaris_cli_name} arguments must adhere to specific guidelines:
 
 * All arguments must be separated by whitespace (specifically: spaces, tabs, newlines, carriage returns, or linefeeds).
-* All values containing whitespace must be surrounded by quotes.
-* You must escape all quotes (", ') that are used in values.
+* All values containing whitespace must be surrounded by quotation marks.
+* You must escape all quotation marks (", ') that are used in values.
 * You must escape all backslashes (\\) that are used in values.
 
-For example, the arguments
+For example, the following arguments:
 
 `--co project={"branch":"new_branch", "name":"new_name"} analyze`
 
-would be escaped to
+are escaped to:
 
 `--co project='{"branch":"new_branch", "name":"new_name"}' analyze`
