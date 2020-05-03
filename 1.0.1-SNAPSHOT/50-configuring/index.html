@@ -245,15 +245,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuring-synopsys-polaris-cli" class="md-nav__link">
-    Configuring Synopsys Polaris CLI
+  <a href="#synopsys-polaris-for-jenkins-system-configuration" class="md-nav__link">
+    Synopsys Polaris for Jenkins system configuration
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-synopsys-polaris-for-jenkins" class="md-nav__link">
-    Configuring Synopsys Polaris for Jenkins
+  <a href="#configuring-synopsys-polaris-cli-tool-installation" class="md-nav__link">
+    Configuring Synopsys Polaris CLI tool installation
   </a>
   
 </li>
@@ -302,15 +302,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuring-synopsys-polaris-cli" class="md-nav__link">
-    Configuring Synopsys Polaris CLI
+  <a href="#synopsys-polaris-for-jenkins-system-configuration" class="md-nav__link">
+    Synopsys Polaris for Jenkins system configuration
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-synopsys-polaris-for-jenkins" class="md-nav__link">
-    Configuring Synopsys Polaris for Jenkins
+  <a href="#configuring-synopsys-polaris-cli-tool-installation" class="md-nav__link">
+    Configuring Synopsys Polaris CLI tool installation
   </a>
   
 </li>
@@ -335,23 +335,10 @@
                 <h1 id="configuration">Configuration</h1>
 <p>After the Synopsys Polaris for Jenkins plugin is installed, and before you use it in a job, you must configure the following:</p>
 <ol>
-<li>Synopsys Polaris CLI</li>
-<li>Synopsys Polaris for Jenkins</li>
+<li>Synopsys Polaris for Jenkins system configuration</li>
+<li>Synopsys Polaris CLI tool installation</li>
 </ol>
-<h2 id="configuring-synopsys-polaris-cli">Configuring Synopsys Polaris CLI</h2>
-<p>Use the following process to configure Synopsys Polaris CLI:</p>
-<ol>
-<li>In Jenkins, navigate to <em>Manage Jenkins &gt; Global Tool Configuration</em>.</li>
-<li>Scroll down to the <em>Polaris CLI</em> section, click <em>Add Polaris CLI</em>, and complete the following:<ul>
-<li><em>Name</em>: A name for the Synopsys Polaris CLI installation.</li>
-<li><em>Install automatically</em>: To enable Synopsys Polaris for Jenkins to install the Synopsys Polaris CLI from your Synopsys Polaris server automatically, leave this box checked,
-and proceed to the next step. To point Synopsys Polaris for Jenkins to an existing Synopsys Polaris CLI installation, uncheck this box
-and enter the path to the Synopsys Polaris CLI directory in the <em>Installation directory</em> field.</li>
-</ul>
-</li>
-<li>Click <em>Save</em>.</li>
-</ol>
-<h2 id="configuring-synopsys-polaris-for-jenkins">Configuring Synopsys Polaris for Jenkins</h2>
+<h2 id="synopsys-polaris-for-jenkins-system-configuration">Synopsys Polaris for Jenkins system configuration</h2>
 <p>Use the following process to configure Synopsys Polaris for Jenkins:</p>
 <ol>
 <li>Navigate to <em>Manage Jenkins &gt; Configure System</em>.</li>
@@ -365,6 +352,17 @@ and enter the timeout in seconds in the <em>Polaris connection timeout</em> fiel
 using the configuration data you have entered, click <em>Test connection to Polaris</em>.</li>
 </ul>
 </li>
+<li>Click <em>Save</em>.</li>
+</ol>
+<h2 id="configuring-synopsys-polaris-cli-tool-installation">Configuring Synopsys Polaris CLI tool installation</h2>
+<p>Use the following process to configure Synopsys Polaris CLI:</p>
+<ol>
+<li>In Jenkins, navigate to <em>Manage Jenkins &gt; Global Tool Configuration</em>.</li>
+<li>Scroll down to the <em>Polaris CLI</em> section, click <em>Add Polaris CLI</em>, and complete the following:</li>
+<li><em>Name</em>: A name for the Synopsys Polaris CLI installation.</li>
+<li><em>Install automatically</em>: To enable Synopsys Polaris for Jenkins to install the Synopsys Polaris CLI from your Synopsys Polaris server automatically, leave this box checked,
+and proceed to the next step. To point Synopsys Polaris for Jenkins to an existing Synopsys Polaris CLI installation, uncheck this box
+and enter the path to the Synopsys Polaris CLI directory in the <em>Installation directory</em> field.</li>
 <li>Click <em>Save</em>.</li>
 </ol>
                 

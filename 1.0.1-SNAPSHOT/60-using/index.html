@@ -257,15 +257,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#freestyle-build" class="md-nav__link">
-    Freestyle build
+  <a href="#freestyle-job" class="md-nav__link">
+    Freestyle job
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pipeline-build" class="md-nav__link">
-    Pipeline build
+  <a href="#pipeline-job" class="md-nav__link">
+    Pipeline job
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escaping-arguments" class="md-nav__link">
+    Escaping arguments
   </a>
   
 </li>
@@ -302,15 +309,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#freestyle-build" class="md-nav__link">
-    Freestyle build
+  <a href="#freestyle-job" class="md-nav__link">
+    Freestyle job
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#pipeline-build" class="md-nav__link">
-    Pipeline build
+  <a href="#pipeline-job" class="md-nav__link">
+    Pipeline job
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escaping-arguments" class="md-nav__link">
+    Escaping arguments
   </a>
   
 </li>
@@ -333,35 +347,41 @@
                 
                 
                 <h1 id="using-plugin-in-a-build">Using plugin in a build</h1>
-<p>You can use Synopsys Polaris for Jenkins in a freestyle build or a pipeline build.</p>
-<h2 id="freestyle-build">Freestyle build</h2>
-<p>To use Synopsys Polaris for Jenkins in a freestyle build, add it as a build step at the point where you want to build your project, and complete the following:</p>
+<p>You can use Synopsys Polaris for Jenkins in either freestyle or pipeline jobs to invoke the Synopsys Polaris CLI as part of your Jenkins build.
+Refer to the <a href="https://sig-docs.synopsys.com/polaris/docs/c_cli-overview">Polaris Command Line Reference</a> for information about the Polaris CLI.</p>
+<h2 id="freestyle-job">Freestyle job</h2>
+<p>To use Synopsys Polaris for Jenkins in a freestyle job, add it as a build step at the point where you want to build your project, and complete the following:</p>
 <ol>
 <li><em>Polaris CLI Installation</em>: Select the name that you assigned to your Synopsys Polaris CLI installation on the <em>Manage Jenkins &gt; Global Tool Configuration</em> page.</li>
-<li><em>Polaris Arguments</em>: The arguments that you want passed to the Synopsys Polaris CLI, for example, <em>analyze</em>.
-    Arguments that are passed in here must adhere to specific guidelines:<ul>
-<li>All arguments must be separated by whitespace (specifically: spaces, tabs, newlines, carriage returns, or linefeeds).</li>
-<li>All values containing whitespace must be surrounded by quotes.</li>
-<li>You must escape all quotes (", ') that are used in values.</li>
-<li>You must escape all backslashes (\) that are used in values.</li>
-</ul>
-</li>
+<li><em>Polaris Arguments</em>: The arguments that you want passed to the Synopsys Polaris CLI, for example, <em>analyze</em>.</li>
 <li><em>Wait for Issues</em>: If you want the build to wait until Synopsys Polaris determines whether there are issues with your project, check this box and
 use the <em>If there are issues</em> field to select the action you want the plugin to take when issues are discovered. Click <em>Advanced...</em> if you want to adjust maximum
 length of time the job will wait for issues (<em>Job timeout in minutes</em>).
 If you want the build to proceed without waiting, leave the <em>Wait for Issues</em> box unchecked.</li>
 <li>Click <em>Save</em>.</li>
 </ol>
-<h2 id="pipeline-build">Pipeline build</h2>
+<h2 id="pipeline-job">Pipeline job</h2>
 <p>The Synopsys Polaris for Jenkins plugin provides two pipeline steps:</p>
 <ul>
 <li><em>polaris</em>: Runs the Synopsys Polaris CLI to initiate Synopsys Polaris analysis of your project.</li>
 <li><em>polarisIssueCheck</em>: Waits until Synopsys Polaris has completed analysis of your project, and determines the number of issues found.<ul>
-<li>Note that for polarisIssueCheck, the <em>timeout in minutes</em> field requires a positive integer. Values that are not integers may be truncated by Jenkins before being passed on to the plugin.</li>
+<li>Note that for polarisIssueCheck, the <em>timeout in minutes</em> field requires a positive integer. Non-integer values may be truncated by Jenkins before being passed on to the plugin.</li>
 </ul>
 </li>
 </ul>
 <p>Documentation on using these pipeline steps can be found in the <a href="https://jenkins.io/doc/pipeline/steps/synopsys-polaris/">Jenkins pipeline steps documentation</a>.</p>
+<h2 id="escaping-arguments">Escaping arguments</h2>
+<p>Whether using Synopsys Polaris for Jenkins in a freestyle or pipeline job, Synopsys Polaris CLI arguments must adhere to specific guidelines:</p>
+<ul>
+<li>All arguments must be separated by whitespace (specifically: spaces, tabs, newlines, carriage returns, or linefeeds).</li>
+<li>All values containing whitespace must be surrounded by quotation marks.</li>
+<li>You must escape all quotation marks (", ') that are used in values.</li>
+<li>You must escape all backslashes (\) that are used in values.</li>
+</ul>
+<p>For example, the following arguments:</p>
+<p><code>--co project={"branch":"new_branch", "name":"new_name"} analyze</code></p>
+<p>are escaped to:</p>
+<p><code>--co project='{"branch":"new_branch", "name":"new_name"}' analyze</code></p>
                 
                   
                 
