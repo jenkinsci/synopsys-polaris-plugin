@@ -43,9 +43,7 @@ public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object>
     private final PolarisWorkflowStepFactory polarisWorkflowStepFactory;
     private final AbstractBuild<?, ?> build;
     private final WaitForIssues waitForIssues;
-
-    private final JenkinsIntLogger logger;
-    private Integer jobTimeoutInMinutes;
+    private final Integer jobTimeoutInMinutes;
 
     public PolarisBuildStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger logger, final PolarisServicesFactory polarisServicesFactory, final String polarisCLiName, final String polarisArguments,
         final WaitForIssues waitForIssues, final AbstractBuild<?, ?> build) {
@@ -55,7 +53,6 @@ public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object>
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
         this.build = build;
         this.waitForIssues = waitForIssues;
-        this.logger = logger;
         this.jobTimeoutInMinutes = waitForIssues == null ? null : waitForIssues.getJobTimeoutInMinutes();
     }
 
