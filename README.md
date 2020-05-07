@@ -11,7 +11,7 @@ You can download the latest artifact from the [Synopsys Polaris plugin site](htt
 
 Additional releases are available here: https://updates.jenkins-ci.org/download/plugins/synopsys-polaris/
 
-All plugin releases are also available on the [Synopsys public artifactory](https://artifactory.internal.synopsys.com/artifactory/webapp/#/artifacts/browse/tree/General/bds-integrations-release/org/jenkins-ci/plugins/synopsys-polaris)
+All plugin releases are also available on the [Synopsys public artifactory](https://sig-repo.synopsys.com/webapp/#/artifacts/browse/tree/General/bds-integrations-release/org/jenkins-ci/plugins/synopsys-polaris)
 
 # Documentation
 The documentation is located [here](https://jenkinsci.github.io/synopsys-polaris-plugin/latest/).
