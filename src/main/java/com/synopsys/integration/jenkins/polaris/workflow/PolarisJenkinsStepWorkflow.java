@@ -39,25 +39,25 @@ import com.synopsys.integration.stepworkflow.jenkins.JenkinsStepWorkflow;
 public abstract class PolarisJenkinsStepWorkflow<T> extends JenkinsStepWorkflow<T> {
     protected final PolarisServicesFactory polarisServicesFactory;
 
-    public PolarisJenkinsStepWorkflow(final JenkinsIntLogger jenkinsIntLogger, final PolarisServicesFactory polarisServicesFactory) {
-        super(jenkinsIntLogger);
+    public PolarisJenkinsStepWorkflow(JenkinsIntLogger jenkinsIntLogger, JenkinsVersionHelper jenkinsVersionHelper, PolarisServicesFactory polarisServicesFactory) {
+        super(jenkinsIntLogger, jenkinsVersionHelper);
         this.polarisServicesFactory = polarisServicesFactory;
     }
 
     protected PhoneHomeRequestBodyBuilder createPhoneHomeBuilder() {
-        final PolarisPhoneHomeRequestFactory polarisPhoneHomeRequestFactory = new PolarisPhoneHomeRequestFactory("synopsys-polaris-plugin");
-        final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = polarisServicesFactory.getHttpClient();
-        final ContextsService contextsService = polarisServicesFactory.createContextsService();
+        PolarisPhoneHomeRequestFactory polarisPhoneHomeRequestFactory = new PolarisPhoneHomeRequestFactory("synopsys-polaris-plugin");
+        AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = polarisServicesFactory.getHttpClient();
+        ContextsService contextsService = polarisServicesFactory.createContextsService();
         String organizationName;
         try {
             organizationName = contextsService.getCurrentContext()
                                    .map(Context::getAttributes)
                                    .map(ContextAttributes::getOrganizationname)
                                    .orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             organizationName = PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE;
         }
-        return polarisPhoneHomeRequestFactory.create(organizationName, accessTokenPolarisHttpClient.getPolarisServerUrl(), () -> JenkinsVersionHelper.getPluginVersion("synopsys-polaris"), Optional::empty);
+        return polarisPhoneHomeRequestFactory.create(organizationName, accessTokenPolarisHttpClient.getPolarisServerUrl(), () -> jenkinsVersionHelper.getPluginVersion("synopsys-polaris"), Optional::empty);
     }
 
 }

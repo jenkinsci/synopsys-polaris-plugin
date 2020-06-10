@@ -27,6 +27,8 @@ import java.io.IOException;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.JenkinsProxyHelper;
+import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
@@ -41,38 +43,48 @@ import hudson.tools.ToolInstallation;
 import hudson.tools.ToolInstaller;
 import hudson.tools.ToolInstallerDescriptor;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 
 public class PolarisCliInstaller extends ToolInstaller {
     @DataBoundConstructor
-    public PolarisCliInstaller(final String label) {
+    public PolarisCliInstaller(String label) {
         super(label);
     }
 
     @Override
-    public FilePath performInstallation(final ToolInstallation tool, final Node node, final TaskListener log) throws IOException, InterruptedException {
-        final JenkinsIntLogger jenkinsIntLogger = new JenkinsIntLogger(log);
-        final PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
+    public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener log) throws IOException, InterruptedException {
+        JenkinsIntLogger jenkinsIntLogger = new JenkinsIntLogger(log);
+        PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
 
         if (polarisGlobalConfig == null) {
-            throw new AbortException("Cannot install Polaris CLI Installation" + tool.getName() + " because no Polaris global config was found. Please check your system config.");
+            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because no Polaris global config was found. Please check your system config.");
         }
 
-        final VirtualChannel virtualChannel = node.getChannel();
+        VirtualChannel virtualChannel = node.getChannel();
 
         if (virtualChannel == null) {
-            throw new AbortException("Cannot install Polaris CLI Installation" + tool.getName() + " because node " + node.getDisplayName() + " is not connected or offline");
+            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because node " + node.getDisplayName() + " is not connected or offline");
         }
 
-        final FilePath installLocation = preferredLocation(tool, node);
+        Jenkins jenkins = Jenkins.getInstanceOrNull();
+
+        if (jenkins == null) {
+            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because the Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
+        }
+
+        SynopsysCredentialsHelper synopsysCredentialsHelper = new SynopsysCredentialsHelper(jenkins);
+        JenkinsProxyHelper jenkinsProxyHelper = JenkinsProxyHelper.fromJenkins(jenkins);
+
+        FilePath installLocation = preferredLocation(tool, node);
         installLocation.mkdirs();
 
-        final AccessTokenPolarisHttpClient polarisHttpClient = polarisGlobalConfig.getPolarisServerConfig().createPolarisHttpClient(jenkinsIntLogger);
-        final FindOrInstallPolarisCli findOrInstallPolarisCli = FindOrInstallPolarisCli.getConnectionDetailsFromHttpClient(jenkinsIntLogger, polarisHttpClient, installLocation.getRemote());
+        AccessTokenPolarisHttpClient polarisHttpClient = polarisGlobalConfig.getPolarisServerConfig(synopsysCredentialsHelper, jenkinsProxyHelper).createPolarisHttpClient(jenkinsIntLogger);
+        FindOrInstallPolarisCli findOrInstallPolarisCli = FindOrInstallPolarisCli.getConnectionDetailsFromHttpClient(jenkinsIntLogger, polarisHttpClient, installLocation.getRemote());
 
         try {
-            final String polarisCliRemotePath = virtualChannel.call(findOrInstallPolarisCli);
+            String polarisCliRemotePath = virtualChannel.call(findOrInstallPolarisCli);
             return new FilePath(virtualChannel, polarisCliRemotePath);
-        } catch (final IntegrationException ex) {
+        } catch (IntegrationException ex) {
             throw new IOException("Polaris CLI was not correctly installed.", ex);
         }
     }
@@ -85,7 +97,7 @@ public class PolarisCliInstaller extends ToolInstaller {
         }
 
         @Override
-        public boolean isApplicable(final Class<? extends ToolInstallation> toolType) {
+        public boolean isApplicable(Class<? extends ToolInstallation> toolType) {
             return toolType == PolarisCli.class;
         }
     }

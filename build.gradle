@@ -14,23 +14,6 @@ description = 'Allows users to run Polaris static analysis in their builds'
 apply plugin: 'com.synopsys.integration.solution'
 apply from: 'docs.gradle'
 
-def jcenterRepo = project.repositories.findByName('BintrayJCenter')
-project.repositories.remove(jcenterRepo)
-def mavenRepo = project.repositories.findByName('maven')
-project.repositories.remove(mavenRepo)
-
-project.afterEvaluate {
-    // MavenLocal is added by the gradle-jpi-plugin and the common-gradle-plugin so we have to remove it after the plugins are evaluated
-    List<String> repoNames = new ArrayList()
-    repoNames.addAll(project.repositories.getNames())
-    for (String repoName : repoNames) {
-        if (repoName.contains('MavenLocal')) {
-            def repoToRemove = project.repositories.findByName(repoName)
-            project.repositories.remove(repoToRemove)
-        }
-    }
-}
-
 artifactory {
     publish {
         defaults { publications('mavenJpi') }
@@ -57,16 +40,11 @@ jenkinsPlugin {
     maskClasses = 'org.apache.commons.compress'
 }
 
-repositories {
-    maven { url 'https://artifactory.internal.synopsys.com/artifactory/bds-integrations-release/' }
-}
-
 dependencies {
     annotationProcessor 'com.synopsys.integration:jenkins-annotation-processor:0.0.1'
 
-    implementation 'com.synopsys.integration:jenkins-common:0.1.8'
+    implementation 'com.synopsys.integration:jenkins-common:0.2.1'
     implementation 'com.synopsys.integration:polaris-common:0.20.0'
-    implementation 'com.synopsys.integration:phone-home-client:2.0.0'
 
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'

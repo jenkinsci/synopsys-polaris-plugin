@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.jenkins.polaris.extensions.pipeline;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisJenkinsStepWorkflow;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
@@ -29,24 +30,18 @@ import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.stepworkflow.StepWorkflow;
 
 import hudson.AbortException;
-import hudson.FilePath;
-import hudson.model.Node;
 
 public class ExecutePolarisCliStepWorkflow extends PolarisJenkinsStepWorkflow<Integer> {
     private final String polarisCliName;
     private final String polarisArguments;
     private final PolarisWorkflowStepFactory polarisWorkflowStepFactory;
-    private final Node node;
-    private final FilePath workspace;
 
-    public ExecutePolarisCliStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger jenkinsIntLogger, final PolarisServicesFactory polarisServicesFactory, final String polarisCliName,
-        final String polarisArguments, final Node node, final FilePath workspace) {
-        super(jenkinsIntLogger, polarisServicesFactory);
+    public ExecutePolarisCliStepWorkflow(PolarisWorkflowStepFactory polarisWorkflowStepFactory, JenkinsIntLogger jenkinsIntLogger, JenkinsVersionHelper jenkinsVersionHelper, PolarisServicesFactory polarisServicesFactory,
+        String polarisCliName, String polarisArguments) {
+        super(jenkinsIntLogger, jenkinsVersionHelper, polarisServicesFactory);
         this.polarisCliName = polarisCliName;
         this.polarisArguments = polarisArguments;
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
-        this.node = node;
-        this.workspace = workspace;
     }
 
     @Override
@@ -58,13 +53,8 @@ public class ExecutePolarisCliStepWorkflow extends PolarisJenkinsStepWorkflow<In
     }
 
     @Override
-    protected void validate() throws AbortException {
-        if (node == null) {
-            throw new AbortException("Polaris cannot be executed: The node that it was executed on no longer exists.");
-        }
-        if (workspace == null) {
-            throw new AbortException("Polaris cannot be executed: The workspace could not be determined.");
-        }
+    public Integer perform() throws Exception {
+        return runWorkflow().getDataOrThrowException();
     }
 
 }

@@ -42,6 +42,7 @@ import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
@@ -56,6 +57,7 @@ import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Execute Synopsys Polaris CLI";
@@ -70,7 +72,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     private String polarisCli;
 
     @DataBoundConstructor
-    public ExecutePolarisCliStep(final String arguments) {
+    public ExecutePolarisCliStep(String arguments) {
         this.arguments = arguments;
     }
 
@@ -79,7 +81,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setPolarisCli(final String polarisCli) {
+    public void setPolarisCli(String polarisCli) {
         this.polarisCli = polarisCli;
     }
 
@@ -88,7 +90,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     }
 
     @Override
-    public StepExecution start(final StepContext context) throws Exception {
+    public StepExecution start(StepContext context) throws Exception {
         return new Execution(context);
     }
 
@@ -101,7 +103,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         }
 
         public ListBoxModel doFillPolarisCliItems() {
-            final PolarisCli.DescriptorImpl polarisCliToolInstallationDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
+            PolarisCli.DescriptorImpl polarisCliToolInstallationDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
 
             if (polarisCliToolInstallationDescriptor == null) {
                 return new ListBoxModel();
@@ -139,7 +141,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         private final transient Launcher launcher;
         private final transient Node node;
 
-        protected Execution(@Nonnull final StepContext context) throws InterruptedException, IOException {
+        protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
             listener = context.get(TaskListener.class);
             envVars = context.get(EnvVars.class);
@@ -150,11 +152,12 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(node, workspace, envVars, launcher, listener);
-            final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-            final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-            final ExecutePolarisCliStepWorkflow executePolarisCliStepWorkflow = new ExecutePolarisCliStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, polarisCli, arguments, node, workspace);
-            return executePolarisCliStepWorkflow.perform().getDataOrThrowException();
+            PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), node, workspace, envVars, launcher, listener);
+            JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+            JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
+            PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+            ExecutePolarisCliStepWorkflow executePolarisCliStepWorkflow = new ExecutePolarisCliStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, polarisCli, arguments);
+            return executePolarisCliStepWorkflow.perform();
         }
     }
 }

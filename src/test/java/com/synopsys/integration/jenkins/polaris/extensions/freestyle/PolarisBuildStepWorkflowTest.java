@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
@@ -22,6 +23,7 @@ import hudson.model.Node;
 public class PolarisBuildStepWorkflowTest {
     private PolarisWorkflowStepFactory polarisWorkflowStepFactory;
     private JenkinsIntLogger jenkinsIntLogger;
+    private JenkinsVersionHelper jenkinsVersionHelper;
     private PolarisServicesFactory polarisServicesFactory;
     private AbstractBuild<?, ?> build;
 
@@ -32,20 +34,22 @@ public class PolarisBuildStepWorkflowTest {
         polarisWorkflowStepFactory = Mockito.mock(PolarisWorkflowStepFactory.class);
         jenkinsIntLogger = Mockito.mock(JenkinsIntLogger.class);
         polarisServicesFactory = Mockito.mock(PolarisServicesFactory.class);
+        jenkinsVersionHelper = Mockito.mock(JenkinsVersionHelper.class);
 
         build = PowerMockito.mock(AbstractBuild.class);
-        final FilePath workspace = PowerMockito.mock(FilePath.class);
-        final Node node = Mockito.mock(Node.class);
+        FilePath workspace = PowerMockito.mock(FilePath.class);
+        Node node = Mockito.mock(Node.class);
         Mockito.when(build.getBuiltOn()).thenReturn(node);
         Mockito.when(build.getWorkspace()).thenReturn(workspace);
     }
 
     @Test
     public void testPreserveNullTimeout() throws Throwable {
-        final WaitForIssues waitForIssues = new WaitForIssues();
+        WaitForIssues waitForIssues = new WaitForIssues();
         waitForIssues.setBuildStatusForIssues(ChangeBuildStatusTo.SUCCESS);
         waitForIssues.setJobTimeoutInMinutes(null);
-        final PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, jenkinsIntLogger, polarisServicesFactory, "polarisCliName", "polarisArguments", waitForIssues, build);
+        PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, jenkinsIntLogger, jenkinsVersionHelper, polarisServicesFactory, "polarisCliName", "polarisArguments", waitForIssues,
+            build);
 
         polarisBuildStepWorkflow.buildWorkflow();
 

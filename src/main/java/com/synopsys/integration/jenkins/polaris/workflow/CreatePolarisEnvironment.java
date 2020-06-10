@@ -26,7 +26,9 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.synopsys.integration.jenkins.JenkinsProxyHelper;
 import com.synopsys.integration.jenkins.JenkinsVersionHelper;
+import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
@@ -39,40 +41,46 @@ import jenkins.model.GlobalConfiguration;
 
 public class CreatePolarisEnvironment extends AbstractExecutingSubStep {
     private final JenkinsIntLogger logger;
+    private final SynopsysCredentialsHelper credentialsHelper;
+    private final JenkinsProxyHelper proxyHelper;
     private final IntEnvironmentVariables intEnvironmentVariables;
+    private final JenkinsVersionHelper versionHelper;
 
-    public CreatePolarisEnvironment(final JenkinsIntLogger logger, final IntEnvironmentVariables intEnvironmentVariables) {
+    public CreatePolarisEnvironment(JenkinsIntLogger logger, JenkinsVersionHelper versionHelper, SynopsysCredentialsHelper credentialsHelper, JenkinsProxyHelper proxyHelper, IntEnvironmentVariables intEnvironmentVariables) {
         this.logger = logger;
+        this.versionHelper = versionHelper;
+        this.credentialsHelper = credentialsHelper;
+        this.proxyHelper = proxyHelper;
         this.intEnvironmentVariables = intEnvironmentVariables;
     }
 
     @Override
     public SubStepResponse<Object> run() {
-        final PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
+        PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
         if (polarisGlobalConfig == null) {
             return SubStepResponse.FAILURE(new PolarisIntegrationException("No Polaris system configuration could be found, please check your system configuration."));
         }
 
-        final PolarisServerConfigBuilder polarisServerConfigBuilder = polarisGlobalConfig.getPolarisServerConfigBuilder();
+        PolarisServerConfigBuilder polarisServerConfigBuilder = polarisGlobalConfig.getPolarisServerConfigBuilder(credentialsHelper, proxyHelper);
 
         polarisServerConfigBuilder.getProperties()
             .forEach((builderPropertyKey, propertyValue) -> acceptIfNotNull(intEnvironmentVariables::put, builderPropertyKey.getKey(), propertyValue));
 
         try {
             polarisServerConfigBuilder.build().populateEnvironmentVariables(intEnvironmentVariables::put);
-        } catch (final IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             return SubStepResponse.FAILURE(new PolarisIntegrationException("There is a problem with your Polaris system configuration", ex));
         }
 
-        final String logMessage = JenkinsVersionHelper.getPluginVersion("synopsys-polaris")
-                                      .map(version -> String.format("Running Synopsys Polaris for Jenkins version %s", version))
-                                      .orElse("Running Synopsys Polaris for Jenkins");
+        String logMessage = versionHelper.getPluginVersion("synopsys-polaris")
+                                .map(version -> String.format("Running Synopsys Polaris for Jenkins version %s", version))
+                                .orElse("Running Synopsys Polaris for Jenkins");
         logger.info(logMessage);
 
         return SubStepResponse.SUCCESS();
     }
 
-    private void acceptIfNotNull(final BiConsumer<String, String> environmentPutter, final String key, final String value) {
+    private void acceptIfNotNull(BiConsumer<String, String> environmentPutter, String key, String value) {
         if (StringUtils.isNoneBlank(key, value)) {
             environmentPutter.accept(key, value);
         }

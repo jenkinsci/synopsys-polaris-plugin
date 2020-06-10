@@ -22,6 +22,7 @@
  */
 package com.synopsys.integration.jenkins.polaris.extensions.pipeline;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisJenkinsStepWorkflow;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
@@ -37,9 +38,9 @@ public class PolarisIssueCheckStepWorkflow extends PolarisJenkinsStepWorkflow<In
     private final Boolean returnIssueCount;
     private final PolarisWorkflowStepFactory polarisWorkflowStepFactory;
 
-    public PolarisIssueCheckStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger logger, final PolarisServicesFactory polarisServicesFactory, final Integer jobTimeoutInMinutes,
-        final Boolean returnIssueCount) {
-        super(logger, polarisServicesFactory);
+    public PolarisIssueCheckStepWorkflow(PolarisWorkflowStepFactory polarisWorkflowStepFactory, JenkinsIntLogger logger, JenkinsVersionHelper jenkinsVersionHelper, PolarisServicesFactory polarisServicesFactory, Integer jobTimeoutInMinutes,
+        Boolean returnIssueCount) {
+        super(logger, jenkinsVersionHelper, polarisServicesFactory);
         this.jobTimeoutInMinutes = jobTimeoutInMinutes;
         this.returnIssueCount = returnIssueCount;
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
@@ -52,10 +53,12 @@ public class PolarisIssueCheckStepWorkflow extends PolarisJenkinsStepWorkflow<In
                    .build();
     }
 
-    public Integer handleResponse(final JenkinsIntLogger logger, final StepWorkflowResponse<Integer> stepWorkflowResponse) throws Exception {
-        final Integer numberOfIssues = stepWorkflowResponse.getDataOrThrowException();
+    @Override
+    public Integer perform() throws Exception {
+        StepWorkflowResponse<Integer> response = runWorkflow();
+        Integer numberOfIssues = response.getDataOrThrowException();
         if (numberOfIssues > 0) {
-            final String defectMessage = String.format("[Polaris] Found %s total issues.", numberOfIssues);
+            String defectMessage = String.format("[Polaris] Found %s total issues.", numberOfIssues);
             if (Boolean.TRUE.equals(returnIssueCount)) {
                 logger.error(defectMessage);
             } else {
@@ -66,8 +69,4 @@ public class PolarisIssueCheckStepWorkflow extends PolarisJenkinsStepWorkflow<In
         return numberOfIssues;
     }
 
-    @Override
-    protected void validate() throws AbortException {
-        // nothing to validate
-    }
 }

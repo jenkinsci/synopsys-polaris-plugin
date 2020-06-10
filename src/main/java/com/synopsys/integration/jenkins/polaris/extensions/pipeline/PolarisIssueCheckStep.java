@@ -40,6 +40,7 @@ import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
@@ -51,6 +52,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
 import hudson.model.TaskListener;
+import jenkins.model.Jenkins;
 
 public class PolarisIssueCheckStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Check for issues in Polaris found by a previous execution of the CLI";
@@ -77,7 +79,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setJobTimeoutInMinutes(final Integer jobTimeoutInMinutes) {
+    public void setJobTimeoutInMinutes(Integer jobTimeoutInMinutes) {
         this.jobTimeoutInMinutes = jobTimeoutInMinutes;
     }
 
@@ -90,12 +92,12 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
     }
 
     @DataBoundSetter
-    public void setReturnIssueCount(final Boolean returnIssueCount) {
+    public void setReturnIssueCount(Boolean returnIssueCount) {
         this.returnIssueCount = returnIssueCount;
     }
 
     @Override
-    public StepExecution start(final StepContext context) throws Exception {
+    public StepExecution start(StepContext context) throws Exception {
         return new Execution(context);
     }
 
@@ -133,7 +135,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
         private final transient Launcher launcher;
         private final transient Node node;
 
-        protected Execution(@Nonnull final StepContext context) throws InterruptedException, IOException {
+        protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
             listener = context.get(TaskListener.class);
             envVars = context.get(EnvVars.class);
@@ -144,12 +146,12 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(node, workspace, envVars, launcher, listener);
-            final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-            final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-            final PolarisIssueCheckStepWorkflow polarisIssueCheckStepWorkflow = new PolarisIssueCheckStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, jobTimeoutInMinutes, returnIssueCount);
-            return polarisIssueCheckStepWorkflow.perform()
-                       .handleResponse(response -> polarisIssueCheckStepWorkflow.handleResponse(logger, response));
+            PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), node, workspace, envVars, launcher, listener);
+            JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+            JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
+            PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+            PolarisIssueCheckStepWorkflow polarisIssueCheckStepWorkflow = new PolarisIssueCheckStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, jobTimeoutInMinutes, returnIssueCount);
+            return polarisIssueCheckStepWorkflow.perform();
         }
     }
 }

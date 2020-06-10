@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
@@ -49,6 +50,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 
 public class PolarisBuildStep extends Builder {
     public static final String DISPLAY_NAME = "Synopsys Polaris";
@@ -77,7 +79,7 @@ public class PolarisBuildStep extends Builder {
     }
 
     @DataBoundSetter
-    public void setPolarisArguments(final String polarisArguments) {
+    public void setPolarisArguments(String polarisArguments) {
         this.polarisArguments = polarisArguments;
     }
 
@@ -87,7 +89,7 @@ public class PolarisBuildStep extends Builder {
     }
 
     @DataBoundSetter
-    public void setPolarisCliName(final String polarisCliName) {
+    public void setPolarisCliName(String polarisCliName) {
         this.polarisCliName = polarisCliName;
     }
 
@@ -97,7 +99,7 @@ public class PolarisBuildStep extends Builder {
     }
 
     @DataBoundSetter
-    public void setWaitForIssues(final WaitForIssues waitForIssues) {
+    public void setWaitForIssues(WaitForIssues waitForIssues) {
         this.waitForIssues = waitForIssues;
     }
 
@@ -112,13 +114,13 @@ public class PolarisBuildStep extends Builder {
     }
 
     @Override
-    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
-        final PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(build.getBuiltOn(), build.getWorkspace(), build.getEnvironment(listener), launcher, listener);
-        final JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-        final PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-        final PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, logger, polarisServicesFactory, polarisCliName, polarisArguments, waitForIssues, build);
-        return polarisBuildStepWorkflow.perform()
-                   .handleResponse(polarisBuildStepWorkflow::handleResponse);
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), build.getBuiltOn(), build.getWorkspace(), build.getEnvironment(listener), launcher, listener);
+        JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
+        JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
+        PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
+        PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, polarisCliName, polarisArguments, waitForIssues, build);
+        return polarisBuildStepWorkflow.perform();
     }
 
     @Extension
@@ -131,7 +133,7 @@ public class PolarisBuildStep extends Builder {
         }
 
         public ListBoxModel doFillPolarisCliNameItems() {
-            final PolarisCli.DescriptorImpl polarisCliToolInstallationDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
+            PolarisCli.DescriptorImpl polarisCliToolInstallationDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
 
             if (polarisCliToolInstallationDescriptor == null) {
                 return new ListBoxModel();
@@ -144,7 +146,7 @@ public class PolarisBuildStep extends Builder {
         }
 
         @Override
-        public boolean isApplicable(final Class<? extends AbstractProject> jobType) {
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;
         }
 

@@ -25,6 +25,7 @@ package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 import java.util.Objects;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.workflow.PolarisJenkinsStepWorkflow;
@@ -45,24 +46,15 @@ public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object>
     private final WaitForIssues waitForIssues;
     private final Integer jobTimeoutInMinutes;
 
-    public PolarisBuildStepWorkflow(final PolarisWorkflowStepFactory polarisWorkflowStepFactory, final JenkinsIntLogger logger, final PolarisServicesFactory polarisServicesFactory, final String polarisCLiName, final String polarisArguments,
-        final WaitForIssues waitForIssues, final AbstractBuild<?, ?> build) {
-        super(logger, polarisServicesFactory);
+    public PolarisBuildStepWorkflow(PolarisWorkflowStepFactory polarisWorkflowStepFactory, JenkinsIntLogger logger, JenkinsVersionHelper jenkinsVersionHelper, PolarisServicesFactory polarisServicesFactory, String polarisCLiName,
+        String polarisArguments, WaitForIssues waitForIssues, AbstractBuild<?, ?> build) {
+        super(logger, jenkinsVersionHelper, polarisServicesFactory);
         this.polarisCLiName = polarisCLiName;
         this.polarisArguments = polarisArguments;
         this.polarisWorkflowStepFactory = polarisWorkflowStepFactory;
         this.build = build;
         this.waitForIssues = waitForIssues;
         this.jobTimeoutInMinutes = waitForIssues == null ? null : waitForIssues.getJobTimeoutInMinutes();
-    }
-
-    protected void validate() throws AbortException {
-        if (build.getWorkspace() == null) {
-            throw new AbortException("Polaris cannot be executed: The workspace could not be determined.");
-        }
-        if (build.getBuiltOn() == null) {
-            throw new AbortException("Polaris cannot be executed: The node that it was executed on no longer exists.");
-        }
     }
 
     protected StepWorkflow<Object> buildWorkflow() throws AbortException {
@@ -77,27 +69,29 @@ public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object>
                    .build();
     }
 
-    public Boolean handleResponse(final StepWorkflowResponse<Object> stepWorkflowResponse) {
-        final boolean wasSuccessful = stepWorkflowResponse.wasSuccessful();
+    @Override
+    public Boolean perform() throws AbortException {
+        StepWorkflowResponse<Object> response = runWorkflow();
+        boolean wasSuccessful = response.wasSuccessful();
         try {
             if (!wasSuccessful) {
-                throw stepWorkflowResponse.getException();
+                throw response.getException();
             }
-        } catch (final InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.error("[ERROR] Synopsys Polaris thread was interrupted.", e);
             build.setResult(Result.ABORTED);
             Thread.currentThread().interrupt();
-        } catch (final IntegrationException e) {
+        } catch (IntegrationException e) {
             this.handleException(logger, build, Result.FAILURE, e);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             this.handleException(logger, build, Result.UNSTABLE, e);
         }
 
-        return stepWorkflowResponse.wasSuccessful();
+        return response.wasSuccessful();
     }
 
-    private void setBuildStatusOnIssues(final Integer issueCount) {
-        final ChangeBuildStatusTo buildStatusToSet;
+    private void setBuildStatusOnIssues(Integer issueCount) {
+        ChangeBuildStatusTo buildStatusToSet;
         if (waitForIssues == null || waitForIssues.getBuildStatusForIssues() == null) {
             buildStatusToSet = ChangeBuildStatusTo.SUCCESS;
         } else {
@@ -109,13 +103,13 @@ public class PolarisBuildStepWorkflow extends PolarisJenkinsStepWorkflow<Object>
         logger.alwaysLog(String.format("Found %s issues", issueCount));
 
         if (issueCount > 0) {
-            final Result result = buildStatusToSet.getResult();
+            Result result = buildStatusToSet.getResult();
             logger.alwaysLog("Setting build status to " + result.toString());
             build.setResult(result);
         }
     }
 
-    private void handleException(final JenkinsIntLogger logger, final AbstractBuild<?, ?> build, final Result result, final Exception e) {
+    private void handleException(JenkinsIntLogger logger, AbstractBuild<?, ?> build, Result result, Exception e) {
         logger.error("[ERROR] " + e.getMessage());
         logger.debug(e.getMessage(), e);
         build.setResult(result);

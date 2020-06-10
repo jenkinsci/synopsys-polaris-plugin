@@ -18,7 +18,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.synopsys.integration.function.ThrowingFunction;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.workflow.ExecutePolarisCli;
@@ -66,76 +65,76 @@ public class PolarisBuildStepTest {
     @Test
     public void testPerform() throws Throwable {
         // Setup
-        final AbstractBuild<FreeStyleProject, FreeStyleBuild> build = PowerMockito.mock(AbstractBuild.class);
-        final Launcher launcher = PowerMockito.mock(Launcher.class);
-        final BuildListener buildListener = PowerMockito.mock(BuildListener.class);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final PrintStream printStream = new PrintStream(baos, true, "UTF-8");
+        AbstractBuild<FreeStyleProject, FreeStyleBuild> build = PowerMockito.mock(AbstractBuild.class);
+        Launcher launcher = PowerMockito.mock(Launcher.class);
+        BuildListener buildListener = PowerMockito.mock(BuildListener.class);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos, true, "UTF-8");
         Mockito.when(buildListener.getLogger()).thenReturn(printStream);
 
-        final FilePath workspaceFilePath = new FilePath(new File(WORKSPACE_REL_PATH));
+        FilePath workspaceFilePath = new FilePath(new File(WORKSPACE_REL_PATH));
         Mockito.when(build.getWorkspace()).thenReturn(workspaceFilePath);
 
-        final Node node = Mockito.mock(Node.class);
+        Node node = Mockito.mock(Node.class);
         Mockito.when(build.getBuiltOn()).thenReturn(node);
 
-        final EnvVars envVars = Mockito.mock(EnvVars.class);
+        EnvVars envVars = Mockito.mock(EnvVars.class);
         Mockito.when(build.getEnvironment(buildListener)).thenReturn(envVars);
 
-        final FreeStyleProject project = PowerMockito.mock(FreeStyleProject.class);
-        final JDK jdk = PowerMockito.mock(JDK.class);
+        FreeStyleProject project = PowerMockito.mock(FreeStyleProject.class);
+        JDK jdk = PowerMockito.mock(JDK.class);
         Mockito.when(build.getProject()).thenReturn(project);
         Mockito.when(project.getJDK()).thenReturn(jdk);
         Mockito.when(jdk.forNode(Mockito.any(Node.class), Mockito.any(TaskListener.class))).thenReturn(jdk);
         Mockito.when(jdk.getHome()).thenReturn("/tmp/jdk");
 
-        final VirtualChannel channel = PowerMockito.mock(hudson.remoting.VirtualChannel.class);
+        VirtualChannel channel = PowerMockito.mock(hudson.remoting.VirtualChannel.class);
         Mockito.when(launcher.getChannel()).thenReturn(channel);
 
-        final PolarisCli polarisCli = PowerMockito.mock(PolarisCli.class);
+        PolarisCli polarisCli = PowerMockito.mock(PolarisCli.class);
         PowerMockito.mockStatic(PolarisCli.class);
         Mockito.when(PolarisCli.findInstallationWithName("testPolarisCliName")).thenReturn(Optional.of(polarisCli));
         Mockito.when(PolarisCli.installationsExist()).thenReturn(true);
 
-        final PolarisGlobalConfig polarisGlobalConfig = Mockito.mock(PolarisGlobalConfig.class);
-        final ExtensionList extensionList = Mockito.mock(ExtensionList.class);
+        PolarisGlobalConfig polarisGlobalConfig = Mockito.mock(PolarisGlobalConfig.class);
+        ExtensionList extensionList = Mockito.mock(ExtensionList.class);
         PowerMockito.mockStatic(GlobalConfiguration.class);
         Mockito.when(GlobalConfiguration.all()).thenReturn(extensionList);
         Mockito.when(extensionList.get(PolarisGlobalConfig.class)).thenReturn(polarisGlobalConfig);
 
-        final PolarisServerConfig polarisServerConfig = Mockito.mock(PolarisServerConfig.class);
-        Mockito.when(polarisGlobalConfig.getPolarisServerConfig()).thenReturn(polarisServerConfig);
+        PolarisServerConfig polarisServerConfig = Mockito.mock(PolarisServerConfig.class);
+        Mockito.when(polarisGlobalConfig.getPolarisServerConfig(Mockito.any(), Mockito.any())).thenReturn(polarisServerConfig);
 
-        final PolarisServicesFactory polarisServicesFactory = Mockito.mock(PolarisServicesFactory.class);
+        PolarisServicesFactory polarisServicesFactory = Mockito.mock(PolarisServicesFactory.class);
         Mockito.when(polarisServerConfig.createPolarisServicesFactory(Mockito.any(IntLogger.class))).thenReturn(polarisServicesFactory);
 
-        final PolarisService polarisService = Mockito.mock(PolarisService.class);
+        PolarisService polarisService = Mockito.mock(PolarisService.class);
         Mockito.when(polarisServicesFactory.createPolarisService()).thenReturn(polarisService);
 
-        final StepWorkflow.Builder stepWorkflowBuilder = Mockito.mock(StepWorkflow.Builder.class);
+        StepWorkflow.Builder stepWorkflowBuilder = Mockito.mock(StepWorkflow.Builder.class);
         PowerMockito.mockStatic(StepWorkflow.class);
         Mockito.when(StepWorkflow.first(Mockito.any(SubStep.class))).thenReturn(stepWorkflowBuilder);
         Mockito.when(stepWorkflowBuilder.then(Mockito.any(SubStep.class))).thenReturn(stepWorkflowBuilder);
 
-        final StepWorkflow.ConditionalBuilder conditionalBuilder = Mockito.mock(StepWorkflow.ConditionalBuilder.class);
+        StepWorkflow.ConditionalBuilder conditionalBuilder = Mockito.mock(StepWorkflow.ConditionalBuilder.class);
         Mockito.when(stepWorkflowBuilder.andSometimes(Mockito.any(SubStep.class))).thenReturn(conditionalBuilder);
         Mockito.when(conditionalBuilder.then(Mockito.any(SubStep.class))).thenReturn(conditionalBuilder);
         Mockito.when(conditionalBuilder.butOnlyIf(Mockito.any(Object.class), Mockito.any(Predicate.class))).thenReturn(stepWorkflowBuilder);
 
-        final StepWorkflow stepWorkflow = Mockito.mock(StepWorkflow.class);
-        final StepWorkflowResponse stepWorkflowResponse = Mockito.mock(StepWorkflowResponse.class);
+        StepWorkflow stepWorkflow = Mockito.mock(StepWorkflow.class);
+        StepWorkflowResponse stepWorkflowResponse = Mockito.mock(StepWorkflowResponse.class);
+        Mockito.when(stepWorkflowResponse.wasSuccessful()).thenReturn(true);
         Mockito.when(stepWorkflowBuilder.build()).thenReturn(stepWorkflow);
         Mockito.when(stepWorkflow.run()).thenReturn(stepWorkflowResponse);
-        Mockito.when(stepWorkflowResponse.handleResponse(Mockito.any(ThrowingFunction.class))).thenReturn(true);
 
-        final WaitForIssues waitForIssues = Mockito.mock(WaitForIssues.class);
+        WaitForIssues waitForIssues = Mockito.mock(WaitForIssues.class);
 
         // Test
-        final PolarisBuildStep polarisBuildStep = new PolarisBuildStep();
+        PolarisBuildStep polarisBuildStep = new PolarisBuildStep();
         polarisBuildStep.setPolarisCliName("testPolarisCliName");
         polarisBuildStep.setPolarisArguments(POLARIS_ARGUMENTS);
         polarisBuildStep.setWaitForIssues(waitForIssues);
-        final boolean result = polarisBuildStep.perform(build, launcher, buildListener);
+        boolean result = polarisBuildStep.perform(build, launcher, buildListener);
 
         // Verify
         assertTrue(result);
@@ -148,6 +147,5 @@ public class PolarisBuildStepTest {
         Mockito.verify(conditionalBuilder).butOnlyIf(Mockito.any(WaitForIssues.class), Mockito.any(Predicate.class));
         Mockito.verify(stepWorkflowBuilder).build();
         Mockito.verify(stepWorkflow).run();
-        Mockito.verify(stepWorkflowResponse).handleResponse(Mockito.any(ThrowingFunction.class));
     }
 }
