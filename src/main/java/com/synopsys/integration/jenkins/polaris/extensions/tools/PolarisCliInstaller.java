@@ -33,7 +33,6 @@ import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
-import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Node;
@@ -57,19 +56,19 @@ public class PolarisCliInstaller extends ToolInstaller {
         PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
 
         if (polarisGlobalConfig == null) {
-            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because no Polaris global config was found. Please check your system config.");
+            throw new AbortPolarisCliInstallException(tool, "No Polaris global config was found. Please check your system config.");
         }
 
         VirtualChannel virtualChannel = node.getChannel();
 
         if (virtualChannel == null) {
-            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because node " + node.getDisplayName() + " is not connected or offline");
+            throw new AbortPolarisCliInstallException(tool, "Node " + node.getDisplayName() + " is not connected or offline.");
         }
 
         Jenkins jenkins = Jenkins.getInstanceOrNull();
 
         if (jenkins == null) {
-            throw new AbortException("Cannot install Polaris CLI Installation " + tool.getName() + " because the Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
+            throw new AbortPolarisCliInstallException(tool, "The Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
         }
 
         SynopsysCredentialsHelper synopsysCredentialsHelper = new SynopsysCredentialsHelper(jenkins);
