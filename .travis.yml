@@ -6,11 +6,6 @@ language: java
 sudo: false
 install: true
 
-addons:
-  sonarcloud:
-    token:
-      secure: "kHVbq1Tnstd1lsToIrWU1BFmmcEMdZcH89t5J/mxruk0GUXHZEGpnRvjMPJHZbvFVYGDddWburB8aJ6gJb937rSOGPv7/BoIa9LisRF0QvTJ30oR/jgW5TKahI8Jbz1sASJupshPMO8XVhwmrYuPwuDYfItzCWz9mX41UT8BjbgDdcdO+zMJU0kUcc8+n4O6rkkHZmY2tLX+d6PdCSVKnBjgEedfRi4wNo2jcNeuZpeIgaOQDGQD4bqoPB7thmBrt44G+YMMaJ7Grsqv1a4XpOzpQ+mJqhBrvuOPdVBfnZrszVRwcNOWFYbOw+SDIzzPW9whGWwi9ewK1yFqAxUgZmYsYuxYasuA2YNY7xZt2kkh/yrZkcb1w/hW7eUn7C4sueaXv4jJRX/3Omc9KSYncYV/eORyexBmso4j5CuCyPJAryF/D2k8S0Wu4NfI04IursdXriF5nQO5M8zm263h83mT5KDElLOZqWfG7hr4mKuC/md8/OdU/ZfI1L+XOLNCtZBBMankRDEH4t0gyiXBF0j5mxksrS8gwPBFbwJIWbS52RRO5/rGzL8SSEdGJmkoAOecQZfh/Rc4NdepM6BSGH8FD0QG6rnPH0cMDDejvELc/Lp8c4Tu6thR8R358F9HhrS0dLnZd35w4FNqR+n3kfM3DT9iVJO4gPcTEuDz9HM="
-
 jdk:
   - openjdk8
 
@@ -20,7 +15,7 @@ notifications:
       - bdsoss@blackducksoftware.com
 
 script:
-  - "./gradlew clean build jacocoTestReport coveralls sonarqube -Dsonar.projectName='Synopsys Polaris for Jenkins'"
+  - "./gradlew clean build
 
 after_success:
   - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
@@ -28,6 +23,5 @@ after_success:
 cache:
   directories:
     - "$HOME/.m2/repository"
-    - "$HOME/.sonar/cache"
     - "$HOME/.gradle"
     - ".gradle"
