@@ -23,16 +23,18 @@
 package com.synopsys.integration.jenkins.polaris.extensions.tools;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jenkins.JenkinsProxyHelper;
-import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
+import com.synopsys.integration.jenkins.service.JenkinsConfigService;
+import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Node;
@@ -41,8 +43,6 @@ import hudson.remoting.VirtualChannel;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolInstaller;
 import hudson.tools.ToolInstallerDescriptor;
-import jenkins.model.GlobalConfiguration;
-import jenkins.model.Jenkins;
 
 public class PolarisCliInstaller extends ToolInstaller {
     @DataBoundConstructor
@@ -53,11 +53,6 @@ public class PolarisCliInstaller extends ToolInstaller {
     @Override
     public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener log) throws IOException, InterruptedException {
         JenkinsIntLogger jenkinsIntLogger = new JenkinsIntLogger(log);
-        PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
-
-        if (polarisGlobalConfig == null) {
-            throw new AbortPolarisCliInstallException(tool, "No Polaris global config was found. Please check your system config.");
-        }
 
         VirtualChannel virtualChannel = node.getChannel();
 
@@ -65,19 +60,25 @@ public class PolarisCliInstaller extends ToolInstaller {
             throw new AbortPolarisCliInstallException(tool, "Node " + node.getDisplayName() + " is not connected or offline.");
         }
 
-        Jenkins jenkins = Jenkins.getInstanceOrNull();
+        JenkinsConfigService jenkinsConfigService = new JenkinsConfigService(EnvVars.getRemote(virtualChannel), node, log);
+        Optional<PolarisGlobalConfig> possiblePolarisGlobalConfig = jenkinsConfigService.getGlobalConfiguration(PolarisGlobalConfig.class);
 
-        if (jenkins == null) {
-            throw new AbortPolarisCliInstallException(tool, "The Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
+        if (!possiblePolarisGlobalConfig.isPresent()) {
+            throw new AbortPolarisCliInstallException(tool, "No Polaris global config was found. Please check your system config.");
         }
 
-        SynopsysCredentialsHelper synopsysCredentialsHelper = new SynopsysCredentialsHelper(jenkins);
-        JenkinsProxyHelper jenkinsProxyHelper = JenkinsProxyHelper.fromJenkins(jenkins);
+        PolarisGlobalConfig polarisGlobalConfig = possiblePolarisGlobalConfig.get();
+
+        JenkinsWrapper jenkinsWrapper = JenkinsWrapper.initializeFromJenkinsJVM();
+
+        if (!jenkinsWrapper.getJenkins().isPresent()) {
+            throw new AbortPolarisCliInstallException(tool, "The Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
+        }
 
         FilePath installLocation = preferredLocation(tool, node);
         installLocation.mkdirs();
 
-        AccessTokenPolarisHttpClient polarisHttpClient = polarisGlobalConfig.getPolarisServerConfig(synopsysCredentialsHelper, jenkinsProxyHelper).createPolarisHttpClient(jenkinsIntLogger);
+        AccessTokenPolarisHttpClient polarisHttpClient = polarisGlobalConfig.getPolarisServerConfig(jenkinsWrapper.getCredentialsHelper(), jenkinsWrapper.getProxyHelper()).createPolarisHttpClient(jenkinsIntLogger);
         FindOrInstallPolarisCli findOrInstallPolarisCli = FindOrInstallPolarisCli.getConnectionDetailsFromHttpClient(jenkinsIntLogger, polarisHttpClient, installLocation.getRemote());
 
         try {

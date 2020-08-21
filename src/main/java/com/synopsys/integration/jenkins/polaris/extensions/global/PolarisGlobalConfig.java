@@ -55,9 +55,10 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import com.synopsys.integration.builder.Buildable;
 import com.synopsys.integration.builder.IntegrationBuilder;
-import com.synopsys.integration.jenkins.JenkinsProxyHelper;
-import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
+import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
+import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
@@ -134,7 +135,9 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
     }
 
     public ListBoxModel doFillPolarisCredentialsIdItems() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        JenkinsWrapper jenkinsWrapper = JenkinsWrapper.initializeFromJenkinsJVM();
+        if (jenkinsWrapper.getJenkins().isPresent())
+            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         return new StandardListBoxModel()
                    .includeEmptyValue()
                    .includeMatchingAs(ACL.SYSTEM, Jenkins.getInstance(), BaseStandardCredentials.class, Collections.emptyList(), SynopsysCredentialsHelper.API_TOKEN_CREDENTIALS);
@@ -143,9 +146,9 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
     @POST
     public FormValidation doTestPolarisConnection(@QueryParameter("polarisUrl") String polarisUrl, @QueryParameter("polarisCredentialsId") String polarisCredentialsId,
         @QueryParameter("polarisTimeout") String polarisTimeout) {
-        Jenkins jenkins = Jenkins.getInstanceOrNull();
-        SynopsysCredentialsHelper credentialsHelper = new SynopsysCredentialsHelper(jenkins);
-        JenkinsProxyHelper proxyHelper = JenkinsProxyHelper.fromJenkins(jenkins);
+        JenkinsWrapper jenkinsWrapper = JenkinsWrapper.initializeFromJenkinsJVM();
+        SynopsysCredentialsHelper credentialsHelper = new SynopsysCredentialsHelper(jenkinsWrapper);
+        JenkinsProxyHelper proxyHelper = JenkinsProxyHelper.fromJenkins(jenkinsWrapper);
         PolarisServerConfigBuilder polarisServerConfigBuilder = createPolarisServerConfigBuilder(credentialsHelper, proxyHelper, polarisUrl, polarisCredentialsId, Integer.parseInt(polarisTimeout));
         return validateConnection(polarisServerConfigBuilder, PolarisServerConfig::createPolarisHttpClient);
     }

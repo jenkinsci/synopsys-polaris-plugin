@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.workflow;
+package com.synopsys.integration.jenkins.polaris.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +34,7 @@ public class GetPolarisCliResponseContent extends MasterToSlaveCallable<String, 
     private static final long serialVersionUID = -5698280934593066898L;
     private final String workspaceRemotePath;
 
-    public GetPolarisCliResponseContent(final String workspaceRemotePath) {
+    public GetPolarisCliResponseContent(String workspaceRemotePath) {
         this.workspaceRemotePath = workspaceRemotePath;
     }
 
@@ -42,7 +42,7 @@ public class GetPolarisCliResponseContent extends MasterToSlaveCallable<String, 
     public String call() throws PolarisIntegrationException {
         try {
             return new String(Files.readAllBytes(PolarisCliResponseUtility.getDefaultPathToJson(workspaceRemotePath)));
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new PolarisIntegrationException("There was an error getting the Polaris CLI response.", e);
         }
     }

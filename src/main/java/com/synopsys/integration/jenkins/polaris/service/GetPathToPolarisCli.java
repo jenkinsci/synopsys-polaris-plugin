@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.workflow;
+package com.synopsys.integration.jenkins.polaris.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,28 +28,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.util.OperatingSystemType;
 
 import jenkins.security.MasterToSlaveCallable;
 
-public class GetPathToPolarisCli extends MasterToSlaveCallable<String, IntegrationException> {
+public class GetPathToPolarisCli extends MasterToSlaveCallable<String, PolarisIntegrationException> {
     private static final long serialVersionUID = -8823365241230615671L;
     private final String polarisCliHome;
 
-    public GetPathToPolarisCli(final String polarisCliHome) {
+    public GetPathToPolarisCli(String polarisCliHome) {
         this.polarisCliHome = polarisCliHome;
     }
 
     @Override
-    public String call() throws IntegrationException {
-        final Path homePath = Paths.get(polarisCliHome);
-        final Path binPath = homePath.resolve("bin");
+    public String call() throws PolarisIntegrationException {
+        Path homePath = Paths.get(polarisCliHome);
+        Path binPath = homePath.resolve("bin");
 
-        final OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
+        OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
 
-        final Optional<String> polarisCli = checkFile(operatingSystemType, binPath, "polaris");
-        final Optional<String> swipCli = checkFile(operatingSystemType, binPath, "swip_cli");
+        Optional<String> polarisCli = checkFile(operatingSystemType, binPath, "polaris");
+        Optional<String> swipCli = checkFile(operatingSystemType, binPath, "swip_cli");
 
         if (polarisCli.isPresent()) {
             return polarisCli.get();
@@ -57,22 +57,22 @@ public class GetPathToPolarisCli extends MasterToSlaveCallable<String, Integrati
             return swipCli.get();
         }
 
-        throw new IntegrationException("The Polaris CLI could not be found in " + binPath.toString() + " on this node. Please verify the cli exists there and is executable.");
+        throw new PolarisIntegrationException("The Polaris CLI could not be found in " + binPath.toString() + " on this node. Please verify the cli exists there and is executable.");
     }
 
-    private Optional<String> checkFile(final OperatingSystemType operatingSystemType, final Path binPath, final String filePrefix) {
+    private Optional<String> checkFile(OperatingSystemType operatingSystemType, Path binPath, String filePrefix) {
         String binaryName = filePrefix;
         if (OperatingSystemType.WINDOWS == operatingSystemType) {
             binaryName += ".exe";
         }
-        final Path binaryPath = binPath.resolve(binaryName);
+        Path binaryPath = binPath.resolve(binaryName);
 
         try {
             if (!Files.isDirectory(binaryPath) && Files.size(binaryPath) > 0L) {
-                final Path realFilePath = binaryPath.toRealPath();
+                Path realFilePath = binaryPath.toRealPath();
                 return Optional.of(realFilePath.toString());
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             // Do nothing,
         }
         return Optional.empty();

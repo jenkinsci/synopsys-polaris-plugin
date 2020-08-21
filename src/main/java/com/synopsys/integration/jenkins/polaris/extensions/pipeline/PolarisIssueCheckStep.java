@@ -40,11 +40,9 @@ import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
-import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
+import com.synopsys.integration.jenkins.polaris.PolarisCommands;
+import com.synopsys.integration.jenkins.polaris.service.PolarisJenkinsServicesFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -52,7 +50,6 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
 import hudson.model.TaskListener;
-import jenkins.model.Jenkins;
 
 public class PolarisIssueCheckStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Check for issues in Polaris found by a previous execution of the CLI";
@@ -146,12 +143,8 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), node, workspace, envVars, launcher, listener);
-            JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-            JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
-            PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-            PolarisIssueCheckStepWorkflow polarisIssueCheckStepWorkflow = new PolarisIssueCheckStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, jobTimeoutInMinutes, returnIssueCount);
-            return polarisIssueCheckStepWorkflow.perform();
+            PolarisCommands polarisCommands = new PolarisCommands(PolarisJenkinsServicesFactory.fromPipeline(listener, envVars, launcher, node, workspace));
+            return polarisCommands.checkForPolarisIssues(jobTimeoutInMinutes, returnIssueCount);
         }
     }
 }
