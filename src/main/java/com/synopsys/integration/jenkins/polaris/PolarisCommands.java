@@ -1,6 +1,7 @@
 package com.synopsys.integration.jenkins.polaris;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import com.synopsys.integration.exception.IntegrationException;
@@ -23,8 +24,7 @@ import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.service.JobService;
 import com.synopsys.integration.util.IntEnvironmentVariables;
-
-import hudson.util.ArgumentListBuilder;
+import com.synopsys.integration.util.OperatingSystemType;
 
 public class PolarisCommands {
     private final PolarisJenkinsServicesFactory polarisJenkinsServicesFactory;
@@ -122,9 +122,12 @@ public class PolarisCommands {
             IntEnvironmentVariables intEnvironmentVariables = polarisEnvironmentService.createPolarisEnvironment();
 
             String pathToPolarisCli = jenkinsRemotingService.call(new GetPathToPolarisCli(polarisCli.getHome()));
-            ArgumentListBuilder polarisArguments = polarisCliArgumentService.parsePolarisArgumentString(pathToPolarisCli, polarisArgumentString);
 
-            return jenkinsRemotingService.launch(intEnvironmentVariables, polarisArguments.toList());
+            OperatingSystemType operatingSystemType = jenkinsRemotingService.getRemoteOperatingSystemType();
+            List<String> tokenizedPolarisArguments = jenkinsRemotingService.tokenizeArgumentString(polarisArgumentString);
+            List<String> polarisArguments = polarisCliArgumentService.finalizePolarisCliArguments(operatingSystemType, pathToPolarisCli, tokenizedPolarisArguments);
+
+            return jenkinsRemotingService.launch(intEnvironmentVariables, polarisArguments);
         } finally {
             successfulPhoneHomeResponse.ifPresent(PhoneHomeResponse::getImmediateResult);
         }

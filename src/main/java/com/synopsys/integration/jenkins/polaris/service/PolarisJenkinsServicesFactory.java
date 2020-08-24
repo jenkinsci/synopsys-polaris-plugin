@@ -34,6 +34,7 @@ import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
 import com.synopsys.integration.jenkins.wrapper.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
 import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
+import com.synopsys.integration.polaris.common.cli.PolarisCliResponseUtility;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
 import com.synopsys.integration.polaris.common.service.ContextsService;
 import com.synopsys.integration.polaris.common.service.CountService;
@@ -95,15 +96,16 @@ public class PolarisJenkinsServicesFactory {
     }
 
     public PolarisCliArgumentService createPolarisCliArgumentService() {
-        return new PolarisCliArgumentService(initializedLogger.get(), launcher);
+        return new PolarisCliArgumentService(initializedLogger.get());
     }
 
     public PolarisCliIssueCountService createPolarisCliIssueCountService() throws AbortException {
         PolarisServicesFactory polarisServicesFactory = initializedPolarisServicesFactory.get();
         JobService jobService = polarisServicesFactory.createJobService();
         CountService countService = polarisServicesFactory.createCountService();
+        PolarisCliResponseUtility polarisCliResponseUtility = PolarisCliResponseUtility.defaultUtility(initializedLogger.get());
 
-        return new PolarisCliIssueCountService(initializedLogger.get(), countService, jobService);
+        return new PolarisCliIssueCountService(initializedLogger.get(), countService, jobService, polarisCliResponseUtility);
     }
 
     public PolarisPhoneHomeService createPolarisPhoneHomeService() throws AbortException {

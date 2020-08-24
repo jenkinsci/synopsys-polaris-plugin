@@ -22,41 +22,39 @@
  */
 package com.synopsys.integration.jenkins.polaris.service;
 
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
+import java.util.ArrayList;
+import java.util.List;
 
-import hudson.Launcher;
-import hudson.Util;
-import hudson.util.ArgumentListBuilder;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.util.OperatingSystemType;
 
 public class PolarisCliArgumentService {
-    private final Launcher launcher;
     private final JenkinsIntLogger logger;
 
-    public PolarisCliArgumentService(JenkinsIntLogger logger, Launcher launcher) {
+    public PolarisCliArgumentService(JenkinsIntLogger logger) {
         this.logger = logger;
-        this.launcher = launcher;
     }
 
-    public ArgumentListBuilder parsePolarisArgumentString(String pathToPolarisCli, String polarisArgumentString) throws PolarisIntegrationException {
-        ArgumentListBuilder argumentListBuilder = new ArgumentListBuilder();
-        if (launcher.isUnix()) {
-            argumentListBuilder.addTokenized(polarisArgumentString);
-        } else {
+    public List<String> finalizePolarisCliArguments(OperatingSystemType operatingSystemType, String pathToPolarisCli, List<String> tokenizedPolarisArgumentString) {
+        List<String> escapedArguments = new ArrayList<>();
+        escapedArguments.add(pathToPolarisCli);
+
+        if (OperatingSystemType.WINDOWS.equals(operatingSystemType)) {
             boolean isJson = false;
-            for (String argument : Util.tokenize(polarisArgumentString)) {
+            for (String argument : tokenizedPolarisArgumentString) {
                 if (isJson) {
-                    argumentListBuilder.add(argument.replace("\"", "\\\""));
+                    escapedArguments.add(argument.replace("\"", "\\\""));
                 } else {
-                    argumentListBuilder.add(argument);
+                    escapedArguments.add(argument);
                 }
                 isJson = "--co".equals(argument);
             }
+        } else {
+            escapedArguments.addAll(tokenizedPolarisArgumentString);
         }
-        argumentListBuilder.prepend(pathToPolarisCli);
 
-        logger.alwaysLog("Executing " + argumentListBuilder.toString());
+        logger.alwaysLog("Executing " + String.join(" ", escapedArguments));
 
-        return argumentListBuilder;
+        return escapedArguments;
     }
 }

@@ -59,6 +59,10 @@ dependencies {
     optionalJenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-cps:2.23'
     optionalJenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.10'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
+
     testCompile group: 'org.jenkins-ci.main', name: 'jenkins-test-harness', version: '2.58'
     testCompile group: 'org.powermock', name: 'powermock-core', version: '2.0.2'
     testCompile group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'

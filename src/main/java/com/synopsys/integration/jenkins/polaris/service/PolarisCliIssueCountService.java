@@ -42,15 +42,16 @@ public class PolarisCliIssueCountService {
     private final JenkinsIntLogger logger;
     private final CountService countService;
     private final JobService jobService;
+    private final PolarisCliResponseUtility polarisCliResponseUtility;
 
-    public PolarisCliIssueCountService(JenkinsIntLogger logger, CountService countService, JobService jobService) {
+    public PolarisCliIssueCountService(JenkinsIntLogger logger, CountService countService, JobService jobService, PolarisCliResponseUtility polarisCliResponseUtility) {
         this.logger = logger;
         this.countService = countService;
         this.jobService = jobService;
+        this.polarisCliResponseUtility = polarisCliResponseUtility;
     }
 
     public Integer getIssueCount(long jobTimeoutInSeconds, String cliCommonResponseModelJson) throws IntegrationException, InterruptedException {
-        PolarisCliResponseUtility polarisCliResponseUtility = PolarisCliResponseUtility.defaultUtility(logger);
         CliCommonResponseModel polarisCliResponseModel = polarisCliResponseUtility.getPolarisCliResponseModelFromString(cliCommonResponseModelJson);
 
         Optional<CommonIssueSummary> issueSummary = polarisCliResponseModel.getIssueSummary();
