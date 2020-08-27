@@ -18,8 +18,8 @@ import com.synopsys.integration.jenkins.polaris.extensions.freestyle.WaitForIssu
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCliArgumentService;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCliIssueCountService;
+import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 import com.synopsys.integration.jenkins.polaris.service.PolarisEnvironmentService;
-import com.synopsys.integration.jenkins.polaris.service.PolarisJenkinsServicesFactory;
 import com.synopsys.integration.jenkins.polaris.service.PolarisPhoneHomeService;
 import com.synopsys.integration.jenkins.service.JenkinsBuildService;
 import com.synopsys.integration.jenkins.service.JenkinsConfigService;
@@ -35,7 +35,7 @@ public class PolarisCommandsTest {
     private static final int NO_ISSUES = 0;
     private static final int SOME_ISSUES = 1;
 
-    private PolarisJenkinsServicesFactory mockedPolarisJenkinsServicesFactory;
+    private PolarisCommandsFactory mockedPolarisCommandsFactory;
     private JenkinsBuildService mockedBuildService;
     private JenkinsRemotingService mockedRemotingService;
     private JenkinsConfigService mockedConfigService;
@@ -61,13 +61,13 @@ public class PolarisCommandsTest {
             PolarisEnvironmentService mockedPolarisEnvironmentService = Mockito.mock(PolarisEnvironmentService.class);
             PolarisPhoneHomeService mockedPolarisPhoneHomeService = Mockito.mock(PolarisPhoneHomeService.class);
             mockedCliIssueCountService = Mockito.mock(PolarisCliIssueCountService.class);
-            mockedPolarisJenkinsServicesFactory = Mockito.mock(PolarisJenkinsServicesFactory.class);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.createJenkinsServiceFactory()).thenReturn(mockedJenkinsServicesFactory);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.createPolarisCliArgumentService()).thenReturn(mockedPolarisCliArgumentService);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.createPolarisEnvironmentService()).thenReturn(mockedPolarisEnvironmentService);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.createPolarisPhoneHomeService()).thenReturn(mockedPolarisPhoneHomeService);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.createPolarisCliIssueCountService()).thenReturn(mockedCliIssueCountService);
-            Mockito.when(mockedPolarisJenkinsServicesFactory.getOrCreateLogger()).thenReturn(mockedLogger);
+            mockedPolarisCommandsFactory = Mockito.mock(PolarisCommandsFactory.class);
+            Mockito.when(mockedPolarisCommandsFactory.createJenkinsServiceFactory()).thenReturn(mockedJenkinsServicesFactory);
+            Mockito.when(mockedPolarisCommandsFactory.createPolarisCliArgumentService()).thenReturn(mockedPolarisCliArgumentService);
+            Mockito.when(mockedPolarisCommandsFactory.createPolarisEnvironmentService()).thenReturn(mockedPolarisEnvironmentService);
+            Mockito.when(mockedPolarisCommandsFactory.createPolarisPhoneHomeService()).thenReturn(mockedPolarisPhoneHomeService);
+            Mockito.when(mockedPolarisCommandsFactory.createPolarisCliIssueCountService()).thenReturn(mockedCliIssueCountService);
+            Mockito.when(mockedPolarisCommandsFactory.getOrCreateLogger()).thenReturn(mockedLogger);
 
             mockedWaitForIssues = Mockito.mock(WaitForIssues.class);
         } catch (Exception e) {
@@ -82,15 +82,15 @@ public class PolarisCommandsTest {
         WaitForIssues waitForIssues = new WaitForIssues();
         waitForIssues.setBuildStatusForIssues(ChangeBuildStatusTo.SUCCESS);
         waitForIssues.setJobTimeoutInMinutes(null);
-        PolarisCommands spiedPolarisCommands = Mockito.spy(new PolarisCommands(mockedPolarisJenkinsServicesFactory));
-        spiedPolarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, "polarisArguments", waitForIssues);
+        PolarisFreestyleCommands spiedPolarisCommands = Mockito.spy(new PolarisFreestyleCommands(mockedPolarisCommandsFactory));
+        spiedPolarisCommands.runPolarisCli(POLARIS_CLI_NAME, "polarisArguments", waitForIssues);
 
         Mockito.verify(spiedPolarisCommands).getPolarisIssueCount(null);
     }
 
     @Test
     public void testExecutePolarisCliFreestyleSuccess() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -100,7 +100,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService, Mockito.never()).markBuildInterrupted();
         Mockito.verify(mockedBuildService, Mockito.never()).markBuildUnstable(Mockito.any());
@@ -111,7 +111,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliFreestyleFailureCli() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -121,7 +121,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService).markBuildFailed(Mockito.anyString());
 
@@ -133,7 +133,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliFreestyleFailureIssues() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -143,7 +143,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService).markBuildAs(Mockito.any(ChangeBuildStatusTo.class));
 
@@ -155,7 +155,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliFreestyleInterrupted() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -165,7 +165,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService).markBuildInterrupted();
 
@@ -177,7 +177,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliFreestyleUnexpectedException() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -187,7 +187,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService).markBuildUnstable(Mockito.any(IOException.class));
 
@@ -199,7 +199,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliFreestyleIntegrationException() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.empty());
@@ -209,7 +209,7 @@ public class PolarisCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        polarisCommands.executePolarisCliFreestyle(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
+        polarisCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, mockedWaitForIssues);
 
         Mockito.verify(mockedBuildService).markBuildFailed(Mockito.any(IntegrationException.class));
 
@@ -221,7 +221,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliPipelineSuccess() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -241,7 +241,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliPipelineException() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -255,7 +255,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliPipelineFailureReturnStatus() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -275,7 +275,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testExecutePolarisCliPipelineFailureDoNotReturnStatus() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, POLARIS_CLI_NAME)).thenReturn(Optional.of(mockedPolarisCli));
@@ -289,7 +289,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testCheckForPolarisIssuesSuccess() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedCliIssueCountService.getIssueCount(Mockito.anyLong(), Mockito.any())).thenReturn(NO_ISSUES);
@@ -308,7 +308,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testCheckForPolarisIssuesFailureReturnIssues() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedCliIssueCountService.getIssueCount(Mockito.anyLong(), Mockito.any())).thenReturn(SOME_ISSUES);
@@ -327,7 +327,7 @@ public class PolarisCommandsTest {
 
     @Test
     public void testCheckForPolarisIssuesFailureDoNotReturnIssues() {
-        PolarisCommands polarisCommands = new PolarisCommands(mockedPolarisJenkinsServicesFactory);
+        PolarisFreestyleCommands polarisCommands = new PolarisFreestyleCommands(mockedPolarisCommandsFactory);
 
         try {
             Mockito.when(mockedCliIssueCountService.getIssueCount(Mockito.anyLong(), Mockito.any())).thenReturn(SOME_ISSUES);

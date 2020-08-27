@@ -56,19 +56,18 @@ public class PolarisCliIssueCountServiceTest {
         mockedScanInfo = Mockito.mock(CommonScanInfo.class);
         Mockito.when(mockedResponseModel.getScanInfo()).thenReturn(mockedScanInfo);
 
-        CommonToolInfo commonToolInfo = Mockito.mock(CommonToolInfo.class);
-        Mockito.when(mockedResponseModel.getTools()).thenReturn(Collections.singletonList(commonToolInfo));
-
         Mockito.when(mockedCountService.getTotalIssueCountFromIssueApiUrl(VALID_ISSUE_API_URL)).thenReturn(EXPECTED_ISSUE_COUNT);
 
-        successfulToolA = Mockito.mock(CommonToolInfo.class);
-        Mockito.when(successfulToolA.getJobStatusUrl()).thenReturn(SUCCESSFUL_JOB_STATUS_URL);
-        successfulToolB = Mockito.mock(CommonToolInfo.class);
-        Mockito.when(successfulToolB.getJobStatusUrl()).thenReturn(SUCCESSFUL_JOB_STATUS_URL);
-        failingTool = Mockito.mock(CommonToolInfo.class);
-        Mockito.when(failingTool.getJobStatusUrl()).thenReturn(FAILING_JOB_STATUS_URL);
-        invalidTool = Mockito.mock(CommonToolInfo.class);
-        Mockito.when(invalidTool.getJobStatusUrl()).thenReturn(null);
+        successfulToolA = new CommonToolInfo();
+        successfulToolA.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
+
+        successfulToolB = new CommonToolInfo();
+        successfulToolB.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
+
+        failingTool = new CommonToolInfo();
+        failingTool.setJobStatusUrl(FAILING_JOB_STATUS_URL);
+
+        invalidTool = new CommonToolInfo();
 
         Mockito.doThrow(new IntegrationException()).when(mockedJobService).waitForJobStateIsCompletedOrDieByUrl(FAILING_JOB_STATUS_URL, VALID_TIMEOUT, JobService.DEFAULT_WAIT_INTERVAL);
     }

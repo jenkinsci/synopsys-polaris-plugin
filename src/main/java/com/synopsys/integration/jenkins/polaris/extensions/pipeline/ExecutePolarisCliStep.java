@@ -43,9 +43,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.polaris.PolarisCommands;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
-import com.synopsys.integration.jenkins.polaris.service.PolarisJenkinsServicesFactory;
+import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -166,8 +165,8 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            PolarisCommands polarisCommands = new PolarisCommands(PolarisJenkinsServicesFactory.fromPipeline(listener, envVars, launcher, node, workspace));
-            return polarisCommands.executePolarisCliPipeline(polarisCli, arguments, returnStatus);
+            return PolarisCommandsFactory.fromPipeline(listener, envVars, launcher, node, workspace)
+                       .runPolarisCli(polarisCli, arguments, returnStatus);
         }
     }
 }

@@ -41,8 +41,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.polaris.PolarisCommands;
-import com.synopsys.integration.jenkins.polaris.service.PolarisJenkinsServicesFactory;
+import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -143,8 +142,8 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            PolarisCommands polarisCommands = new PolarisCommands(PolarisJenkinsServicesFactory.fromPipeline(listener, envVars, launcher, node, workspace));
-            return polarisCommands.checkForPolarisIssues(jobTimeoutInMinutes, returnIssueCount);
+            return PolarisCommandsFactory.fromPipeline(listener, envVars, launcher, node, workspace)
+                       .checkForIssues(jobTimeoutInMinutes, returnIssueCount);
         }
     }
 }
