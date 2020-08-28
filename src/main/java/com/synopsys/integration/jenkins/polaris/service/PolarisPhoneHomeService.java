@@ -86,7 +86,7 @@ public class PolarisPhoneHomeService {
 
         PhoneHomeRequestBodyBuilder phoneHomeRequestBodyBuilder = PhoneHomeRequestBodyBuilder.createForPolaris("synopsys-polaris-plugin",
             organizationName,
-            accessTokenPolarisHttpClient.getPolarisServerUrl(),
+            accessTokenPolarisHttpClient.getPolarisServerUrl().string(),
             jenkinsVersionHelper.getPluginVersion("synopsys-polaris").orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE),
             PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
 

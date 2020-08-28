@@ -36,6 +36,7 @@ import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.service.CountService;
 import com.synopsys.integration.polaris.common.service.JobService;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class PolarisCliIssueCountService {
     public static final String STEP_EXCEPTION_PREFIX = "Issue count for most recent Polaris Analysis could not be determined: ";
@@ -80,7 +81,7 @@ public class PolarisCliIssueCountService {
             if (jobStatusUrl == null) {
                 throw new PolarisIntegrationException(STEP_EXCEPTION_PREFIX + "tool with name " + tool.getToolName() + " has no jobStatusUrl");
             }
-            jobService.waitForJobStateIsCompletedOrDieByUrl(jobStatusUrl, jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
+            jobService.waitForJobStateIsCompletedOrDieByUrl(new HttpUrl(jobStatusUrl), jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
         }
 
         return countService.getTotalIssueCountFromIssueApiUrl(issueApiUrl);

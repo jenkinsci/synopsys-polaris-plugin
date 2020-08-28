@@ -23,6 +23,7 @@ import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.service.CountService;
 import com.synopsys.integration.polaris.common.service.JobService;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class PolarisCliIssueCountServiceTest {
     public static final Integer EXPECTED_ISSUE_COUNT = 5;
@@ -44,32 +45,36 @@ public class PolarisCliIssueCountServiceTest {
     private CommonToolInfo invalidTool;
 
     @BeforeEach
-    public void setUpMocks() throws IntegrationException, InterruptedException {
-        mockedLogger = Mockito.mock(JenkinsIntLogger.class);
-        mockedCountService = Mockito.mock(CountService.class);
-        mockedJobService = Mockito.mock(JobService.class);
+    public void setUpMocks() {
+        try {
+            mockedLogger = Mockito.mock(JenkinsIntLogger.class);
+            mockedCountService = Mockito.mock(CountService.class);
+            mockedJobService = Mockito.mock(JobService.class);
 
-        mockedPolarisCliResponseUtility = Mockito.mock(PolarisCliResponseUtility.class);
-        mockedResponseModel = Mockito.mock(CliCommonResponseModel.class);
-        Mockito.when(mockedPolarisCliResponseUtility.getPolarisCliResponseModelFromString(MOCK_JSON)).thenReturn(mockedResponseModel);
+            mockedPolarisCliResponseUtility = Mockito.mock(PolarisCliResponseUtility.class);
+            mockedResponseModel = Mockito.mock(CliCommonResponseModel.class);
+            Mockito.when(mockedPolarisCliResponseUtility.getPolarisCliResponseModelFromString(MOCK_JSON)).thenReturn(mockedResponseModel);
 
-        mockedScanInfo = Mockito.mock(CommonScanInfo.class);
-        Mockito.when(mockedResponseModel.getScanInfo()).thenReturn(mockedScanInfo);
+            mockedScanInfo = Mockito.mock(CommonScanInfo.class);
+            Mockito.when(mockedResponseModel.getScanInfo()).thenReturn(mockedScanInfo);
 
-        Mockito.when(mockedCountService.getTotalIssueCountFromIssueApiUrl(VALID_ISSUE_API_URL)).thenReturn(EXPECTED_ISSUE_COUNT);
+            Mockito.when(mockedCountService.getTotalIssueCountFromIssueApiUrl(VALID_ISSUE_API_URL)).thenReturn(EXPECTED_ISSUE_COUNT);
 
-        successfulToolA = new CommonToolInfo();
-        successfulToolA.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
+            successfulToolA = new CommonToolInfo();
+            successfulToolA.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
 
-        successfulToolB = new CommonToolInfo();
-        successfulToolB.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
+            successfulToolB = new CommonToolInfo();
+            successfulToolB.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);
 
-        failingTool = new CommonToolInfo();
-        failingTool.setJobStatusUrl(FAILING_JOB_STATUS_URL);
+            failingTool = new CommonToolInfo();
+            failingTool.setJobStatusUrl(FAILING_JOB_STATUS_URL);
 
-        invalidTool = new CommonToolInfo();
+            invalidTool = new CommonToolInfo();
 
-        Mockito.doThrow(new IntegrationException()).when(mockedJobService).waitForJobStateIsCompletedOrDieByUrl(FAILING_JOB_STATUS_URL, VALID_TIMEOUT, JobService.DEFAULT_WAIT_INTERVAL);
+            Mockito.doThrow(new IntegrationException()).when(mockedJobService).waitForJobStateIsCompletedOrDieByUrl(new HttpUrl(FAILING_JOB_STATUS_URL), VALID_TIMEOUT, JobService.DEFAULT_WAIT_INTERVAL);
+        } catch (Exception e) {
+            fail("Unexpected exception in test code: ", e);
+        }
     }
 
     @Test
@@ -117,7 +122,7 @@ public class PolarisCliIssueCountServiceTest {
         try {
             Integer actualIssueCount = polarisCliIssueCountService.getIssueCount(VALID_TIMEOUT, MOCK_JSON);
 
-            Mockito.verify(mockedJobService, Mockito.times(2)).waitForJobStateIsCompletedOrDieByUrl(SUCCESSFUL_JOB_STATUS_URL, VALID_TIMEOUT, JobService.DEFAULT_WAIT_INTERVAL);
+            Mockito.verify(mockedJobService, Mockito.times(2)).waitForJobStateIsCompletedOrDieByUrl(new HttpUrl(SUCCESSFUL_JOB_STATUS_URL), VALID_TIMEOUT, JobService.DEFAULT_WAIT_INTERVAL);
             assertEquals(EXPECTED_ISSUE_COUNT, actualIssueCount);
         } catch (Exception e) {
             fail("An unexpected exception occurred in the test code, it may need to be fixed.", e);
