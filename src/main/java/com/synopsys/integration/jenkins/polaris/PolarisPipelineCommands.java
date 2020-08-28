@@ -31,9 +31,9 @@ import com.synopsys.integration.polaris.common.exception.PolarisIntegrationExcep
 public class PolarisPipelineCommands {
     private final JenkinsIntLogger logger;
     private final PolarisCliRunner polarisCliRunner;
-    private final PolarisIssueCounter polarisIssueCounter;
+    private final PolarisIssueChecker polarisIssueCounter;
 
-    public PolarisPipelineCommands(JenkinsIntLogger jenkinsIntLogger, PolarisCliRunner polarisCliRunner, PolarisIssueCounter polarisIssueCounter) {
+    public PolarisPipelineCommands(JenkinsIntLogger jenkinsIntLogger, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
         this.logger = jenkinsIntLogger;
         this.polarisCliRunner = polarisCliRunner;
         this.polarisIssueCounter = polarisIssueCounter;

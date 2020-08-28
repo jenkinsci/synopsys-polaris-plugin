@@ -29,7 +29,7 @@ import com.synopsys.integration.function.ThrowingSupplier;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.PolarisCliRunner;
 import com.synopsys.integration.jenkins.polaris.PolarisFreestyleCommands;
-import com.synopsys.integration.jenkins.polaris.PolarisIssueCounter;
+import com.synopsys.integration.jenkins.polaris.PolarisIssueChecker;
 import com.synopsys.integration.jenkins.polaris.PolarisPipelineCommands;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.jenkins.service.JenkinsBuildService;
@@ -81,7 +81,7 @@ public class PolarisCommandsFactory {
         JenkinsBuildService jenkinsBuildService = jenkinsServicesFactory.createJenkinsBuildService();
 
         PolarisCliRunner polarisCliRunner = polarisCommandsFactory.createPolarisCliRunner(jenkinsConfigService, jenkinsRemotingService);
-        PolarisIssueCounter polarisIssueCounter = polarisCommandsFactory.createPolarisIssueCounter(jenkinsConfigService, jenkinsRemotingService);
+        PolarisIssueChecker polarisIssueCounter = polarisCommandsFactory.createPolarisIssueCounter(jenkinsConfigService, jenkinsRemotingService);
 
         return new PolarisFreestyleCommands(polarisCommandsFactory.getOrCreateLogger(), jenkinsBuildService, polarisCliRunner, polarisIssueCounter);
     }
@@ -94,13 +94,13 @@ public class PolarisCommandsFactory {
         JenkinsConfigService jenkinsConfigService = jenkinsServicesFactory.createJenkinsConfigService();
 
         PolarisCliRunner polarisCliRunner = polarisCommandsFactory.createPolarisCliRunner(jenkinsConfigService, jenkinsRemotingService);
-        PolarisIssueCounter polarisIssueCounter = polarisCommandsFactory.createPolarisIssueCounter(jenkinsConfigService, jenkinsRemotingService);
+        PolarisIssueChecker polarisIssueCounter = polarisCommandsFactory.createPolarisIssueCounter(jenkinsConfigService, jenkinsRemotingService);
 
         return new PolarisPipelineCommands(polarisCommandsFactory.getOrCreateLogger(), polarisCliRunner, polarisIssueCounter);
     }
 
-    public PolarisIssueCounter createPolarisIssueCounter(JenkinsConfigService jenkinsConfigService, JenkinsRemotingService jenkinsRemotingService) throws AbortException {
-        return new PolarisIssueCounter(createPolarisCliIssueCountService(jenkinsConfigService), jenkinsRemotingService);
+    public PolarisIssueChecker createPolarisIssueCounter(JenkinsConfigService jenkinsConfigService, JenkinsRemotingService jenkinsRemotingService) throws AbortException {
+        return new PolarisIssueChecker(createPolarisCliIssueCountService(jenkinsConfigService), jenkinsRemotingService);
     }
 
     public PolarisCliRunner createPolarisCliRunner(JenkinsConfigService jenkinsConfigService, JenkinsRemotingService jenkinsRemotingService) throws AbortException {

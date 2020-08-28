@@ -34,9 +34,9 @@ public class PolarisFreestyleCommands {
     private final JenkinsIntLogger logger;
     private final JenkinsBuildService jenkinsBuildService;
     private final PolarisCliRunner polarisCliRunner;
-    private final PolarisIssueCounter polarisIssueCounter;
+    private final PolarisIssueChecker polarisIssueCounter;
 
-    public PolarisFreestyleCommands(JenkinsIntLogger jenkinsIntLogger, JenkinsBuildService jenkinsBuildService, PolarisCliRunner polarisCliRunner, PolarisIssueCounter polarisIssueCounter) {
+    public PolarisFreestyleCommands(JenkinsIntLogger jenkinsIntLogger, JenkinsBuildService jenkinsBuildService, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
         this.logger = jenkinsIntLogger;
         this.jenkinsBuildService = jenkinsBuildService;
         this.polarisCliRunner = polarisCliRunner;
