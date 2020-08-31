@@ -19,18 +19,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.compression.FilterServletOutputStream;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.synopsys.integration.jenkins.JenkinsProxyHelper;
-import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
+import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
+import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
@@ -42,9 +38,6 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 
-@PowerMockIgnore({ "javax.crypto.*", "javax.net.ssl.*" })
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ SynopsysCredentialsHelper.class, PolarisServerConfig.class })
 public class PolarisGlobalConfigTest {
 
     public static final String POLARIS_TOKEN = "testToken";
@@ -53,7 +46,7 @@ public class PolarisGlobalConfigTest {
     private static final String POLARIS_CREDENTIALS_ID = "123";
     private static final String POLARIS_TIMEOUT_STRING = "30";
     private static final int POLARIS_TIMEOUT_INT = 30;
-    private static final String CONFIG_XML_CONTENTS = "<?xml version='1.0' encoding='UTF-8'?>\n"
+    private static final String CONFIG_XML_CONTENTS = "<?xml version='1.1' encoding='UTF-8'?>\n"
                                                           + "<com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig>\n"
                                                           + "  <polarisUrl>https://dev01.dev.polaris.synopsys.com</polarisUrl>\n"
                                                           + "  <polarisCredentialsId>0424ba25-4607-4a81-a809-0220c44d0fc1</polarisCredentialsId>\n"
@@ -130,7 +123,7 @@ public class PolarisGlobalConfigTest {
         Mockito.when(req.getMethod()).thenReturn("GET");
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ServletOutputStream servletOutputStream = new FilterServletOutputStream(byteArrayOutputStream);
+        ServletOutputStream servletOutputStream = new FilterServletOutputStream(byteArrayOutputStream, Mockito.mock(ServletOutputStream.class));
         Mockito.when(rsp.getOutputStream()).thenReturn(servletOutputStream);
 
         File pluginConfigFile = new File(Jenkins.getInstance().getRootDir(), PolarisGlobalConfig.class.getName() + ".xml");

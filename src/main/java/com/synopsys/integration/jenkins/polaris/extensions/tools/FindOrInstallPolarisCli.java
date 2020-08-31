@@ -31,6 +31,7 @@ import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.polaris.common.cli.PolarisDownloadUtility;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
+import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -53,8 +54,8 @@ public class FindOrInstallPolarisCli extends MasterToSlaveCallable<String, Integ
     private final String proxyNtlmWorkstation;
     private final String installationLocation;
 
-    public FindOrInstallPolarisCli(final JenkinsIntLogger jenkinsIntLogger, final String polarisServerUrl, final int timeout, final String proxyHost, final int proxyPort,
-        final String proxyUsername, final String proxyPassword, final String proxyNtlmDomain, final String proxyNtlmWorkstation, final String installationLocation) {
+    public FindOrInstallPolarisCli(JenkinsIntLogger jenkinsIntLogger, String polarisServerUrl, int timeout, String proxyHost, int proxyPort,
+        String proxyUsername, String proxyPassword, String proxyNtlmDomain, String proxyNtlmWorkstation, String installationLocation) {
         this.jenkinsIntLogger = jenkinsIntLogger;
         this.polarisServerUrl = polarisServerUrl;
         this.timeout = timeout;
@@ -68,11 +69,11 @@ public class FindOrInstallPolarisCli extends MasterToSlaveCallable<String, Integ
     }
 
     // We'd love to just pass the httpclient through but it's not serializable and it's probably not worthwhile to make a serializable class just for this -- rotte DEC 2019
-    public static FindOrInstallPolarisCli getConnectionDetailsFromHttpClient(final JenkinsIntLogger jenkinsIntLogger, final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient, final String installationLocation) {
-        final ProxyInfo proxyInfo = accessTokenPolarisHttpClient.getProxyInfo();
+    public static FindOrInstallPolarisCli getConnectionDetailsFromHttpClient(JenkinsIntLogger jenkinsIntLogger, AccessTokenPolarisHttpClient accessTokenPolarisHttpClient, String installationLocation) {
+        ProxyInfo proxyInfo = accessTokenPolarisHttpClient.getProxyInfo();
         return new FindOrInstallPolarisCli(
             jenkinsIntLogger,
-            accessTokenPolarisHttpClient.getPolarisServerUrl(),
+            accessTokenPolarisHttpClient.getPolarisServerUrl().string(),
             accessTokenPolarisHttpClient.getTimeoutInSeconds(),
             proxyInfo.getHost().orElse(null),
             proxyInfo.getPort(),
@@ -86,27 +87,27 @@ public class FindOrInstallPolarisCli extends MasterToSlaveCallable<String, Integ
     @Override
     public String call() throws IntegrationException {
         try {
-            final File installLocation = new File(installationLocation);
-            final OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
-            final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
+            File installLocation = new File(installationLocation);
+            OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
+            CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
             credentialsBuilder.setUsernameAndPassword(proxyUsername, proxyPassword);
 
-            final ProxyInfoBuilder proxyInfoBuilder = new ProxyInfoBuilder();
+            ProxyInfoBuilder proxyInfoBuilder = new ProxyInfoBuilder();
             proxyInfoBuilder.setCredentials(credentialsBuilder.build());
             proxyInfoBuilder.setHost(proxyHost);
             proxyInfoBuilder.setPort(proxyPort);
             proxyInfoBuilder.setNtlmDomain(proxyNtlmDomain);
             proxyInfoBuilder.setNtlmDomain(proxyNtlmWorkstation);
 
-            final IntHttpClient intHttpClient = new IntHttpClient(jenkinsIntLogger, timeout, false, proxyInfoBuilder.build());
-            final CleanupZipExpander cleanupZipExpander = new CleanupZipExpander(jenkinsIntLogger);
+            IntHttpClient intHttpClient = new IntHttpClient(jenkinsIntLogger, timeout, false, proxyInfoBuilder.build());
+            CleanupZipExpander cleanupZipExpander = new CleanupZipExpander(jenkinsIntLogger);
 
             Files.createDirectories(installLocation.toPath());
 
-            final PolarisDownloadUtility polarisDownloadUtility = new PolarisDownloadUtility(jenkinsIntLogger, operatingSystemType, intHttpClient, cleanupZipExpander, polarisServerUrl, installLocation);
+            PolarisDownloadUtility polarisDownloadUtility = new PolarisDownloadUtility(jenkinsIntLogger, operatingSystemType, intHttpClient, cleanupZipExpander, new HttpUrl(polarisServerUrl), installLocation);
 
             return polarisDownloadUtility.getOrDownloadPolarisCliHome().orElseThrow(() -> new PolarisIntegrationException("The Polaris CLI could not be found or installed correctly."));
-        } catch (final IOException | IllegalArgumentException ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             throw new PolarisIntegrationException(ex);
         }
     }

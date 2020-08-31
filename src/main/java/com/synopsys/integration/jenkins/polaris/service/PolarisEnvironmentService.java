@@ -20,45 +20,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.workflow;
+package com.synopsys.integration.jenkins.polaris.service;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.jenkins.JenkinsProxyHelper;
-import com.synopsys.integration.jenkins.JenkinsVersionHelper;
-import com.synopsys.integration.jenkins.SynopsysCredentialsHelper;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
+import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
+import com.synopsys.integration.jenkins.wrapper.JenkinsVersionHelper;
+import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
-import com.synopsys.integration.stepworkflow.AbstractExecutingSubStep;
-import com.synopsys.integration.stepworkflow.SubStepResponse;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 
 import jenkins.model.GlobalConfiguration;
 
-public class CreatePolarisEnvironment extends AbstractExecutingSubStep {
+public class PolarisEnvironmentService {
     private final JenkinsIntLogger logger;
     private final SynopsysCredentialsHelper credentialsHelper;
     private final JenkinsProxyHelper proxyHelper;
-    private final IntEnvironmentVariables intEnvironmentVariables;
+    private final Map<String, String> environmentVariables;
     private final JenkinsVersionHelper versionHelper;
 
-    public CreatePolarisEnvironment(JenkinsIntLogger logger, JenkinsVersionHelper versionHelper, SynopsysCredentialsHelper credentialsHelper, JenkinsProxyHelper proxyHelper, IntEnvironmentVariables intEnvironmentVariables) {
+    public PolarisEnvironmentService(JenkinsIntLogger logger, JenkinsVersionHelper versionHelper, SynopsysCredentialsHelper credentialsHelper, JenkinsProxyHelper proxyHelper, Map<String, String> environmentVariables) {
         this.logger = logger;
         this.versionHelper = versionHelper;
         this.credentialsHelper = credentialsHelper;
         this.proxyHelper = proxyHelper;
-        this.intEnvironmentVariables = intEnvironmentVariables;
+        this.environmentVariables = environmentVariables;
     }
 
-    @Override
-    public SubStepResponse<Object> run() {
+    public IntEnvironmentVariables createPolarisEnvironment() throws PolarisIntegrationException {
+        IntEnvironmentVariables intEnvironmentVariables = IntEnvironmentVariables.empty();
+        intEnvironmentVariables.putAll(environmentVariables);
+
         PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
         if (polarisGlobalConfig == null) {
-            return SubStepResponse.FAILURE(new PolarisIntegrationException("No Polaris system configuration could be found, please check your system configuration."));
+            throw new PolarisIntegrationException("No Polaris system configuration could be found, please check your system configuration.");
         }
 
         PolarisServerConfigBuilder polarisServerConfigBuilder = polarisGlobalConfig.getPolarisServerConfigBuilder(credentialsHelper, proxyHelper);
@@ -69,7 +70,7 @@ public class CreatePolarisEnvironment extends AbstractExecutingSubStep {
         try {
             polarisServerConfigBuilder.build().populateEnvironmentVariables(intEnvironmentVariables::put);
         } catch (IllegalArgumentException ex) {
-            return SubStepResponse.FAILURE(new PolarisIntegrationException("There is a problem with your Polaris system configuration", ex));
+            throw new PolarisIntegrationException("There is a problem with your Polaris system configuration", ex);
         }
 
         String logMessage = versionHelper.getPluginVersion("synopsys-polaris")
@@ -77,7 +78,7 @@ public class CreatePolarisEnvironment extends AbstractExecutingSubStep {
                                 .orElse("Running Synopsys Polaris for Jenkins");
         logger.info(logMessage);
 
-        return SubStepResponse.SUCCESS();
+        return intEnvironmentVariables;
     }
 
     private void acceptIfNotNull(BiConsumer<String, String> environmentPutter, String key, String value) {

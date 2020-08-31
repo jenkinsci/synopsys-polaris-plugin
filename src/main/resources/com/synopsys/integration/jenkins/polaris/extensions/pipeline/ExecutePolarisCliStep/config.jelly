@@ -5,4 +5,7 @@
     <f:entry field="arguments" title="Polaris Arguments">
         <f:textarea/>
     </f:entry>
+    <f:entry field="returnStatus" title="Return status code">
+        <f:checkbox/>
+    </f:entry>
 </j:jelly>
