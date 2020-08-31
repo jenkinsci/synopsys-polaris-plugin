@@ -27,8 +27,8 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
@@ -53,8 +54,6 @@ import org.xml.sax.SAXException;
 
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
-import com.synopsys.integration.builder.Buildable;
-import com.synopsys.integration.builder.IntegrationBuilder;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
 import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
 import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
@@ -63,16 +62,17 @@ import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
-import com.synopsys.integration.rest.client.AuthenticatingIntHttpClient;
 import com.synopsys.integration.rest.client.ConnectionResult;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 import hudson.Extension;
 import hudson.Functions;
+import hudson.Util;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.IOUtils;
 import hudson.util.ListBoxModel;
+import hudson.util.Messages;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.util.xml.XMLUtils;
@@ -135,22 +135,57 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
     }
 
     public ListBoxModel doFillPolarisCredentialsIdItems() {
-        JenkinsWrapper jenkinsWrapper = JenkinsWrapper.initializeFromJenkinsJVM();
-        if (jenkinsWrapper.getJenkins().isPresent())
-            Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        // We don't use JenkinsWrapper here because it grants us no benefit-- we are guaranteed to be running on Jenkins Master and Jenkins should be started when UI-bound methods are run.
+        // -- rotte AUG 2020
+        Jenkins jenkins = Jenkins.get();
+        jenkins.checkPermission(Jenkins.ADMINISTER);
+
         return new StandardListBoxModel()
                    .includeEmptyValue()
-                   .includeMatchingAs(ACL.SYSTEM, Jenkins.getInstance(), BaseStandardCredentials.class, Collections.emptyList(), SynopsysCredentialsHelper.API_TOKEN_CREDENTIALS);
+                   .includeMatchingAs(ACL.SYSTEM, jenkins, BaseStandardCredentials.class, Collections.emptyList(), SynopsysCredentialsHelper.API_TOKEN_CREDENTIALS);
     }
 
     @POST
     public FormValidation doTestPolarisConnection(@QueryParameter("polarisUrl") String polarisUrl, @QueryParameter("polarisCredentialsId") String polarisCredentialsId,
         @QueryParameter("polarisTimeout") String polarisTimeout) {
         JenkinsWrapper jenkinsWrapper = JenkinsWrapper.initializeFromJenkinsJVM();
-        SynopsysCredentialsHelper credentialsHelper = new SynopsysCredentialsHelper(jenkinsWrapper);
-        JenkinsProxyHelper proxyHelper = JenkinsProxyHelper.fromJenkins(jenkinsWrapper);
-        PolarisServerConfigBuilder polarisServerConfigBuilder = createPolarisServerConfigBuilder(credentialsHelper, proxyHelper, polarisUrl, polarisCredentialsId, Integer.parseInt(polarisTimeout));
-        return validateConnection(polarisServerConfigBuilder, PolarisServerConfig::createPolarisHttpClient);
+        if (!jenkinsWrapper.getJenkins().isPresent()) {
+            return FormValidation.warning(
+                "Connection validation could not be completed: Validation couldn't retrieve the instance of Jenkins from the JVM. This may happen if Jenkins is still starting up or if this code is running on a different JVM than your Jenkins server.");
+        }
+        jenkinsWrapper.getJenkins().get().checkPermission(Jenkins.ADMINISTER);
+
+        SynopsysCredentialsHelper synopsysCredentialsHelper = jenkinsWrapper.getCredentialsHelper();
+        JenkinsProxyHelper jenkinsProxyHelper = jenkinsWrapper.getProxyHelper();
+
+        try {
+            PolarisServerConfig polarisServerConfig = createPolarisServerConfigBuilder(synopsysCredentialsHelper, jenkinsProxyHelper, polarisUrl, polarisCredentialsId, Integer.parseInt(polarisTimeout)).build();
+            ConnectionResult connectionResult = polarisServerConfig.createPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.DEBUG)).attemptConnection();
+            if (connectionResult.isFailure()) {
+                int statusCode = connectionResult.getHttpStatusCode();
+                String validationMessage;
+                try {
+                    String statusPhrase = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.ENGLISH);
+                    validationMessage = String.format("ERROR: Connection attempt returned %s %s", statusCode, statusPhrase);
+                } catch (IllegalArgumentException ignored) {
+                    // EnglishReasonPhraseCatalog throws an IllegalArgumentException if the status code is outside of the 100-600 range --rotte AUG 2020
+                    validationMessage = "ERROR: Connection could not be established.";
+                }
+
+                // This is how Jenkins constructs an error with an exception stack trace, we're using it here because often a status code and phrase are not enough, but also (especially with proxies) the failure message can be too much.
+                // --rotte AUG 2020
+                String moreDetailsHtml = connectionResult.getFailureMessage()
+                                             .map(Util::escape)
+                                             .map(msg -> String.format("<a href='#' class='showDetails'>%s</a><pre style='display:none'>%s</pre>", Messages.FormValidation_Error_Details(), msg))
+                                             .orElse(StringUtils.EMPTY);
+
+                return FormValidation.errorWithMarkup(String.join(" ", validationMessage, moreDetailsHtml));
+            }
+        } catch (IllegalArgumentException e) {
+            return FormValidation.error(e.getMessage());
+        }
+
+        return FormValidation.ok("Connection successful.");
     }
 
     // EX: http://localhost:8080/descriptorByName/com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig/config.xml
@@ -183,19 +218,6 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
             if (changed) {
                 Thread.currentThread().setContextClassLoader(originalClassLoader);
             }
-        }
-    }
-
-    private <T extends Buildable> FormValidation validateConnection(IntegrationBuilder<T> configBuilder, BiFunction<T, PrintStreamIntLogger, AuthenticatingIntHttpClient> createHttpClientMethod) {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
-        try {
-            T config = configBuilder.build();
-            ConnectionResult connectionResult = createHttpClientMethod.apply(config, new PrintStreamIntLogger(System.out, LogLevel.DEBUG)).attemptConnection();
-            return connectionResult.getFailureMessage()
-                       .map(FormValidation::error)
-                       .orElse(FormValidation.ok("Connection successful"));
-        } catch (IllegalArgumentException e) {
-            return FormValidation.error(e.getMessage());
         }
     }
 
