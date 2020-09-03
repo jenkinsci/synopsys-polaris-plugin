@@ -1,5 +1,5 @@
 /**
- * polaris-common
+ * synopsys-polaris
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
