@@ -23,7 +23,7 @@ artifactory {
 
 jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
-    coreVersion = '2.60.1'
+    coreVersion = '2.150.3'
     displayName = 'Synopsys Polaris Plugin'
     url = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
     gitHubUrl = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
@@ -43,8 +43,7 @@ jenkinsPlugin {
 dependencies {
     annotationProcessor 'com.synopsys.integration:jenkins-annotation-processor:0.0.1'
 
-    implementation 'com.synopsys.integration:jenkins-common:0.2.1'
-    implementation 'com.synopsys.integration:integration-rest:3.0.0'
+    implementation 'com.synopsys.integration:jenkins-common:0.3.1'
 
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'
@@ -55,10 +54,10 @@ dependencies {
     optionalJenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-cps:2.23'
     optionalJenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.10'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.6.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.3.3'
+
     testCompile group: 'org.jenkins-ci.main', name: 'jenkins-test-harness', version: '2.58'
-    testCompile group: 'org.powermock', name: 'powermock-core', version: '2.0.2'
-    testCompile group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.2'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
 }

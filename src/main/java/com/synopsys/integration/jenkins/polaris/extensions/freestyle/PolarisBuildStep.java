@@ -33,12 +33,9 @@ import javax.annotation.Nullable;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
-import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
-import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
+import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
 import hudson.Extension;
 import hudson.Launcher;
@@ -50,7 +47,6 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
 
 public class PolarisBuildStep extends Builder {
     public static final String DISPLAY_NAME = "Synopsys Polaris";
@@ -115,12 +111,10 @@ public class PolarisBuildStep extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), build.getBuiltOn(), build.getWorkspace(), build.getEnvironment(listener), launcher, listener);
-        JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-        JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
-        PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-        PolarisBuildStepWorkflow polarisBuildStepWorkflow = new PolarisBuildStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, polarisCliName, polarisArguments, waitForIssues, build);
-        return polarisBuildStepWorkflow.perform();
+        PolarisCommandsFactory.fromPostBuild(build, launcher, listener)
+            .runPolarisCliAndCheckForIssues(polarisCliName, polarisArguments, waitForIssues);
+
+        return true;
     }
 
     @Extension

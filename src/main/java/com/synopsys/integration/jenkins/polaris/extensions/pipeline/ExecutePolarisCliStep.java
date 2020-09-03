@@ -42,12 +42,9 @@ import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import com.synopsys.integration.jenkins.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
-import com.synopsys.integration.jenkins.polaris.workflow.PolarisWorkflowStepFactory;
-import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
+import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -57,7 +54,6 @@ import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Execute Synopsys Polaris CLI";
@@ -70,6 +66,10 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     @Nullable
     @HelpMarkdown("The Polaris CLI installation to execute")
     private String polarisCli;
+
+    @Nullable
+    @HelpMarkdown("If true (checked), returns the status code of the Polaris CLI run instead of throwing an exception")
+    private Boolean returnStatus;
 
     @DataBoundConstructor
     public ExecutePolarisCliStep(String arguments) {
@@ -92,6 +92,19 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     @Override
     public StepExecution start(StepContext context) throws Exception {
         return new Execution(context);
+    }
+
+    @Nullable
+    public Boolean getReturnIssueCount() {
+        if (!Boolean.TRUE.equals(returnStatus)) {
+            return null;
+        }
+        return returnStatus;
+    }
+
+    @DataBoundSetter
+    public void setReturnStatus(Boolean returnStatus) {
+        this.returnStatus = returnStatus;
     }
 
     @Symbol(PIPELINE_NAME)
@@ -152,12 +165,8 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
 
         @Override
         protected Integer run() throws Exception {
-            PolarisWorkflowStepFactory polarisWorkflowStepFactory = new PolarisWorkflowStepFactory(Jenkins.getInstanceOrNull(), node, workspace, envVars, launcher, listener);
-            JenkinsIntLogger logger = polarisWorkflowStepFactory.getOrCreateLogger();
-            JenkinsVersionHelper jenkinsVersionHelper = polarisWorkflowStepFactory.getOrCreateJenkinsVersionHelper();
-            PolarisServicesFactory polarisServicesFactory = polarisWorkflowStepFactory.getOrCreatePolarisServicesFactory();
-            ExecutePolarisCliStepWorkflow executePolarisCliStepWorkflow = new ExecutePolarisCliStepWorkflow(polarisWorkflowStepFactory, logger, jenkinsVersionHelper, polarisServicesFactory, polarisCli, arguments);
-            return executePolarisCliStepWorkflow.perform();
+            return PolarisCommandsFactory.fromPipeline(listener, envVars, launcher, node, workspace)
+                       .runPolarisCli(polarisCli, arguments, returnStatus);
         }
     }
 }

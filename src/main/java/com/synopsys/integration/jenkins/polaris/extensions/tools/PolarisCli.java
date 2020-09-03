@@ -25,12 +25,9 @@ package com.synopsys.integration.jenkins.polaris.extensions.tools;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -50,41 +47,22 @@ public class PolarisCli extends ToolInstallation implements NodeSpecific<Polaris
     private static final long serialVersionUID = -3838254855454518440L;
 
     @DataBoundConstructor
-    public PolarisCli(final String name, final String home, final List<? extends ToolProperty<?>> properties) {
+    public PolarisCli(String name, String home, List<? extends ToolProperty<?>> properties) {
         super(Util.fixEmptyAndTrim(name), Util.fixEmptyAndTrim(home), properties);
     }
 
-    public static boolean installationsExist() {
-        return Optional.ofNullable(ToolInstallation.all().get(PolarisCli.DescriptorImpl.class))
-                   .map(PolarisCli.DescriptorImpl::getInstallations)
-                   .filter(ArrayUtils::isNotEmpty)
-                   .isPresent();
-    }
-
-    public static Optional<PolarisCli> findInstallationWithName(final String polarisCliName) {
-        final ToolDescriptor<PolarisCli> toolDescriptor = ToolInstallation.all().get(PolarisCli.DescriptorImpl.class);
-
-        if (toolDescriptor == null) {
-            return Optional.empty();
-        }
-
-        return Stream.of(toolDescriptor.getInstallations())
-                   .filter(installation -> installation.getName().equals(polarisCliName))
-                   .findFirst();
-    }
-
     @Override
-    public PolarisCli forNode(@Nonnull final Node node, final TaskListener log) throws IOException, InterruptedException {
+    public PolarisCli forNode(@Nonnull Node node, TaskListener log) throws IOException, InterruptedException {
         return new PolarisCli(getName(), translateFor(node, log), getProperties().toList());
     }
 
     @Override
-    public PolarisCli forEnvironment(final EnvVars environment) {
+    public PolarisCli forEnvironment(EnvVars environment) {
         return new PolarisCli(getName(), environment.expand(getHome()), getProperties().toList());
     }
 
     @Override
-    public void buildEnvVars(final EnvVars env) {
+    public void buildEnvVars(EnvVars env) {
         // This is what the gradle plugin does, so it's probably good enough for us --rotte (JAN 2020)
         env.putIfNotNull("PATH+POLARIS", getHome() + "/bin");
     }
@@ -104,7 +82,7 @@ public class PolarisCli extends ToolInstallation implements NodeSpecific<Polaris
         }
 
         @Override
-        public void setInstallations(final PolarisCli... installations) {
+        public void setInstallations(PolarisCli... installations) {
             super.setInstallations(installations);
             save();
         }
