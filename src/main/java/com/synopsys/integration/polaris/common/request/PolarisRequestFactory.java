@@ -41,25 +41,24 @@ public class PolarisRequestFactory {
     public static final int DEFAULT_LIMIT = 25;
     public static final int DEFAULT_OFFSET = 0;
 
-    public static Request createDefaultPolarisGetRequest(String requestUri) throws IntegrationException {
+    public static Request createDefaultGetRequest(String requestUri) throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl(requestUri);
         return createDefaultBuilder()
                    .url(httpUrl)
                    .build();
     }
 
-    public static Request createDefaultCommonPolarisPagedGetRequest(String requestUri) throws IntegrationException {
-        return createCommonPolarisPagedGetRequest(requestUri, DEFAULT_LIMIT);
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl) throws IntegrationException {
+        return createDefaultPagedGetRequest(requestHttpUrl, DEFAULT_LIMIT);
     }
 
-    public static Request createCommonPolarisPagedGetRequest(String requestUri, int limit) throws IntegrationException {
-        return createCommonPolarisPagedGetRequest(requestUri, limit, DEFAULT_OFFSET);
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit) throws IntegrationException {
+        return createDefaultPagedGetRequest(requestHttpUrl, limit, DEFAULT_OFFSET);
     }
 
-    public static Request createCommonPolarisPagedGetRequest(String requestUri, int limit, int offset) throws IntegrationException {
-        HttpUrl httpUrl = new HttpUrl(requestUri);
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit, int offset) throws IntegrationException {
         return createDefaultPagedRequestBuilder(limit, offset)
-                   .url(httpUrl)
+                   .url(requestHttpUrl)
                    .build();
     }
 

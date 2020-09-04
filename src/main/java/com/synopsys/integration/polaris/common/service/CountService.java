@@ -41,14 +41,14 @@ public class CountService {
         this.polarisService = polarisService;
     }
 
-    public PolarisPagedResourceResponse<PolarisResource<CountV0Attributes>> getCountV0ResourcesFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
+    public PolarisPagedResourceResponse<PolarisResource<CountV0Attributes>> getCountV0ResourcesFromIssueApiUrl(HttpUrl issueApiUrl) throws IntegrationException {
         Request.Builder requestBuilder = PolarisRequestFactory.createDefaultBuilder()
-                                             .url(new HttpUrl(issueApiUrl));
+                                             .url(issueApiUrl);
         Request request = requestBuilder.build();
         return polarisService.get(COUNTV0_RESOURCES.getType(), request);
     }
 
-    public Integer getTotalIssueCountFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
+    public Integer getTotalIssueCountFromIssueApiUrl(HttpUrl issueApiUrl) throws IntegrationException {
         return getCountV0ResourcesFromIssueApiUrl(issueApiUrl).getData().stream()
                    .map(PolarisResource::getAttributes)
                    .map(CountV0Attributes::getValue)

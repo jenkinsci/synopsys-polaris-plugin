@@ -37,7 +37,6 @@ import com.synopsys.integration.polaris.common.api.model.JobAttributes;
 import com.synopsys.integration.polaris.common.api.model.JobStatus;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
-import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.wait.WaitJob;
@@ -46,40 +45,18 @@ public class JobService {
     public static final long DEFAULT_TIMEOUT = 30 * 60L;
     public static final int DEFAULT_WAIT_INTERVAL = 5;
 
-    private static final String JOB_SERVICE_API_SPEC = "/api/jobs";
-    private static final String JOBS_API_SPEC = JOB_SERVICE_API_SPEC + "/jobs";
     private static final TypeToken<PolarisSingleResourceResponse<PolarisResource<JobAttributes>>> SINGLE_JOB_RESOURCE_RESPONSE = new TypeToken<PolarisSingleResourceResponse<PolarisResource<JobAttributes>>>() {};
     private final IntLogger logger;
-    private final AccessTokenPolarisHttpClient polarisHttpClient;
     private final PolarisService polarisService;
 
-    public JobService(AccessTokenPolarisHttpClient polarisHttpClient, PolarisService polarisService) {
-        this.logger = polarisHttpClient.getLogger();
-        this.polarisHttpClient = polarisHttpClient;
+    public JobService(IntLogger logger, PolarisService polarisService) {
+        this.logger = logger;
         this.polarisService = polarisService;
-    }
-
-    public PolarisSingleResourceResponse<PolarisResource<JobAttributes>> getJobById(String jobId) throws IntegrationException {
-        HttpUrl url = polarisHttpClient.appendToPolarisUrl(JOBS_API_SPEC + "/" + jobId);
-        return getJobByUrl(url);
     }
 
     public PolarisSingleResourceResponse<PolarisResource<JobAttributes>> getJobByUrl(HttpUrl jobApiUrl) throws IntegrationException {
         Request request = PolarisRequestFactory.createDefaultBuilder().url(jobApiUrl).build();
         return polarisService.get(SINGLE_JOB_RESOURCE_RESPONSE.getType(), request);
-    }
-
-    public void waitForJobStateIsCompletedOrDieById(String jobId) throws IntegrationException, InterruptedException {
-        waitForJobStateIsCompletedOrDieById(jobId, polarisHttpClient.getTimeoutInSeconds(), DEFAULT_WAIT_INTERVAL);
-    }
-
-    public void waitForJobStateIsCompletedOrDieById(String jobId, long timeoutInSeconds, int waitIntervalInSeconds) throws IntegrationException, InterruptedException {
-        HttpUrl url = polarisHttpClient.appendToPolarisUrl(JOBS_API_SPEC + "/" + jobId);
-        waitForJobStateIsCompletedOrDieByUrl(url, timeoutInSeconds, waitIntervalInSeconds);
-    }
-
-    public void waitForJobStateIsCompletedOrDieByUrl(HttpUrl jobApiUrl) throws IntegrationException, InterruptedException {
-        waitForJobStateIsCompletedOrDieByUrl(jobApiUrl, polarisHttpClient.getTimeoutInSeconds(), DEFAULT_WAIT_INTERVAL);
     }
 
     public void waitForJobStateIsCompletedOrDieByUrl(HttpUrl jobApiUrl, long timeoutInSeconds, int waitIntervalInSeconds) throws IntegrationException, InterruptedException {

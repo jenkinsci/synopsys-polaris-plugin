@@ -47,7 +47,7 @@ public class PolarisServicesFactory {
     }
 
     public JobService createJobService() {
-        return new JobService(httpClient, createPolarisService());
+        return new JobService(logger, createPolarisService());
     }
 
     public CountService createCountService() {
