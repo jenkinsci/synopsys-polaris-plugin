@@ -26,7 +26,7 @@ public class ContextsServiceIT {
     @BeforeEach
     public void createContextsService() {
         PolarisServerConfigBuilder polarisServerConfigBuilder = PolarisServerConfig.newBuilder();
-        polarisServerConfigBuilder.setUrl(System.getenv("POLARIS_URL"));
+        polarisServerConfigBuilder.setUrl(System.getenv("TEST_POLARIS_URL"));
         polarisServerConfigBuilder.setAccessToken(System.getenv("POLARIS_ACCESS_TOKEN"));
         polarisServerConfigBuilder.setGson(new Gson());
 
