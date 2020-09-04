@@ -22,34 +22,11 @@
  */
 package com.synopsys.integration.polaris.common.api.query.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
-import com.synopsys.integration.polaris.common.api.PolarisComponent;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class CountV0Resources extends PolarisComponent {
-    @SerializedName("data")
-    private List<CountV0> data = new ArrayList<>();
-
-    public CountV0Resources addDataItem(CountV0 dataItem) {
-        this.data.add(dataItem);
-        return this;
-    }
-
-    /**
-     * Get data
-     * @return data
-     */
-    public List<CountV0> getData() {
-        return data;
-    }
-
-    public void setData(List<CountV0> data) {
-        this.data = data;
-    }
+public class CountV0Resource extends PolarisResource<CountV0Attributes> {
 
 }
 

@@ -41,22 +41,22 @@ public class PolarisRequestFactory {
     public static final int DEFAULT_LIMIT = 25;
     public static final int DEFAULT_OFFSET = 0;
 
-    public static Request createDefaultPolarisGetRequest(final String requestUri) throws IntegrationException {
+    public static Request createDefaultPolarisGetRequest(String requestUri) throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl(requestUri);
         return createDefaultBuilder()
                    .url(httpUrl)
                    .build();
     }
 
-    public static Request createDefaultPolarisPagedGetRequest(final String requestUri) throws IntegrationException {
+    public static Request createDefaultCommonPolarisPagedGetRequest(String requestUri) throws IntegrationException {
         return createCommonPolarisPagedGetRequest(requestUri, DEFAULT_LIMIT);
     }
 
-    public static Request createCommonPolarisPagedGetRequest(final String requestUri, final int limit) throws IntegrationException {
+    public static Request createCommonPolarisPagedGetRequest(String requestUri, int limit) throws IntegrationException {
         return createCommonPolarisPagedGetRequest(requestUri, limit, DEFAULT_OFFSET);
     }
 
-    public static Request createCommonPolarisPagedGetRequest(final String requestUri, final int limit, final int offset) throws IntegrationException {
+    public static Request createCommonPolarisPagedGetRequest(String requestUri, int limit, int offset) throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl(requestUri);
         return createDefaultPagedRequestBuilder(limit, offset)
                    .url(httpUrl)
@@ -67,11 +67,11 @@ public class PolarisRequestFactory {
         return populatePagedRequestBuilder(createDefaultBuilder(), DEFAULT_LIMIT, DEFAULT_OFFSET);
     }
 
-    public static Request.Builder createDefaultPagedRequestBuilder(final int limit, final int offset) {
+    public static Request.Builder createDefaultPagedRequestBuilder(int limit, int offset) {
         return populatePagedRequestBuilder(createDefaultBuilder(), limit, offset);
     }
 
-    public static Request.Builder populatePagedRequestBuilder(final Request.Builder requestBuilder, final int limit, final int offset) {
+    public static Request.Builder populatePagedRequestBuilder(Request.Builder requestBuilder, int limit, int offset) {
         Map<String, Set<String>> queryParameters = requestBuilder.getQueryParameters();
         if (null == queryParameters) {
             requestBuilder.queryParameters(new HashMap<>());

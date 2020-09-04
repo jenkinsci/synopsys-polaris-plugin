@@ -27,15 +27,15 @@ import java.util.Optional;
 
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.auth.model.Context;
+import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
 import com.synopsys.integration.polaris.common.api.auth.model.ContextAttributes;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextResources;
+import com.synopsys.integration.polaris.common.api.auth.model.ContextResource;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.request.Request;
 
 public class ContextsService {
-    private static final TypeToken CONTEXT_RESOURCES = new TypeToken<ContextResources>() {};
+    private static final TypeToken<PolarisPagedResourceResponse<ContextResource>> CONTEXT_RESOURCES = new TypeToken<PolarisPagedResourceResponse<ContextResource>>() {};
     private final PolarisService polarisService;
     private final AccessTokenPolarisHttpClient polarisHttpClient;
 
@@ -44,20 +44,20 @@ public class ContextsService {
         this.polarisHttpClient = polarisHttpClient;
     }
 
-    public List<Context> getAllContexts() throws IntegrationException {
+    public List<ContextResource> getAllContexts() throws IntegrationException {
         Request request = PolarisRequestFactory.createDefaultPolarisGetRequest(polarisHttpClient.getPolarisServerUrl() + "/api/auth/contexts");
         return polarisService.getAllResponses(request, CONTEXT_RESOURCES.getType());
     }
 
-    public Optional<Context> getCurrentContext() throws IntegrationException {
+    public Optional<ContextResource> getCurrentContext() throws IntegrationException {
         return getAllContexts().stream()
                    .filter(this::isCurrentContext)
                    .findFirst();
     }
 
-    private Boolean isCurrentContext(Context context) {
+    private Boolean isCurrentContext(ContextResource context) {
         return Optional.ofNullable(context)
-                   .map(Context::getAttributes)
+                   .map(ContextResource::getAttributes)
                    .map(ContextAttributes::getCurrent)
                    .orElse(Boolean.FALSE);
     }

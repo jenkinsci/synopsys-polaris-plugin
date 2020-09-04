@@ -22,18 +22,44 @@
  */
 package com.synopsys.integration.polaris.common.api;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
-public class PolarisResourceLinks extends PolarisComponent {
-    @SerializedName("self")
-    private PolarisResourceLink self;
+public class PolarisPagedResourceResponse<R extends PolarisResource> extends PolarisResponse {
+    @SerializedName("data")
+    private List<R> data = null;
+    @SerializedName("included")
+    private List<AttributelessPolarisResource> included = null;
+    @SerializedName("meta")
+    private PolarisPaginationMeta meta = null;
 
-    public PolarisResourceLink getSelf() {
-        return self;
+    /**
+     * Get data
+     * @return data
+     */
+    public List<R> getData() {
+        return data;
     }
 
-    public void setSelf(PolarisResourceLink self) {
-        this.self = self;
+    public void setData(List<R> data) {
+        this.data = data;
+    }
+
+    public List<AttributelessPolarisResource> getIncluded() {
+        return included;
+    }
+
+    public void setIncluded(List<AttributelessPolarisResource> included) {
+        this.included = included;
+    }
+
+    public PolarisPaginationMeta getMeta() {
+        return meta;
+    }
+
+    public void setMeta(PolarisPaginationMeta meta) {
+        this.meta = meta;
     }
 
 }

@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
  * An abstract representation of the Polaris CLI's cli-scan.json version number. Conventional version numbers, as well as current and past
  * codenames are all valid and comparable.
  */
-// TODO: This class should be moved to Polaris Common
 public class PolarisCliResponseVersion implements Comparable<PolarisCliResponseVersion>, Serializable {
     private static final long serialVersionUID = -5934404604968505634L;
     private final int major;

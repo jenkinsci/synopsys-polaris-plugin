@@ -24,18 +24,16 @@ package com.synopsys.integration.polaris.common.api.auth.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.polaris.common.api.PolarisAttributes;
+import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class ContextAttributes extends PolarisAttributes {
+public class ContextAttributes extends PolarisResponse implements PolarisAttributes {
     @SerializedName("current")
     private Boolean current;
 
     @SerializedName("organizationname")
     private String organizationname;
-
-    @SerializedName("username")
-    private String username;
 
     /**
      * Get current
@@ -45,7 +43,7 @@ public class ContextAttributes extends PolarisAttributes {
         return current;
     }
 
-    public void setCurrent(final Boolean current) {
+    public void setCurrent(Boolean current) {
         this.current = current;
     }
 
@@ -57,20 +55,8 @@ public class ContextAttributes extends PolarisAttributes {
         return organizationname;
     }
 
-    public void setOrganizationname(final String organizationname) {
+    public void setOrganizationname(String organizationname) {
         this.organizationname = organizationname;
-    }
-
-    /**
-     * Get username
-     * @return username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(final String username) {
-        this.username = username;
     }
 
 }

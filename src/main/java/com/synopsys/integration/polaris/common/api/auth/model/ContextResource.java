@@ -22,10 +22,10 @@
  */
 package com.synopsys.integration.polaris.common.api.auth.model;
 
-import com.synopsys.integration.polaris.common.api.PolarisRelationships;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class ContextRelationships extends PolarisRelationships {
+public class ContextResource extends PolarisResource<ContextAttributes> {
 }
 

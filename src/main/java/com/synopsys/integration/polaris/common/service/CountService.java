@@ -24,31 +24,33 @@ package com.synopsys.integration.polaris.common.service;
 
 import java.util.Objects;
 
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.query.model.CountV0;
+import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
 import com.synopsys.integration.polaris.common.api.query.model.CountV0Attributes;
-import com.synopsys.integration.polaris.common.api.query.model.CountV0Resources;
+import com.synopsys.integration.polaris.common.api.query.model.CountV0Resource;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
 
 public class CountService {
+    public static final TypeToken<PolarisPagedResourceResponse<CountV0Resource>> COUNTV0_RESOURCES = new TypeToken<PolarisPagedResourceResponse<CountV0Resource>>() {};
     private final PolarisService polarisService;
 
-    public CountService(final PolarisService polarisService) {
+    public CountService(PolarisService polarisService) {
         this.polarisService = polarisService;
     }
 
-    public CountV0Resources getCountV0ResourcesFromIssueApiUrl(final String issueApiUrl) throws IntegrationException {
-        final Request.Builder requestBuilder = PolarisRequestFactory.createDefaultBuilder()
-                                                   .url(new HttpUrl(issueApiUrl));
-        final Request request = requestBuilder.build();
-        return polarisService.get(CountV0Resources.class, request);
+    public PolarisPagedResourceResponse<CountV0Resource> getCountV0ResourcesFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
+        Request.Builder requestBuilder = PolarisRequestFactory.createDefaultBuilder()
+                                             .url(new HttpUrl(issueApiUrl));
+        Request request = requestBuilder.build();
+        return polarisService.get(COUNTV0_RESOURCES.getType(), request);
     }
 
-    public Integer getTotalIssueCountFromIssueApiUrl(final String issueApiUrl) throws IntegrationException {
+    public Integer getTotalIssueCountFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
         return getCountV0ResourcesFromIssueApiUrl(issueApiUrl).getData().stream()
-                   .map(CountV0::getAttributes)
+                   .map(CountV0Resource::getAttributes)
                    .map(CountV0Attributes::getValue)
                    .filter(Objects::nonNull)
                    .reduce(0, Integer::sum);

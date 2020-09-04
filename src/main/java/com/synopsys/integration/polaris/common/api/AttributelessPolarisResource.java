@@ -22,24 +22,5 @@
  */
 package com.synopsys.integration.polaris.common.api;
 
-import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
-
-public class PolarisResources<R extends PolarisResource> extends PolarisResponse {
-    @SerializedName("data")
-    private List<R> data = null;
-
-    /**
-     * Get data
-     * @return data
-     */
-    public List<R> getData() {
-        return data;
-    }
-
-    public void setData(List<R> data) {
-        this.data = data;
-    }
-
+public class AttributelessPolarisResource extends PolarisResource<PolarisAttributes> {
 }

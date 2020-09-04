@@ -31,7 +31,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.polaris.common.api.PolarisComponent;
+import com.synopsys.integration.polaris.common.api.PolarisResponse;
 import com.synopsys.integration.rest.response.Response;
 
 public class PolarisJsonTransformer {
@@ -45,12 +45,12 @@ public class PolarisJsonTransformer {
         this.logger = logger;
     }
 
-    public <C extends PolarisComponent> C getResponse(Response response, Type responseType) throws IntegrationException {
+    public <C extends PolarisResponse> C getResponse(Response response, Type responseType) throws IntegrationException {
         String json = response.getContentString();
         return getResponseAs(json, responseType);
     }
 
-    public <C extends PolarisComponent> C getResponseAs(String json, Type responseType) throws IntegrationException {
+    public <C extends PolarisResponse> C getResponseAs(String json, Type responseType) throws IntegrationException {
         try {
             JsonObject jsonElement = gson.fromJson(json, JsonObject.class);
             return getResponseAs(jsonElement, responseType);
@@ -60,7 +60,7 @@ public class PolarisJsonTransformer {
         }
     }
 
-    public <C extends PolarisComponent> C getResponseAs(JsonObject jsonObject, Type responseType) throws IntegrationException {
+    public <C extends PolarisResponse> C getResponseAs(JsonObject jsonObject, Type responseType) throws IntegrationException {
         String json = gson.toJson(jsonObject);
         try {
             addJsonAsField(jsonObject);

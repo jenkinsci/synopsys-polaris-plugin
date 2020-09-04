@@ -24,17 +24,13 @@ package com.synopsys.integration.polaris.common.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PolarisResource<A extends PolarisAttributes, R extends PolarisRelationships> extends PolarisComponent {
+public class PolarisResource<A extends PolarisAttributes> extends PolarisResponse {
     @SerializedName("type")
     private String type;
     @SerializedName("id")
     private String id;
     @SerializedName("attributes")
     private A attributes = null;
-    @SerializedName("relationships")
-    private R relationships = null;
-    @SerializedName("links")
-    private PolarisResourceLinks links;
 
     public String getType() {
         return type;
@@ -58,22 +54,6 @@ public class PolarisResource<A extends PolarisAttributes, R extends PolarisRelat
 
     public void setAttributes(A attributes) {
         this.attributes = attributes;
-    }
-
-    public R getRelationships() {
-        return relationships;
-    }
-
-    public void setRelationships(R relationships) {
-        this.relationships = relationships;
-    }
-
-    public PolarisResourceLinks getLinks() {
-        return links;
-    }
-
-    public void setLinks(PolarisResourceLinks links) {
-        this.links = links;
     }
 
 }

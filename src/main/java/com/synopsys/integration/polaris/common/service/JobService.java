@@ -30,8 +30,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.polaris.common.api.PolarisSingleResourceResponse;
 import com.synopsys.integration.polaris.common.api.job.model.FailureInfo;
-import com.synopsys.integration.polaris.common.api.job.model.Job;
 import com.synopsys.integration.polaris.common.api.job.model.JobAttributes;
 import com.synopsys.integration.polaris.common.api.job.model.JobResource;
 import com.synopsys.integration.polaris.common.api.job.model.JobStatus;
@@ -48,7 +48,7 @@ public class JobService {
 
     private static final String JOB_SERVICE_API_SPEC = "/api/jobs";
     private static final String JOBS_API_SPEC = JOB_SERVICE_API_SPEC + "/jobs";
-    private static final TypeToken<JobResource> JOB_RESOURCE = new TypeToken<JobResource>() {};
+    private static final TypeToken<PolarisSingleResourceResponse<JobResource>> SINGLE_JOB_RESOURCE_RESPONSE = new TypeToken<PolarisSingleResourceResponse<JobResource>>() {};
     private final IntLogger logger;
     private final AccessTokenPolarisHttpClient polarisHttpClient;
     private final PolarisService polarisService;
@@ -59,14 +59,14 @@ public class JobService {
         this.polarisService = polarisService;
     }
 
-    public JobResource getJobById(String jobId) throws IntegrationException {
+    public PolarisSingleResourceResponse<JobResource> getJobById(String jobId) throws IntegrationException {
         HttpUrl url = polarisHttpClient.appendToPolarisUrl(JOBS_API_SPEC + "/" + jobId);
         return getJobByUrl(url);
     }
 
-    public JobResource getJobByUrl(HttpUrl jobApiUrl) throws IntegrationException {
+    public PolarisSingleResourceResponse<JobResource> getJobByUrl(HttpUrl jobApiUrl) throws IntegrationException {
         Request request = PolarisRequestFactory.createDefaultBuilder().url(jobApiUrl).build();
-        return polarisService.get(JOB_RESOURCE.getType(), request);
+        return polarisService.get(SINGLE_JOB_RESOURCE_RESPONSE.getType(), request);
     }
 
     public void waitForJobStateIsCompletedOrDieById(String jobId) throws IntegrationException, InterruptedException {
@@ -89,10 +89,10 @@ public class JobService {
             throw new PolarisIntegrationException(String.format("Job at url %s did not end in the provided timeout of %s", jobApiUrl, maximumDurationString));
         }
 
-        JobResource jobResource = this.getJobByUrl(jobApiUrl);
-        JobStatus.StateEnum jobState = Optional.ofNullable(jobResource)
-                                           .map(JobResource::getData)
-                                           .map(Job::getAttributes)
+        PolarisSingleResourceResponse<JobResource> jobResourceResponse = this.getJobByUrl(jobApiUrl);
+        JobStatus.StateEnum jobState = Optional.ofNullable(jobResourceResponse)
+                                           .map(PolarisSingleResourceResponse::getData)
+                                           .map(JobResource::getAttributes)
                                            .map(JobAttributes::getStatus)
                                            .map(JobStatus::getState)
                                            .orElseThrow(() -> new PolarisIntegrationException(String.format("Job at url %s ended but its state cannot be determined.", jobApiUrl)));
@@ -102,7 +102,7 @@ public class JobService {
             errorMessageBuilder.append(String.format("Job at url %s ended with state %s instead of %s", jobApiUrl, jobState, JobStatus.StateEnum.COMPLETED));
             if (JobStatus.StateEnum.FAILED.equals(jobState)) {
                 // Niether Data nor Attributes can be null because they were validated above -- rotte MAR 2020
-                FailureInfo failureInfo = jobResource.getData().getAttributes().getFailureInfo();
+                FailureInfo failureInfo = jobResourceResponse.getData().getAttributes().getFailureInfo();
                 if (failureInfo != null && StringUtils.isNotBlank(failureInfo.getUserFriendlyFailureReason())) {
                     errorMessageBuilder.append(String.format(" because: %s", failureInfo.getUserFriendlyFailureReason()));
                 }
@@ -118,8 +118,8 @@ public class JobService {
 
         try {
             Optional<JobStatus> optionalJobStatus = Optional.ofNullable(getJobByUrl(jobApiUrl))
-                                                        .map(JobResource::getData)
-                                                        .map(Job::getAttributes)
+                                                        .map(PolarisSingleResourceResponse::getData)
+                                                        .map(JobResource::getAttributes)
                                                         .map(JobAttributes::getStatus);
 
             if (!optionalJobStatus.isPresent()) {

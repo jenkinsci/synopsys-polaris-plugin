@@ -33,11 +33,11 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.PolarisComponent;
+import com.synopsys.integration.polaris.common.api.AttributelessPolarisResource;
+import com.synopsys.integration.polaris.common.api.PolarisAttributes;
+import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
+import com.synopsys.integration.polaris.common.api.PolarisPaginationMeta;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
-import com.synopsys.integration.polaris.common.api.PolarisResourceSparse;
-import com.synopsys.integration.polaris.common.api.PolarisResources;
-import com.synopsys.integration.polaris.common.api.PolarisResourcesPagination;
 import com.synopsys.integration.polaris.common.api.PolarisResponse;
 import com.synopsys.integration.polaris.common.request.PolarisPagedRequestWrapper;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
@@ -45,13 +45,6 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 
 public class PolarisService {
-    public static final String PROJECT_ID = "project-id";
-    public static final String BRANCH_ID = "branch-id";
-
-    public static final String COMMON_API_SPEC = "/api/common/v0";
-    public static final String PROJECT_API_SPEC = COMMON_API_SPEC + "/projects";
-    public static final String BRANCHES_API_SPEC = COMMON_API_SPEC + "/branches";
-
     public static final String QUERY_API_SPEC = "/api/query/v0";
     public static final String ISSUES_API_SPEC = QUERY_API_SPEC + "/issues";
     private final AccessTokenPolarisHttpClient polarisHttpClient;
@@ -68,10 +61,10 @@ public class PolarisService {
         return ISSUES_API_SPEC + "/" + issueKey;
     }
 
-    public <R extends PolarisResource> Optional<R> getResourceFromPopulated(PolarisResponse populatedResources, PolarisResourceSparse sparseResourceData, Class<R> resourceClass) {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>> Optional<R> getResourceFromPopulated(PolarisPagedResourceResponse<R> populatedResources, AttributelessPolarisResource sparseResourceData, Class<R> resourceClass) {
         String id = StringUtils.defaultString(sparseResourceData.getId());
         String type = StringUtils.defaultString(sparseResourceData.getType());
-        for (PolarisResource includedResource : populatedResources.getIncluded()) {
+        for (AttributelessPolarisResource includedResource : populatedResources.getIncluded()) {
             if (type.equals(includedResource.getType()) && id.equals(includedResource.getId())) {
                 try {
                     R fullyTypedResource = polarisJsonTransformer.getResponseAs(includedResource.getJson(), resourceClass);
@@ -84,7 +77,7 @@ public class PolarisService {
         return Optional.empty();
     }
 
-    public <R extends PolarisComponent> R get(Type returnType, Request request) throws IntegrationException {
+    public <R extends PolarisResponse> R get(Type returnType, Request request) throws IntegrationException {
         try (Response response = polarisHttpClient.execute(request)) {
             response.throwExceptionForError();
 
@@ -101,10 +94,10 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
                .findFirst();
 }
  */
-    public <R extends PolarisResource> Optional<R> getFirstResponse(Request request, Type resourcesType) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>> Optional<R> getFirstResponse(Request request, Type resourcesType) throws IntegrationException {
         try (Response response = polarisHttpClient.execute(request)) {
             response.throwExceptionForError();
-            PolarisResources<R> wrappedResponse = polarisJsonTransformer.getResponse(response, resourcesType);
+            PolarisPagedResourceResponse<R> wrappedResponse = polarisJsonTransformer.getResponse(response, resourcesType);
             if (wrappedResponse != null) {
                 List<R> data = wrappedResponse.getData();
                 if (null != data && !data.isEmpty()) {
@@ -117,10 +110,10 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
         }
     }
 
-    public <R extends PolarisResource> List<R> getAllResponses(Request request, Type resourcesType) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>> List<R> getAllResponses(Request request, Type resourcesType) throws IntegrationException {
         try (Response response = polarisHttpClient.execute(request)) {
             response.throwExceptionForError();
-            PolarisResources<R> wrappedResponse = polarisJsonTransformer.getResponse(response, resourcesType);
+            PolarisPagedResourceResponse<R> wrappedResponse = polarisJsonTransformer.getResponse(response, resourcesType);
             if (wrappedResponse != null && wrappedResponse.getData() != null) {
                 return wrappedResponse.getData();
             }
@@ -130,11 +123,11 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
         }
     }
 
-    public <R extends PolarisResource> List<R> getAllResponses(PolarisPagedRequestWrapper polarisPagedRequestWrapper) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>> List<R> getAllResponses(PolarisPagedRequestWrapper polarisPagedRequestWrapper) throws IntegrationException {
         return getAllResponses(polarisPagedRequestWrapper, defaultPageSize);
     }
 
-    public <R extends PolarisResource, W extends PolarisResources<R>> List<R> getAllResponses(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int pageSize) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> List<R> getAllResponses(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int pageSize) throws IntegrationException {
         W populatedResponse = getPopulatedResponse(polarisPagedRequestWrapper, pageSize);
 
         if (populatedResponse == null) {
@@ -144,15 +137,15 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
         return populatedResponse.getData();
     }
 
-    public <R extends PolarisResource, W extends PolarisResources<R>> W getPopulatedResponse(PolarisPagedRequestWrapper polarisPagedRequestWrapper) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> W getPopulatedResponse(PolarisPagedRequestWrapper polarisPagedRequestWrapper) throws IntegrationException {
         return getPopulatedResponse(polarisPagedRequestWrapper, defaultPageSize);
     }
 
     // TODO: Cognitive complexity should be reduced even more here --rotte APR 2020
-    public <R extends PolarisResource, W extends PolarisResources<R>> W getPopulatedResponse(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int pageSize) throws IntegrationException {
+    public <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> W getPopulatedResponse(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int pageSize) throws IntegrationException {
         W populatedResources = null;
         List<R> allData = new ArrayList<>();
-        List<PolarisResourceSparse> allIncluded = new ArrayList<>();
+        List<AttributelessPolarisResource> allIncluded = new ArrayList<>();
 
         Integer totalExpected = null;
         int offset = 0;
@@ -170,9 +163,9 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
             }
 
             if (totalExpectedHasNotBeenSet) {
-                PolarisResourcesPagination meta = wrappedResponse.getMeta();
+                PolarisPaginationMeta meta = wrappedResponse.getMeta();
                 totalExpected = Optional.ofNullable(meta)
-                                    .map(PolarisResourcesPagination::getTotal)
+                                    .map(PolarisPaginationMeta::getTotal)
                                     .map(BigDecimal::intValue)
                                     .orElse(null);
                 totalExpectedHasNotBeenSet = false;
@@ -181,7 +174,7 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
             List<R> data = Optional.ofNullable(wrappedResponse.getData()).orElse(Collections.emptyList());
             allData.addAll(data);
 
-            List<PolarisResourceSparse> included = Optional.ofNullable(wrappedResponse.getIncluded()).orElse(Collections.emptyList());
+            List<AttributelessPolarisResource> included = Optional.ofNullable(wrappedResponse.getIncluded()).orElse(Collections.emptyList());
             allIncluded.addAll(included);
 
             if (totalExpected != null) {
@@ -199,7 +192,8 @@ public <R extends PolarisResource> Optional<R> getFirstResponse2(final Request r
         return populatedResources;
     }
 
-    private <R extends PolarisResource, W extends PolarisResources<R>> W executePagedRequest(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int offset, int limit) throws IntegrationException {
+    private <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> W executePagedRequest(PolarisPagedRequestWrapper polarisPagedRequestWrapper, int offset, int limit)
+        throws IntegrationException {
         Request pagedRequest = polarisPagedRequestWrapper.getRequestCreator().apply(limit, offset);
         try (Response response = polarisHttpClient.execute(pagedRequest)) {
             response.throwExceptionForError();

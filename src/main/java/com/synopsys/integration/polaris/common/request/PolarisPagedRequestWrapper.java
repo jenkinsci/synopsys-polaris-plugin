@@ -23,17 +23,20 @@
 package com.synopsys.integration.polaris.common.request;
 
 import java.lang.reflect.Type;
+import java.util.function.BiFunction;
+
+import com.synopsys.integration.rest.request.Request;
 
 public class PolarisPagedRequestWrapper {
-    private final PolarisPagedRequestCreator requestCreator;
+    private final BiFunction<Integer, Integer, Request> requestCreator;
     private final Type type;
 
-    public PolarisPagedRequestWrapper(final PolarisPagedRequestCreator requestCreator, final Type type) {
+    public PolarisPagedRequestWrapper(BiFunction<Integer, Integer, Request> requestCreator, Type type) {
         this.requestCreator = requestCreator;
         this.type = type;
     }
 
-    public PolarisPagedRequestCreator getRequestCreator() {
+    public BiFunction<Integer, Integer, Request> getRequestCreator() {
         return requestCreator;
     }
 

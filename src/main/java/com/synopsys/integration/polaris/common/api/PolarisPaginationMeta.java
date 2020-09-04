@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PolarisResourcesPagination extends PolarisComponent {
+public class PolarisPaginationMeta extends PolarisResponse {
     @SerializedName("offset")
     private BigDecimal offset;
 
@@ -44,7 +44,7 @@ public class PolarisResourcesPagination extends PolarisComponent {
         return offset;
     }
 
-    public void setOffset(final BigDecimal offset) {
+    public void setOffset(BigDecimal offset) {
         this.offset = offset;
     }
 
@@ -56,7 +56,7 @@ public class PolarisResourcesPagination extends PolarisComponent {
         return limit;
     }
 
-    public void setLimit(final BigDecimal limit) {
+    public void setLimit(BigDecimal limit) {
         this.limit = limit;
     }
 
@@ -68,7 +68,7 @@ public class PolarisResourcesPagination extends PolarisComponent {
         return total;
     }
 
-    public void setTotal(final BigDecimal total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 

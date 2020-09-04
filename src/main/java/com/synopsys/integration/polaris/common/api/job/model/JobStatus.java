@@ -29,11 +29,11 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.synopsys.integration.polaris.common.api.PolarisComponent;
+import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class JobStatus extends PolarisComponent {
+public class JobStatus extends PolarisResponse {
     @SerializedName("state")
     private StateEnum state;
     @SerializedName("progress")
