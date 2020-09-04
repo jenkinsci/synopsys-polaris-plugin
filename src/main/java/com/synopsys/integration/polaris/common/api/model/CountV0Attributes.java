@@ -20,12 +20,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.api.job.model;
+package com.synopsys.integration.polaris.common.api.model;
 
-import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.google.gson.annotations.SerializedName;
+import com.synopsys.integration.polaris.common.api.PolarisAttributes;
+import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class JobResource extends PolarisResource<JobAttributes> {
+public class CountV0Attributes extends PolarisResponse implements PolarisAttributes {
+    @SerializedName("value")
+    private Integer value;
+
+    /**
+     * Get value
+     * @return value
+     */
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
 
 }
+

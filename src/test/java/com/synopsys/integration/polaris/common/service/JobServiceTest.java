@@ -15,9 +15,10 @@ import com.google.gson.Gson;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.PolarisSingleResourceResponse;
-import com.synopsys.integration.polaris.common.api.job.model.JobResource;
-import com.synopsys.integration.polaris.common.api.job.model.JobStatus;
+import com.synopsys.integration.polaris.common.api.model.JobAttributes;
+import com.synopsys.integration.polaris.common.api.model.JobStatus;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.HttpUrl;
@@ -35,7 +36,7 @@ public class JobServiceTest {
         PolarisService polarisService = new PolarisService(polarisHttpClient, polarisJsonTransformer, PolarisRequestFactory.DEFAULT_LIMIT);
 
         JobService jobService = new JobService(polarisHttpClient, polarisService);
-        PolarisSingleResourceResponse<JobResource> jobResource = jobService.getJobByUrl(jobsApi);
+        PolarisSingleResourceResponse<PolarisResource<JobAttributes>> jobResource = jobService.getJobByUrl(jobsApi);
         JobStatus jobStatus = jobResource.getData().getAttributes().getStatus();
 
         assertEquals(Integer.valueOf(100), jobStatus.getProgress());
@@ -52,7 +53,7 @@ public class JobServiceTest {
         PolarisService polarisService = new PolarisService(polarisHttpClient, polarisJsonTransformer, PolarisRequestFactory.DEFAULT_LIMIT);
 
         JobService jobService = new JobService(polarisHttpClient, polarisService);
-        PolarisSingleResourceResponse<JobResource> jobResource = jobService.getJobByUrl(opsraApi);
+        PolarisSingleResourceResponse<PolarisResource<JobAttributes>> jobResource = jobService.getJobByUrl(opsraApi);
         JobStatus jobStatus = jobResource.getData().getAttributes().getStatus();
 
         assertEquals(Integer.valueOf(100), jobStatus.getProgress());

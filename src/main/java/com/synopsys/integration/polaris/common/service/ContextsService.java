@@ -28,14 +28,14 @@ import java.util.Optional;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextAttributes;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextResource;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.synopsys.integration.polaris.common.api.model.ContextAttributes;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.request.Request;
 
 public class ContextsService {
-    private static final TypeToken<PolarisPagedResourceResponse<ContextResource>> CONTEXT_RESOURCES = new TypeToken<PolarisPagedResourceResponse<ContextResource>>() {};
+    private static final TypeToken<PolarisPagedResourceResponse<PolarisResource<ContextAttributes>>> CONTEXT_RESOURCES = new TypeToken<PolarisPagedResourceResponse<PolarisResource<ContextAttributes>>>() {};
     private final PolarisService polarisService;
     private final AccessTokenPolarisHttpClient polarisHttpClient;
 
@@ -44,20 +44,20 @@ public class ContextsService {
         this.polarisHttpClient = polarisHttpClient;
     }
 
-    public List<ContextResource> getAllContexts() throws IntegrationException {
+    public List<PolarisResource<ContextAttributes>> getAllContexts() throws IntegrationException {
         Request request = PolarisRequestFactory.createDefaultPolarisGetRequest(polarisHttpClient.getPolarisServerUrl() + "/api/auth/contexts");
         return polarisService.getAllResponses(request, CONTEXT_RESOURCES.getType());
     }
 
-    public Optional<ContextResource> getCurrentContext() throws IntegrationException {
+    public Optional<PolarisResource<ContextAttributes>> getCurrentContext() throws IntegrationException {
         return getAllContexts().stream()
                    .filter(this::isCurrentContext)
                    .findFirst();
     }
 
-    private Boolean isCurrentContext(ContextResource context) {
+    private Boolean isCurrentContext(PolarisResource<ContextAttributes> context) {
         return Optional.ofNullable(context)
-                   .map(ContextResource::getAttributes)
+                   .map(PolarisResource::getAttributes)
                    .map(ContextAttributes::getCurrent)
                    .orElse(Boolean.FALSE);
     }

@@ -30,11 +30,11 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.PolarisSingleResourceResponse;
-import com.synopsys.integration.polaris.common.api.job.model.FailureInfo;
-import com.synopsys.integration.polaris.common.api.job.model.JobAttributes;
-import com.synopsys.integration.polaris.common.api.job.model.JobResource;
-import com.synopsys.integration.polaris.common.api.job.model.JobStatus;
+import com.synopsys.integration.polaris.common.api.model.FailureInfo;
+import com.synopsys.integration.polaris.common.api.model.JobAttributes;
+import com.synopsys.integration.polaris.common.api.model.JobStatus;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
@@ -48,7 +48,7 @@ public class JobService {
 
     private static final String JOB_SERVICE_API_SPEC = "/api/jobs";
     private static final String JOBS_API_SPEC = JOB_SERVICE_API_SPEC + "/jobs";
-    private static final TypeToken<PolarisSingleResourceResponse<JobResource>> SINGLE_JOB_RESOURCE_RESPONSE = new TypeToken<PolarisSingleResourceResponse<JobResource>>() {};
+    private static final TypeToken<PolarisSingleResourceResponse<PolarisResource<JobAttributes>>> SINGLE_JOB_RESOURCE_RESPONSE = new TypeToken<PolarisSingleResourceResponse<PolarisResource<JobAttributes>>>() {};
     private final IntLogger logger;
     private final AccessTokenPolarisHttpClient polarisHttpClient;
     private final PolarisService polarisService;
@@ -59,12 +59,12 @@ public class JobService {
         this.polarisService = polarisService;
     }
 
-    public PolarisSingleResourceResponse<JobResource> getJobById(String jobId) throws IntegrationException {
+    public PolarisSingleResourceResponse<PolarisResource<JobAttributes>> getJobById(String jobId) throws IntegrationException {
         HttpUrl url = polarisHttpClient.appendToPolarisUrl(JOBS_API_SPEC + "/" + jobId);
         return getJobByUrl(url);
     }
 
-    public PolarisSingleResourceResponse<JobResource> getJobByUrl(HttpUrl jobApiUrl) throws IntegrationException {
+    public PolarisSingleResourceResponse<PolarisResource<JobAttributes>> getJobByUrl(HttpUrl jobApiUrl) throws IntegrationException {
         Request request = PolarisRequestFactory.createDefaultBuilder().url(jobApiUrl).build();
         return polarisService.get(SINGLE_JOB_RESOURCE_RESPONSE.getType(), request);
     }
@@ -89,10 +89,10 @@ public class JobService {
             throw new PolarisIntegrationException(String.format("Job at url %s did not end in the provided timeout of %s", jobApiUrl, maximumDurationString));
         }
 
-        PolarisSingleResourceResponse<JobResource> jobResourceResponse = this.getJobByUrl(jobApiUrl);
+        PolarisSingleResourceResponse<PolarisResource<JobAttributes>> jobResourceResponse = this.getJobByUrl(jobApiUrl);
         JobStatus.StateEnum jobState = Optional.ofNullable(jobResourceResponse)
                                            .map(PolarisSingleResourceResponse::getData)
-                                           .map(JobResource::getAttributes)
+                                           .map(PolarisResource::getAttributes)
                                            .map(JobAttributes::getStatus)
                                            .map(JobStatus::getState)
                                            .orElseThrow(() -> new PolarisIntegrationException(String.format("Job at url %s ended but its state cannot be determined.", jobApiUrl)));
@@ -119,7 +119,7 @@ public class JobService {
         try {
             Optional<JobStatus> optionalJobStatus = Optional.ofNullable(getJobByUrl(jobApiUrl))
                                                         .map(PolarisSingleResourceResponse::getData)
-                                                        .map(JobResource::getAttributes)
+                                                        .map(PolarisResource::getAttributes)
                                                         .map(JobAttributes::getStatus);
 
             if (!optionalJobStatus.isPresent()) {

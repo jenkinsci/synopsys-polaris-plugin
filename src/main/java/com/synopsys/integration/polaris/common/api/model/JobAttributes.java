@@ -20,7 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.api.query.model;
+package com.synopsys.integration.polaris.common.api.model;
+
+import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.polaris.common.api.PolarisAttributes;
@@ -28,21 +30,50 @@ import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class CountV0Attributes extends PolarisResponse implements PolarisAttributes {
-    @SerializedName("value")
-    private Integer value;
+public class JobAttributes extends PolarisResponse implements PolarisAttributes {
+    @SerializedName("details")
+    private Map<String, Object> details = null;
+
+    @SerializedName("failureInfo")
+    private FailureInfo failureInfo = null;
+
+    @SerializedName("status")
+    private JobStatus status = null;
 
     /**
-     * Get value
-     * @return value
+     * Get details
+     * @return details
      */
-    public Integer getValue() {
-        return value;
+    public Map<String, Object> getDetails() {
+        return details;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setDetails(Map<String, Object> details) {
+        this.details = details;
+    }
+
+    /**
+     * Get failureInfo
+     * @return failureInfo
+     */
+    public FailureInfo getFailureInfo() {
+        return failureInfo;
+    }
+
+    public void setFailureInfo(FailureInfo failureInfo) {
+        this.failureInfo = failureInfo;
+    }
+
+    /**
+     * Get status
+     * @return status
+     */
+    public JobStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobStatus status) {
+        this.status = status;
     }
 
 }
-

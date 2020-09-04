@@ -20,12 +20,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.api.auth.model;
+package com.synopsys.integration.polaris.common.api.model;
 
-import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.google.gson.annotations.SerializedName;
+import com.synopsys.integration.util.Stringable;
 
-// this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
+public class FailureInfo extends Stringable {
+    @SerializedName("userFriendlyFailureReason")
+    private String userFriendlyFailureReason;
 
-public class ContextResource extends PolarisResource<ContextAttributes> {
+    @SerializedName("exception")
+    private String exception;
+
+    /**
+     * Get userFriendlyFailureReason
+     * @return userFriendlyFailureReason
+     */
+    public String getUserFriendlyFailureReason() {
+        return userFriendlyFailureReason;
+    }
+
+    /**
+     * Get exception
+     * @return exception
+     */
+    public String getException() {
+        return exception;
+    }
+
 }
-

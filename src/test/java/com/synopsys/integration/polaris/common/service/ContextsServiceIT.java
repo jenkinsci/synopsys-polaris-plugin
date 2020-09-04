@@ -15,8 +15,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextAttributes;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextResource;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.synopsys.integration.polaris.common.api.model.ContextAttributes;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
 
@@ -43,15 +43,15 @@ public class ContextsServiceIT {
     @Test
     public void testGetCurrentContext() {
         try {
-            Optional<ContextResource> currentContext = contextsService.getCurrentContext();
+            Optional<PolarisResource<ContextAttributes>> currentContext = contextsService.getCurrentContext();
             if (currentContext.isPresent()) {
-                assertTrue(currentContext.map(ContextResource::getAttributes)
+                assertTrue(currentContext.map(PolarisResource::getAttributes)
                                .map(ContextAttributes::getCurrent)
                                .orElse(Boolean.FALSE));
             } else {
                 assertTrue(contextsService.getAllContexts()
                                .stream()
-                               .map(ContextResource::getAttributes)
+                               .map(PolarisResource::getAttributes)
                                .map(ContextAttributes::getCurrent)
                                .noneMatch(Boolean.TRUE::equals));
             }

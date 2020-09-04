@@ -20,13 +20,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.api.query.model;
+package com.synopsys.integration.polaris.common.api.model;
 
-import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.google.gson.annotations.SerializedName;
+import com.synopsys.integration.polaris.common.api.PolarisAttributes;
+import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
-public class CountV0Resource extends PolarisResource<CountV0Attributes> {
+public class ContextAttributes extends PolarisResponse implements PolarisAttributes {
+    @SerializedName("current")
+    private Boolean current;
+
+    @SerializedName("organizationname")
+    private String organizationname;
+
+    /**
+     * Get current
+     * @return current
+     */
+    public Boolean getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Boolean current) {
+        this.current = current;
+    }
+
+    /**
+     * Get organizationname
+     * @return organizationname
+     */
+    public String getOrganizationname() {
+        return organizationname;
+    }
+
+    public void setOrganizationname(String organizationname) {
+        this.organizationname = organizationname;
+    }
 
 }
 

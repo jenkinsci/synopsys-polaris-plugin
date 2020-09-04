@@ -27,21 +27,21 @@ import java.util.Objects;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
-import com.synopsys.integration.polaris.common.api.query.model.CountV0Attributes;
-import com.synopsys.integration.polaris.common.api.query.model.CountV0Resource;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.synopsys.integration.polaris.common.api.model.CountV0Attributes;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
 
 public class CountService {
-    public static final TypeToken<PolarisPagedResourceResponse<CountV0Resource>> COUNTV0_RESOURCES = new TypeToken<PolarisPagedResourceResponse<CountV0Resource>>() {};
+    public static final TypeToken<PolarisPagedResourceResponse<PolarisResource<CountV0Attributes>>> COUNTV0_RESOURCES = new TypeToken<PolarisPagedResourceResponse<PolarisResource<CountV0Attributes>>>() {};
     private final PolarisService polarisService;
 
     public CountService(PolarisService polarisService) {
         this.polarisService = polarisService;
     }
 
-    public PolarisPagedResourceResponse<CountV0Resource> getCountV0ResourcesFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
+    public PolarisPagedResourceResponse<PolarisResource<CountV0Attributes>> getCountV0ResourcesFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
         Request.Builder requestBuilder = PolarisRequestFactory.createDefaultBuilder()
                                              .url(new HttpUrl(issueApiUrl));
         Request request = requestBuilder.build();
@@ -50,7 +50,7 @@ public class CountService {
 
     public Integer getTotalIssueCountFromIssueApiUrl(String issueApiUrl) throws IntegrationException {
         return getCountV0ResourcesFromIssueApiUrl(issueApiUrl).getData().stream()
-                   .map(CountV0Resource::getAttributes)
+                   .map(PolarisResource::getAttributes)
                    .map(CountV0Attributes::getValue)
                    .filter(Objects::nonNull)
                    .reduce(0, Integer::sum);
