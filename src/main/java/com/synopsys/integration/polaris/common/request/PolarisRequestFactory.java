@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.request.Request;
@@ -41,29 +40,24 @@ public class PolarisRequestFactory {
     public static final int DEFAULT_LIMIT = 25;
     public static final int DEFAULT_OFFSET = 0;
 
-    public static Request createDefaultGetRequest(String requestUri) throws IntegrationException {
-        HttpUrl httpUrl = new HttpUrl(requestUri);
+    public static Request createDefaultGetRequest(HttpUrl requestHttpUrl) {
         return createDefaultBuilder()
-                   .url(httpUrl)
-                   .build();
-    }
-
-    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl) throws IntegrationException {
-        return createDefaultPagedGetRequest(requestHttpUrl, DEFAULT_LIMIT);
-    }
-
-    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit) throws IntegrationException {
-        return createDefaultPagedGetRequest(requestHttpUrl, limit, DEFAULT_OFFSET);
-    }
-
-    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit, int offset) throws IntegrationException {
-        return createDefaultPagedRequestBuilder(limit, offset)
                    .url(requestHttpUrl)
                    .build();
     }
 
-    public static Request.Builder createDefaultRequestBuilder() {
-        return populatePagedRequestBuilder(createDefaultBuilder(), DEFAULT_LIMIT, DEFAULT_OFFSET);
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl) {
+        return createDefaultPagedGetRequest(requestHttpUrl, DEFAULT_LIMIT);
+    }
+
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit) {
+        return createDefaultPagedGetRequest(requestHttpUrl, limit, DEFAULT_OFFSET);
+    }
+
+    public static Request createDefaultPagedGetRequest(HttpUrl requestHttpUrl, int limit, int offset) {
+        return createDefaultPagedRequestBuilder(limit, offset)
+                   .url(requestHttpUrl)
+                   .build();
     }
 
     public static Request.Builder createDefaultPagedRequestBuilder(int limit, int offset) {

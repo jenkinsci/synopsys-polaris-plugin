@@ -22,15 +22,11 @@
  */
 package com.synopsys.integration.polaris.common.api;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 public class PolarisSingleResourceResponse<R extends PolarisResource> extends PolarisResponse {
     @SerializedName("data")
     private R data = null;
-    @SerializedName("included")
-    private List<AttributelessPolarisResource> included = null;
 
     /**
      * Get data
@@ -42,14 +38,6 @@ public class PolarisSingleResourceResponse<R extends PolarisResource> extends Po
 
     public void setData(R data) {
         this.data = data;
-    }
-
-    public List<AttributelessPolarisResource> getIncluded() {
-        return included;
-    }
-
-    public void setIncluded(List<AttributelessPolarisResource> included) {
-        this.included = included;
     }
 
 }

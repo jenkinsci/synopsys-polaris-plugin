@@ -15,8 +15,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.log.SilentIntLogger;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
-import com.synopsys.integration.polaris.common.api.PolarisSingleResourceResponse;
 import com.synopsys.integration.polaris.common.api.model.JobAttributes;
 import com.synopsys.integration.polaris.common.api.model.JobStatus;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
@@ -35,9 +35,9 @@ public class JobServiceTest {
         PolarisJsonTransformer polarisJsonTransformer = new PolarisJsonTransformer(new Gson(), new PrintStreamIntLogger(System.out, LogLevel.INFO));
         PolarisService polarisService = new PolarisService(polarisHttpClient, polarisJsonTransformer, PolarisRequestFactory.DEFAULT_LIMIT);
 
-        JobService jobService = new JobService(polarisHttpClient, polarisService);
-        PolarisSingleResourceResponse<PolarisResource<JobAttributes>> jobResource = jobService.getJobByUrl(jobsApi);
-        JobStatus jobStatus = jobResource.getData().getAttributes().getStatus();
+        JobService jobService = new JobService(new SilentIntLogger(), polarisService);
+        PolarisResource<JobAttributes> jobResource = jobService.getJobByUrl(jobsApi);
+        JobStatus jobStatus = jobResource.getAttributes().getStatus();
 
         assertEquals(Integer.valueOf(100), jobStatus.getProgress());
         assertEquals(JobStatus.StateEnum.COMPLETED, jobStatus.getState());
@@ -52,9 +52,9 @@ public class JobServiceTest {
         PolarisJsonTransformer polarisJsonTransformer = new PolarisJsonTransformer(new Gson(), new PrintStreamIntLogger(System.out, LogLevel.INFO));
         PolarisService polarisService = new PolarisService(polarisHttpClient, polarisJsonTransformer, PolarisRequestFactory.DEFAULT_LIMIT);
 
-        JobService jobService = new JobService(polarisHttpClient, polarisService);
-        PolarisSingleResourceResponse<PolarisResource<JobAttributes>> jobResource = jobService.getJobByUrl(opsraApi);
-        JobStatus jobStatus = jobResource.getData().getAttributes().getStatus();
+        JobService jobService = new JobService(new SilentIntLogger(), polarisService);
+        PolarisResource<JobAttributes> jobResource = jobService.getJobByUrl(opsraApi);
+        JobStatus jobStatus = jobResource.getAttributes().getStatus();
 
         assertEquals(Integer.valueOf(100), jobStatus.getProgress());
         assertEquals(JobStatus.StateEnum.COMPLETED, jobStatus.getState());

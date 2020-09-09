@@ -25,7 +25,6 @@ package com.synopsys.integration.polaris.common.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.model.ContextAttributes;
@@ -33,7 +32,6 @@ import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient
 import com.synopsys.integration.rest.HttpUrl;
 
 public class ContextsService {
-    private static final TypeToken<PolarisResource<ContextAttributes>> CONTEXT_RESOURCES = new TypeToken<PolarisResource<ContextAttributes>>() {};
     private final PolarisService polarisService;
     private final AccessTokenPolarisHttpClient polarisHttpClient;
 
@@ -44,7 +42,7 @@ public class ContextsService {
 
     public List<PolarisResource<ContextAttributes>> getAllContexts() throws IntegrationException {
         HttpUrl httpUrl = new HttpUrl(polarisHttpClient.getPolarisServerUrl() + "/api/auth/contexts");
-        return polarisService.getAll(httpUrl, CONTEXT_RESOURCES.getType());
+        return polarisService.getAll(httpUrl, ContextAttributes.class);
     }
 
     public Optional<PolarisResource<ContextAttributes>> getCurrentContext() throws IntegrationException {

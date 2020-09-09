@@ -29,29 +29,15 @@ import com.google.gson.annotations.SerializedName;
 public class PolarisPagedResourceResponse<R extends PolarisResource> extends PolarisResponse {
     @SerializedName("data")
     private List<R> data = null;
-    @SerializedName("included")
-    private List<AttributelessPolarisResource> included = null;
     @SerializedName("meta")
     private PolarisPaginationMeta meta = null;
 
-    /**
-     * Get data
-     * @return data
-     */
     public List<R> getData() {
         return data;
     }
 
     public void setData(List<R> data) {
         this.data = data;
-    }
-
-    public List<AttributelessPolarisResource> getIncluded() {
-        return included;
-    }
-
-    public void setIncluded(List<AttributelessPolarisResource> included) {
-        this.included = included;
     }
 
     public PolarisPaginationMeta getMeta() {

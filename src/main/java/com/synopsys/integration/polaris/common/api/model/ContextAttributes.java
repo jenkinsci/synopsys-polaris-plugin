@@ -35,10 +35,6 @@ public class ContextAttributes extends PolarisResponse implements PolarisAttribu
     @SerializedName("organizationname")
     private String organizationname;
 
-    /**
-     * Get current
-     * @return current
-     */
     public Boolean getCurrent() {
         return current;
     }
@@ -47,10 +43,6 @@ public class ContextAttributes extends PolarisResponse implements PolarisAttribu
         this.current = current;
     }
 
-    /**
-     * Get organizationname
-     * @return organizationname
-     */
     public String getOrganizationname() {
         return organizationname;
     }

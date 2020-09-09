@@ -26,16 +26,10 @@ import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.polaris.common.api.PolarisAttributes;
 import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
-// this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
-
 public class CountV0Attributes extends PolarisResponse implements PolarisAttributes {
     @SerializedName("value")
     private Integer value;
 
-    /**
-     * Get value
-     * @return value
-     */
     public Integer getValue() {
         return value;
     }

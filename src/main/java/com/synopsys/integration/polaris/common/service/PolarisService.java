@@ -30,13 +30,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.polaris.common.api.AttributelessPolarisResource;
 import com.synopsys.integration.polaris.common.api.PolarisAttributes;
 import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
 import com.synopsys.integration.polaris.common.api.PolarisPaginationMeta;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.PolarisResponse;
+import com.synopsys.integration.polaris.common.api.PolarisSingleResourceResponse;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.HttpUrl;
@@ -54,7 +55,7 @@ public class PolarisService {
         this.defaultPageSize = defaultPageSize;
     }
 
-    public <R extends PolarisResponse> R get(Type returnType, Request request) throws IntegrationException {
+    public <R extends PolarisResponse> R get(Request request, Type returnType) throws IntegrationException {
         try (Response response = polarisHttpClient.execute(request)) {
             response.throwExceptionForError();
 
@@ -64,43 +65,40 @@ public class PolarisService {
         }
     }
 
-    public <A extends PolarisAttributes, R extends PolarisResource<A>> List<R> getAll(HttpUrl apiUrl, Type type) throws IntegrationException {
-        return getAll(apiUrl, type, defaultPageSize);
+    public <A extends PolarisAttributes> PolarisResource<A> get(HttpUrl apiUrl, Class<A> attributeType) throws IntegrationException {
+        Type resourceType = TypeToken.getParameterized(PolarisResource.class, attributeType).getType();
+        Type responseType = TypeToken.getParameterized(PolarisSingleResourceResponse.class, resourceType).getType();
+
+        Request request = PolarisRequestFactory.createDefaultGetRequest(apiUrl);
+        PolarisSingleResourceResponse<PolarisResource<A>> polarisSingleResourceResponse = get(request, responseType);
+        return polarisSingleResourceResponse.getData();
     }
 
-    public <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> List<R> getAll(HttpUrl apiUrl, Type type, int pageSize) throws IntegrationException {
-        W collectedPagedResourceResponse = collectAllPagedResourceResponses(apiUrl, type, pageSize);
+    public <A extends PolarisAttributes> List<PolarisResource<A>> getAll(HttpUrl apiUrl, Class<A> attributeType) throws IntegrationException {
+        return getAll(apiUrl, attributeType, defaultPageSize);
+    }
 
-        if (collectedPagedResourceResponse == null) {
-            return Collections.emptyList();
-        }
-
-        return collectedPagedResourceResponse.getData();
+    public <A extends PolarisAttributes> List<PolarisResource<A>> getAll(HttpUrl apiUrl, Class<A> attributeType, int pageSize) throws IntegrationException {
+        return collectAllResources(apiUrl, attributeType, pageSize);
     }
 
     // TODO: Cognitive complexity should be reduced even more here --rotte APR 2020
-    public <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> W collectAllPagedResourceResponses(HttpUrl apiUrl, Type type, int pageSize) throws IntegrationException {
-        W populatedResources = null;
-        List<R> allData = new ArrayList<>();
-        List<AttributelessPolarisResource> allIncluded = new ArrayList<>();
+    public <A extends PolarisAttributes> List<PolarisResource<A>> collectAllResources(HttpUrl apiUrl, Class<A> attributeType, int pageSize) throws IntegrationException {
+        List<PolarisResource<A>> allResources = new ArrayList<>();
 
         Integer totalExpected = null;
         int offset = 0;
         boolean totalExpectedHasNotBeenSet = true;
         boolean thisPageHadData;
-        boolean isMoreData = true;
+        boolean isMoreData;
         do {
-            W wrappedResponse = executePagedRequest(apiUrl, type, offset, pageSize);
-            if (wrappedResponse == null) {
+            PolarisPagedResourceResponse<PolarisResource<A>> pageOfResources = executePagedRequest(apiUrl, attributeType, offset, pageSize);
+            if (pageOfResources == null) {
                 break;
             }
 
-            if (null == populatedResources) {
-                populatedResources = wrappedResponse;
-            }
-
             if (totalExpectedHasNotBeenSet) {
-                PolarisPaginationMeta meta = wrappedResponse.getMeta();
+                PolarisPaginationMeta meta = pageOfResources.getMeta();
                 totalExpected = Optional.ofNullable(meta)
                                     .map(PolarisPaginationMeta::getTotal)
                                     .map(BigDecimal::intValue)
@@ -108,33 +106,26 @@ public class PolarisService {
                 totalExpectedHasNotBeenSet = false;
             }
 
-            List<R> data = Optional.ofNullable(wrappedResponse.getData()).orElse(Collections.emptyList());
-            allData.addAll(data);
+            List<PolarisResource<A>> pageResources = Optional.ofNullable(pageOfResources.getData()).orElse(Collections.emptyList());
+            allResources.addAll(pageResources);
 
-            List<AttributelessPolarisResource> included = Optional.ofNullable(wrappedResponse.getIncluded()).orElse(Collections.emptyList());
-            allIncluded.addAll(included);
-
-            if (totalExpected != null) {
-                isMoreData = totalExpected > allData.size();
-            }
-            thisPageHadData = !data.isEmpty();
+            // Pagination meta does not include a total if it only has one page of results to give. -- rotte SEP 2020
+            isMoreData = totalExpected != null && totalExpected > allResources.size();
+            thisPageHadData = !pageResources.isEmpty();
             offset += pageSize;
         } while (isMoreData && thisPageHadData);
 
-        // If wrappedResponse is null, populatedResources could be null -- rotte APR 2020
-        if (populatedResources != null) {
-            populatedResources.setData(new ArrayList<>(allData));
-            populatedResources.setIncluded(new ArrayList<>(allIncluded));
-        }
-        return populatedResources;
+        return allResources;
     }
 
-    private <A extends PolarisAttributes, R extends PolarisResource<A>, W extends PolarisPagedResourceResponse<R>> W executePagedRequest(HttpUrl apiUrl, Type type, int offset, int limit)
-        throws IntegrationException {
+    private <A extends PolarisAttributes> PolarisPagedResourceResponse<PolarisResource<A>> executePagedRequest(HttpUrl apiUrl, Class<A> attributeType, int offset, int limit) throws IntegrationException {
+        Type resourceType = TypeToken.getParameterized(PolarisResource.class, attributeType).getType();
+        Type responseType = TypeToken.getParameterized(PolarisPagedResourceResponse.class, resourceType).getType();
+
         Request pagedRequest = PolarisRequestFactory.createDefaultPagedGetRequest(apiUrl, limit, offset);
         try (Response response = polarisHttpClient.execute(pagedRequest)) {
             response.throwExceptionForError();
-            return polarisJsonTransformer.getResponse(response, type);
+            return polarisJsonTransformer.getResponse(response, responseType);
         } catch (IOException e) {
             throw new IntegrationException("Problem handling request", e);
         }

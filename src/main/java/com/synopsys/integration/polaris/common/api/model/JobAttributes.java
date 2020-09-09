@@ -40,10 +40,6 @@ public class JobAttributes extends PolarisResponse implements PolarisAttributes 
     @SerializedName("status")
     private JobStatus status = null;
 
-    /**
-     * Get details
-     * @return details
-     */
     public Map<String, Object> getDetails() {
         return details;
     }
@@ -52,10 +48,6 @@ public class JobAttributes extends PolarisResponse implements PolarisAttributes 
         this.details = details;
     }
 
-    /**
-     * Get failureInfo
-     * @return failureInfo
-     */
     public FailureInfo getFailureInfo() {
         return failureInfo;
     }
@@ -64,10 +56,6 @@ public class JobAttributes extends PolarisResponse implements PolarisAttributes 
         this.failureInfo = failureInfo;
     }
 
-    /**
-     * Get status
-     * @return status
-     */
     public JobStatus getStatus() {
         return status;
     }

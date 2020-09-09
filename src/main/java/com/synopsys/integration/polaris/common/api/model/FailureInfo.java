@@ -32,18 +32,10 @@ public class FailureInfo extends Stringable {
     @SerializedName("exception")
     private String exception;
 
-    /**
-     * Get userFriendlyFailureReason
-     * @return userFriendlyFailureReason
-     */
     public String getUserFriendlyFailureReason() {
         return userFriendlyFailureReason;
     }
 
-    /**
-     * Get exception
-     * @return exception
-     */
     public String getException() {
         return exception;
     }

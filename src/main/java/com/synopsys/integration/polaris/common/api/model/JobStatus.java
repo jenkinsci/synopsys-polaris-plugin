@@ -34,15 +34,12 @@ import com.synopsys.integration.polaris.common.api.PolarisResponse;
 // this file should not be edited - if changes are necessary, the generator should be updated, then this file should be re-created
 
 public class JobStatus extends PolarisResponse {
+    private static final long serialVersionUID = 3583443188791241547L;
     @SerializedName("state")
     private StateEnum state;
     @SerializedName("progress")
     private Integer progress;
 
-    /**
-     * Get state
-     * @return state
-     */
     public StateEnum getState() {
         return state;
     }
@@ -57,26 +54,17 @@ public class JobStatus extends PolarisResponse {
         return progress;
     }
 
-    /**
-     * Gets or Sets state
-     */
     @JsonAdapter(StateEnum.Adapter.class)
     public enum StateEnum {
         UNSCHEDULED("UNSCHEDULED"),
-
         DISPATCHED("DISPATCHED"),
-
         QUEUED("QUEUED"),
-
         RUNNING("RUNNING"),
-
         COMPLETED("COMPLETED"),
-
         CANCELLED("CANCELLED"),
-
         FAILED("FAILED");
 
-        private String value;
+        private final String value;
 
         StateEnum(String value) {
             this.value = value;

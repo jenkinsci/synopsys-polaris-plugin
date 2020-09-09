@@ -64,7 +64,7 @@ public class PolarisServiceTest {
 
     @Test
     public void createDefaultPolarisGetRequestTest() throws IntegrationException {
-        Request request = PolarisRequestFactory.createDefaultPagedGetRequest(BASE_URL.string());
+        Request request = PolarisRequestFactory.createDefaultPagedGetRequest(BASE_URL);
         assertNotNull(request);
     }
 
