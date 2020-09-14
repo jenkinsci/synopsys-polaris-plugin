@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "attributes": {
+        "analysis_runtime_info": {},
+        "branchName": "A2TBranch",
+        "dateCompleted": "2020-09-14T12:55:27.443+0000",
+        "dateCreated": "2020-09-14T12:52:39.259+0000",
+        "dateFinished": "2020-09-14T12:55:27.443+0000",
+        "dateQueued": "2020-09-14T12:52:39.714+0000",
+        "dateStarted": "2020-09-14T12:55:09.850+0000",
+        "details": {},
+        "diagnosticsKey": "urn:x-swip:organizations:fl1v7rb3ol7gj9l4hh9lntmpfc/cc79df56-dede-4487-8091-1908430a4438",
+        "expiryDate": "2020-10-14T12:52:39.259+0000",
+        "intermediateDirectoryMD5": "Yx4uZNKZS2Vsnu6LAf4Acw==",
+        "intermediateDirectoryStorageKey": "urn:x-swip:organizations:fl1v7rb3ol7gj9l4hh9lntmpfc/e3167c6a-cb98-4eca-a5b6-64dd6898bd2f",
+        "intermediateDirectoryUploadDescriptor": {},
+        "jobType": "nomad",
+        "lifecycleEvents": [],
+        "lifecyclePhases": [],
+        "priority": 4,
+        "projectName": "Analysis2Triage",
+        "resultsKey": "urn:x-swip:organizations:fl1v7rb3ol7gj9l4hh9lntmpfc/b5c5a25b-f796-4d32-928d-e33dd61214df",
+        "revisionName": "A2TRevision",
+        "status": {
+          "progress": 100,
+          "state": "COMPLETED"
+        },
+        "submission": {},
+        "swip_spi_metadata": {}
+      },
+      "id": "dn1q8u3iip3vjd6egqnh5ets0g",
+      "links": {},
+      "relationships": {},
+      "type": "jobs"
+    }
+  ],
+  "included": [],
+  "meta": {
+    "filters": {
+      "BranchIdFilter": "",
+      "JobStateFilter": "UNSCHEDULED,CANCELLED,DISPATCHED,QUEUED,RUNNING,COMPLETED,FAILED",
+      "ProjectIdFilter": "",
+      "RevisionIdFilter": "",
+      "RunIdFilter": ""
+    },
+    "limit": 1,
+    "offset": 3,
+    "total": 4
+  }
+}
