@@ -117,7 +117,7 @@ public class PolarisService {
         return allResources;
     }
 
-    private <A extends PolarisAttributes> PolarisPagedResourceResponse<PolarisResource<A>> executePagedRequest(HttpUrl apiUrl, Class<A> attributeType, int offset, int limit) throws IntegrationException {
+    protected <A extends PolarisAttributes> PolarisPagedResourceResponse<PolarisResource<A>> executePagedRequest(HttpUrl apiUrl, Class<A> attributeType, int offset, int limit) throws IntegrationException {
         Type resourceType = TypeToken.getParameterized(PolarisResource.class, attributeType).getType();
         Type responseType = TypeToken.getParameterized(PolarisPagedResourceResponse.class, resourceType).getType();
 

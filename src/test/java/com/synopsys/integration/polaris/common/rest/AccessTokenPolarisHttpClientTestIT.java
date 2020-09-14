@@ -23,7 +23,7 @@ import com.synopsys.integration.rest.support.AuthenticationSupport;
 import com.synopsys.integration.rest.support.UrlSupport;
 
 public class AccessTokenPolarisHttpClientTestIT {
-    public static final String ENV_POLARIS_URL = "POLARIS_URL";
+    public static final String ENV_POLARIS_URL = "TEST_POLARIS_URL";
     public static final String ENV_POLARIS_ACCESS_TOKEN = "POLARIS_ACCESS_TOKEN";
 
     private static final String VALID_SPEC = "/api/common/v0/branches?page[offset]=0&page[limit]=10";

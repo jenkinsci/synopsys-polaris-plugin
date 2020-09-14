@@ -3,6 +3,7 @@ package com.synopsys.integration.polaris.common.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,15 +24,21 @@ import org.opentest4j.AssertionFailedError;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.polaris.common.api.PolarisPagedResourceResponse;
+import com.synopsys.integration.polaris.common.api.PolarisPaginationMeta;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.model.JobAttributes;
 import com.synopsys.integration.polaris.common.request.PolarisRequestFactory;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
+import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClientTestIT;
 import com.synopsys.integration.rest.HttpUrl;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 import com.synopsys.integration.rest.support.UrlSupport;
 
 public class PolarisServiceTest {
@@ -80,8 +88,6 @@ public class PolarisServiceTest {
         assertNotNull(request);
     }
 
-    // TODO: Replace with an api we use
-    /*
     @Test
     public void executeGetRequestTestIT() throws IntegrationException {
         String baseUrl = System.getenv(AccessTokenPolarisHttpClientTestIT.ENV_POLARIS_URL);
@@ -92,25 +98,23 @@ public class PolarisServiceTest {
 
         Gson gson = new Gson();
         IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(logger, 100, true, ProxyInfo.NO_PROXY_INFO, new HttpUrl(baseUrl), accessToken, gson, urlSupport, new AuthenticationSupport(urlSupport));
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(logger, 100, ProxyInfo.NO_PROXY_INFO, new HttpUrl(baseUrl), accessToken, gson, urlSupport, new AuthenticationSupport(urlSupport));
 
         PolarisService polarisService = new PolarisService(httpClient, new PolarisJsonTransformer(gson, logger), PolarisRequestFactory.DEFAULT_LIMIT);
 
-        String requestUri = baseUrl + "/api/common/v0/branches";
-        Request request = PolarisRequestFactory.createDefaultCommonPolarisPagedGetRequest(requestUri);
+        HttpUrl apiHttpUrl = httpClient.appendToPolarisUrl("/api/jobs/jobs");
 
-        PolarisPagedResourceResponse<BranchV0Resource> branchV0Resources = polarisService.get(BranchV0Resources.class, request);
-        List<BranchV0Resource> branchV0ResourceList = branchV0Resources.getData();
-        assertNotNull(branchV0ResourceList);
-        PolarisPaginationMeta meta = branchV0Resources.getMeta();
+        PolarisPagedResourceResponse<PolarisResource<JobAttributes>> jobsResponse = polarisService.executePagedRequest(apiHttpUrl, JobAttributes.class, 0, 1);
+        List<PolarisResource<JobAttributes>> jobsList = jobsResponse.getData();
+        assertNotNull(jobsList);
+        PolarisPaginationMeta meta = jobsResponse.getMeta();
         assertNotNull(meta);
     }
- */
 
     @ParameterizedTest
     @MethodSource("createGetAllMockData")
     public void testGetAll(Map<String, String> offsetsToResults, int pageSize, int expectedTotal) throws IntegrationException {
-        HttpUrl requestUri = urlSupport.appendRelativeUrl(BASE_URL, "/api/jobs");
+        HttpUrl requestUri = urlSupport.appendRelativeUrl(BASE_URL, "/api/jobs/jobs");
 
         AccessTokenPolarisHttpClient polarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
         mockClientBehavior(polarisHttpClient, requestUri, offsetsToResults, "jobs_no_more_results.json");
