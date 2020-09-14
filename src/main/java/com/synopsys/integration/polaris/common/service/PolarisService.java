@@ -82,7 +82,6 @@ public class PolarisService {
         return collectAllResources(apiUrl, attributeType, pageSize);
     }
 
-    // TODO: Cognitive complexity should be reduced even more here --rotte APR 2020
     public <A extends PolarisAttributes> List<PolarisResource<A>> collectAllResources(HttpUrl apiUrl, Class<A> attributeType, int pageSize) throws IntegrationException {
         List<PolarisResource<A>> allResources = new ArrayList<>();
 

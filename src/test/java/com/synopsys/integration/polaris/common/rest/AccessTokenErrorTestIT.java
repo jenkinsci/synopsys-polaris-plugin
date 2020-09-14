@@ -1,7 +1,5 @@
 package com.synopsys.integration.polaris.common.rest;
 
-import java.io.IOException;
-
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,8 +17,8 @@ import com.synopsys.integration.rest.support.UrlSupport;
 
 public class AccessTokenErrorTestIT {
     @Test
-    public void unauthorizedTest() throws IntegrationException, IOException {
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, true, ProxyInfo.NO_PROXY_INFO, new HttpUrl("http://www.blackducksoftware.com"), "garbage token",
+    public void unauthorizedTest() throws IntegrationException {
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, new HttpUrl("http://www.blackducksoftware.com"), "garbage token",
             new Gson(), new UrlSupport(), new AuthenticationSupport(new UrlSupport()));
 
         String authHeader = "Authorization";

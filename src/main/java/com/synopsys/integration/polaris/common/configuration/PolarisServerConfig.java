@@ -61,17 +61,15 @@ public class PolarisServerConfig extends Stringable implements Buildable {
     private final int timeoutSeconds;
     private final String accessToken;
     private final ProxyInfo proxyInfo;
-    private final boolean alwaysTrustServerCertificate;
     private final Gson gson;
     private final UrlSupport urlSupport;
     private final AuthenticationSupport authenticationSupport;
 
-    public PolarisServerConfig(HttpUrl polarisUrl, int timeoutSeconds, String accessToken, ProxyInfo proxyInfo, boolean alwaysTrustServerCertificate, Gson gson, UrlSupport urlSupport, AuthenticationSupport authenticationSupport) {
+    public PolarisServerConfig(HttpUrl polarisUrl, int timeoutSeconds, String accessToken, ProxyInfo proxyInfo, Gson gson, UrlSupport urlSupport, AuthenticationSupport authenticationSupport) {
         this.polarisUrl = polarisUrl;
         this.timeoutSeconds = timeoutSeconds;
         this.accessToken = accessToken;
         this.proxyInfo = proxyInfo;
-        this.alwaysTrustServerCertificate = alwaysTrustServerCertificate;
         this.gson = gson;
         this.urlSupport = urlSupport;
         this.authenticationSupport = authenticationSupport;
@@ -82,7 +80,7 @@ public class PolarisServerConfig extends Stringable implements Buildable {
     }
 
     public AccessTokenPolarisHttpClient createPolarisHttpClient(IntLogger logger) {
-        return new AccessTokenPolarisHttpClient(logger, timeoutSeconds, alwaysTrustServerCertificate, proxyInfo, polarisUrl, accessToken, gson, urlSupport, authenticationSupport);
+        return new AccessTokenPolarisHttpClient(logger, timeoutSeconds, proxyInfo, polarisUrl, accessToken, gson, urlSupport, authenticationSupport);
     }
 
     public PolarisServicesFactory createPolarisServicesFactory(IntLogger logger) {
@@ -108,10 +106,6 @@ public class PolarisServerConfig extends Stringable implements Buildable {
 
     public ProxyInfo getProxyInfo() {
         return proxyInfo;
-    }
-
-    public boolean isAlwaysTrustServerCertificate() {
-        return alwaysTrustServerCertificate;
     }
 
     public Gson getGson() {

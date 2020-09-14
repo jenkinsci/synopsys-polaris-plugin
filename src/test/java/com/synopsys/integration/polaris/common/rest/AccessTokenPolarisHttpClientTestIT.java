@@ -49,7 +49,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void validRequestTest() throws IntegrationException, IOException {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, true, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
             authenticationSupport);
 
         HttpUrl requestUrl = httpClient.appendToPolarisUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);
@@ -64,7 +64,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void testSuccessConnectionResult() {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, true, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
             authenticationSupport);
         ConnectionResult connectionResult = httpClient.attemptConnection();
         assertTrue(connectionResult.isSuccess());
@@ -74,7 +74,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void testFailureConnectionResult() {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, true, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken + "make it bad", gson, new UrlSupport(),
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken + "make it bad", gson, new UrlSupport(),
             authenticationSupport);
         ConnectionResult connectionResult = httpClient.attemptConnection();
         assertTrue(connectionResult.isFailure());
@@ -84,7 +84,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void invalidMimeTypeTest() throws IntegrationException, IOException {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, true, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
             authenticationSupport);
 
         HttpUrl requestUrl = httpClient.appendToPolarisUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);

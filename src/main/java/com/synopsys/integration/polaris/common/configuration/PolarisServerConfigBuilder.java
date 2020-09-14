@@ -78,7 +78,6 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
 
     public static final BuilderPropertyKey URL_KEY = new BuilderPropertyKey("POLARIS_SERVER_URL");
     public static final BuilderPropertyKey ACCESS_TOKEN_KEY = new BuilderPropertyKey("POLARIS_ACCESS_TOKEN");
-    public static final BuilderPropertyKey TRUST_CERT_KEY = new BuilderPropertyKey("POLARIS_TRUST_CERT");
     public static final BuilderPropertyKey TIMEOUT_KEY = new BuilderPropertyKey("POLARIS_TIMEOUT");
     public static final BuilderPropertyKey POLARIS_HOME_KEY = new BuilderPropertyKey("POLARIS_HOME");
     public static final BuilderPropertyKey ACCESS_TOKEN_FILE_PATH_KEY = new BuilderPropertyKey("POLARIS_ACCESS_TOKEN_FILE");
@@ -93,9 +92,9 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
     public static final int DEFAULT_TIMEOUT_SECONDS = 120;
 
     private final BuilderProperties builderProperties;
+    private final UrlSupport urlSupport = new UrlSupport();
     private IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
     private Gson gson = new Gson();
-    private UrlSupport urlSupport = new UrlSupport();
     private AuthenticationSupport authenticationSupport = new AuthenticationSupport(urlSupport);
 
     public PolarisServerConfigBuilder() {
@@ -109,7 +108,6 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
         propertyKeys.add(PROXY_PASSWORD_KEY);
         propertyKeys.add(PROXY_NTLM_DOMAIN_KEY);
         propertyKeys.add(PROXY_NTLM_WORKSTATION_KEY);
-        propertyKeys.add(TRUST_CERT_KEY);
         builderProperties = new BuilderProperties(propertyKeys);
 
         builderProperties.set(TIMEOUT_KEY, Integer.toString(PolarisServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS));
@@ -123,7 +121,7 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
         } catch (IntegrationException e) {
         }
 
-        return new PolarisServerConfig(polarisURL, getTimeoutInSeconds(), getAccessToken(), getProxyInfo(), isTrustCert(), gson, urlSupport, authenticationSupport);
+        return new PolarisServerConfig(polarisURL, getTimeoutInSeconds(), getAccessToken(), getProxyInfo(), gson, urlSupport, authenticationSupport);
     }
 
     private ProxyInfo getProxyInfo() {
@@ -384,20 +382,6 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
 
     public PolarisServerConfigBuilder setProxyNtlmWorkstation(String proxyNtlmWorkstation) {
         builderProperties.set(PROXY_NTLM_WORKSTATION_KEY, proxyNtlmWorkstation);
-        return this;
-    }
-
-    public boolean isTrustCert() {
-        return Boolean.parseBoolean(builderProperties.get(TRUST_CERT_KEY));
-    }
-
-    public PolarisServerConfigBuilder setTrustCert(String trustCert) {
-        builderProperties.set(TRUST_CERT_KEY, trustCert);
-        return this;
-    }
-
-    public PolarisServerConfigBuilder setTrustCert(boolean trustCert) {
-        setTrustCert(String.valueOf(trustCert));
         return this;
     }
 

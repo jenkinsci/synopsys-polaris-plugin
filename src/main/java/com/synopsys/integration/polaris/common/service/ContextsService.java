@@ -41,7 +41,7 @@ public class ContextsService {
     }
 
     public List<PolarisResource<ContextAttributes>> getAllContexts() throws IntegrationException {
-        HttpUrl httpUrl = new HttpUrl(polarisHttpClient.getPolarisServerUrl() + "/api/auth/contexts");
+        HttpUrl httpUrl = polarisHttpClient.appendToPolarisUrl("/api/auth/contexts");
         return polarisService.getAll(httpUrl, ContextAttributes.class);
     }
 

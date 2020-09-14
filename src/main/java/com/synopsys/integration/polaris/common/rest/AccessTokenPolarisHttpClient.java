@@ -56,10 +56,8 @@ public class AccessTokenPolarisHttpClient extends AuthenticatingIntHttpClient {
     private final HttpUrl baseUrl;
     private final String accessToken;
 
-    public AccessTokenPolarisHttpClient(
-        IntLogger logger, int timeout, boolean alwaysTrustServerCertificate, ProxyInfo proxyInfo, HttpUrl baseUrl, String accessToken, Gson gson, UrlSupport urlSupport,
-        AuthenticationSupport authenticationSupport) {
-        super(logger, timeout, alwaysTrustServerCertificate, proxyInfo);
+    public AccessTokenPolarisHttpClient(IntLogger logger, int timeout, ProxyInfo proxyInfo, HttpUrl baseUrl, String accessToken, Gson gson, UrlSupport urlSupport, AuthenticationSupport authenticationSupport) {
+        super(logger, timeout, false, proxyInfo);
         this.baseUrl = baseUrl;
         this.accessToken = accessToken;
         this.gson = gson;
@@ -112,7 +110,7 @@ public class AccessTokenPolarisHttpClient extends AuthenticatingIntHttpClient {
             return urlSupport.appendRelativeUrl(baseUrl, relativeUrl);
         } catch (IntegrationException e) {
             //TODO if supporting this library is important, we should do better
-            throw new RuntimeException(String.format("Can't combine the base url () with relative url ().", baseUrl.string(), relativeUrl));
+            throw new RuntimeException(String.format("Can't combine the base url %s with relative url %s.", baseUrl.string(), relativeUrl));
         }
     }
 
