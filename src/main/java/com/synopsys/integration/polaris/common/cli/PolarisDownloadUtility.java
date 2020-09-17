@@ -32,7 +32,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -70,8 +69,8 @@ public class PolarisDownloadUtility {
         this.polarisServerUrl = polarisServerUrl;
         installDirectory = new File(downloadTargetDirectory, PolarisDownloadUtility.POLARIS_CLI_INSTALL_DIRECTORY);
 
-        installDirectory.mkdirs();
-        if (!installDirectory.exists() || !installDirectory.isDirectory() || !installDirectory.canWrite()) {
+        boolean directoriesCreated = installDirectory.mkdirs();
+        if (!directoriesCreated || !installDirectory.exists() || !installDirectory.isDirectory() || !installDirectory.canWrite()) {
             throw new IllegalArgumentException("The provided directory must exist and be writable.");
         }
     }
@@ -84,21 +83,11 @@ public class PolarisDownloadUtility {
     }
 
     public static PolarisDownloadUtility defaultUtilityNoProxy(IntLogger logger, HttpUrl polarisServerUrl, File downloadTargetDirectory) {
-        OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
-        IntHttpClient intHttpClient = new IntHttpClient(logger, PolarisDownloadUtility.DEFAULT_POLARIS_TIMEOUT, false, ProxyInfo.NO_PROXY_INFO);
-        CleanupZipExpander cleanupZipExpander = new CleanupZipExpander(logger);
-        return new PolarisDownloadUtility(logger, operatingSystemType, intHttpClient, cleanupZipExpander, polarisServerUrl, downloadTargetDirectory);
-    }
-
-    public static PolarisDownloadUtility fromPolaris(IntLogger logger, AccessTokenPolarisHttpClient polarisHttpClient, File downloadTargetDirectory) {
-        OperatingSystemType operatingSystemType = OperatingSystemType.determineFromSystem();
-        IntHttpClient intHttpClient = new IntHttpClient(logger, polarisHttpClient.getTimeoutInSeconds(), polarisHttpClient.isAlwaysTrustServerCertificate(), polarisHttpClient.getProxyInfo());
-        CleanupZipExpander cleanupZipExpander = new CleanupZipExpander(logger);
-        return new PolarisDownloadUtility(logger, operatingSystemType, intHttpClient, cleanupZipExpander, polarisHttpClient.getPolarisServerUrl(), downloadTargetDirectory);
+        return defaultUtility(logger, polarisServerUrl, ProxyInfo.NO_PROXY_INFO, downloadTargetDirectory);
     }
 
     /**
-     * The Polaris CLI will be download if it has not previously been downloaded or
+     * The Polaris CLI will be downloaded if it has not previously been downloaded or
      * if it has been updated on the server. The absolute path to the swip_cli
      * executable will be returned if it was downloaded or found successfully,
      * otherwise an Optional.empty will be returned and the log will contain
@@ -121,7 +110,7 @@ public class PolarisDownloadUtility {
     }
 
     public Optional<File> getOrDownloadPolarisCliBin() {
-        File versionFile = null;
+        File versionFile;
         try {
             versionFile = getOrCreateVersionFile();
         } catch (IOException e) {
@@ -158,18 +147,6 @@ public class PolarisDownloadUtility {
 
                        return Optional.ofNullable(pathToPolarisCliHome);
                    });
-    }
-
-    public Optional<String> findPolarisCliInBin(File binDirectory) {
-        String polarisCli = null;
-
-        try {
-            polarisCli = getPolarisCli(binDirectory).getCanonicalPath();
-        } catch (Exception e) {
-            logger.error("The Polaris CLI could not be found in directory " + binDirectory.toString() + ". Please ensure the directory exists and contains the Polaris CLI.");
-        }
-
-        return Optional.ofNullable(polarisCli);
     }
 
     public File getOrCreateVersionFile() throws IOException {

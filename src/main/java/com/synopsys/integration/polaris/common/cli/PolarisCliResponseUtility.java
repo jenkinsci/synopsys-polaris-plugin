@@ -40,14 +40,15 @@ public class PolarisCliResponseUtility {
     private final Gson gson;
     private final CliCommonResponseAdapter cliCommonResponseAdapter;
 
-    public PolarisCliResponseUtility(IntLogger logger, Gson gson) {
+    public PolarisCliResponseUtility(IntLogger logger, Gson gson, CliCommonResponseAdapter cliCommonResponseAdapter) {
         this.logger = logger;
         this.gson = gson;
-        cliCommonResponseAdapter = new CliCommonResponseAdapter(gson);
+        this.cliCommonResponseAdapter = cliCommonResponseAdapter;
     }
 
     public static PolarisCliResponseUtility defaultUtility(IntLogger logger) {
-        return new PolarisCliResponseUtility(logger, new Gson());
+        Gson gson = new Gson();
+        return new PolarisCliResponseUtility(logger, gson, new CliCommonResponseAdapter(gson));
     }
 
     public static Path getDefaultPathToJson(String projectRootDirectory) {
@@ -87,7 +88,7 @@ public class PolarisCliResponseUtility {
     public CliCommonResponseModel getPolarisCliResponseModelFromJsonObject(JsonObject versionlessModel) throws PolarisIntegrationException {
         String versionString = versionlessModel.get("version").getAsString();
         PolarisCliResponseVersion polarisCliResponseVersion = PolarisCliResponseVersion.parse(versionString)
-                                                                        .orElseThrow(() -> new PolarisIntegrationException("Version " + versionString + " is not a valid version of cli-scan.json"));
+                                                                  .orElseThrow(() -> new PolarisIntegrationException("Version " + versionString + " is not a valid version of cli-scan.json"));
 
         return cliCommonResponseAdapter.fromJson(versionString, polarisCliResponseVersion, versionlessModel);
     }
