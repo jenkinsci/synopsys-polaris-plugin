@@ -84,7 +84,7 @@ public class PolarisCliIssueCountService {
             jobService.waitForJobStateIsCompletedOrDieByUrl(new HttpUrl(jobStatusUrl), jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
         }
 
-        return countService.getTotalIssueCountFromIssueApiUrl(issueApiUrl);
+        return countService.getTotalIssueCountFromIssueApiUrl(new HttpUrl(issueApiUrl));
     }
 
 }

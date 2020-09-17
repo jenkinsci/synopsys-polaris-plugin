@@ -44,7 +44,6 @@ dependencies {
     annotationProcessor 'com.synopsys.integration:jenkins-annotation-processor:0.0.1'
 
     implementation 'com.synopsys.integration:jenkins-common:0.3.1'
-    implementation 'com.synopsys.integration:polaris-common:0.21.0'
 
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'

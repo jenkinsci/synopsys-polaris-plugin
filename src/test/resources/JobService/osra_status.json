@@ -1,0 +1,67 @@
+{
+  "scanId": "5ed9ed6e-f9b7-4ea8-8255-ec6104f72437",
+  "creator": "e9a21bda-40ef-4364-88e2-617b54532301",
+  "dateCreated": 1589979523802,
+  "progress": [
+    {
+      "phase": "BOM Computataion",
+      "completedWork": 1,
+      "totalWork": 1,
+      "dateStarted": 1589979523916,
+      "dateUpdated": 1589979525908,
+      "dateFinished": 1589979525908
+    },
+    {
+      "phase": "issue creation",
+      "completedWork": 1,
+      "totalWork": 1,
+      "dateStarted": 1589979525435,
+      "dateUpdated": 1589979527512,
+      "dateFinished": 1589979527512
+    },
+    {
+      "phase": "uploading",
+      "completedWork": 1,
+      "totalWork": 1,
+      "dateStarted": 1589979523802,
+      "dateUpdated": 1589979524027,
+      "dateFinished": 1589979524027
+    }
+  ],
+  "percentage": 100,
+  "dateCompleted": 1589979527756,
+  "projectId": "d34a53ed-54ae-457d-b4fb-0781becdc274",
+  "branchId": "8ae5bd97-d185-4199-a3dc-0deca8f1f532",
+  "revisionId": "e0075a5e-ba24-46b4-800f-f62fea8d97b9",
+  "runId": "2d12367f-fef6-43e3-b8eb-7063a3420f79",
+  "issueCounts": [
+    {
+      "id": "critical",
+      "count": 1
+    },
+    {
+      "id": "high",
+      "count": 10
+    },
+    {
+      "id": "medium",
+      "count": 4
+    },
+    {
+      "id": "low",
+      "count": 0
+    },
+    {
+      "id": "audit",
+      "count": 0
+    }
+  ],
+  "data": {
+    "attributes": {
+      "status": {
+        "state": "COMPLETED",
+        "progress": 100
+      }
+    }
+  }
+}

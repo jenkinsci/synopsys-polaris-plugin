@@ -58,7 +58,7 @@ public class PolarisCliIssueCountServiceTest {
             mockedScanInfo = Mockito.mock(CommonScanInfo.class);
             Mockito.when(mockedResponseModel.getScanInfo()).thenReturn(mockedScanInfo);
 
-            Mockito.when(mockedCountService.getTotalIssueCountFromIssueApiUrl(VALID_ISSUE_API_URL)).thenReturn(EXPECTED_ISSUE_COUNT);
+            Mockito.when(mockedCountService.getTotalIssueCountFromIssueApiUrl(new HttpUrl(VALID_ISSUE_API_URL))).thenReturn(EXPECTED_ISSUE_COUNT);
 
             successfulToolA = new CommonToolInfo();
             successfulToolA.setJobStatusUrl(SUCCESSFUL_JOB_STATUS_URL);

@@ -1,0 +1,16 @@
+{
+  "data": [],
+  "included": [],
+  "meta": {
+    "filters": {
+      "BranchIdFilter": "",
+      "JobStateFilter": "UNSCHEDULED,CANCELLED,DISPATCHED,QUEUED,RUNNING,COMPLETED,FAILED",
+      "ProjectIdFilter": "",
+      "RevisionIdFilter": "",
+      "RunIdFilter": ""
+    },
+    "limit": 3,
+    "offset": 3,
+    "total": 3
+  }
+}

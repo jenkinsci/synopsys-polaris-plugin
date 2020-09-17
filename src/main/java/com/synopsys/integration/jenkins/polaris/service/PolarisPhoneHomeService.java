@@ -36,8 +36,8 @@ import com.synopsys.integration.phonehome.PhoneHomeResponse;
 import com.synopsys.integration.phonehome.PhoneHomeService;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.request.PhoneHomeRequestBodyBuilder;
-import com.synopsys.integration.polaris.common.api.auth.model.Context;
-import com.synopsys.integration.polaris.common.api.auth.model.ContextAttributes;
+import com.synopsys.integration.polaris.common.api.PolarisResource;
+import com.synopsys.integration.polaris.common.api.model.ContextAttributes;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.polaris.common.service.ContextsService;
 
@@ -77,7 +77,7 @@ public class PolarisPhoneHomeService {
         String organizationName;
         try {
             organizationName = contextsService.getCurrentContext()
-                                   .map(Context::getAttributes)
+                                   .map(PolarisResource::getAttributes)
                                    .map(ContextAttributes::getOrganizationname)
                                    .orElse(PhoneHomeRequestBody.UNKNOWN_FIELD_VALUE);
         } catch (Exception ex) {
