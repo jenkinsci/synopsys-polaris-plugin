@@ -55,7 +55,7 @@ public class PolarisServicesFactory {
     }
 
     public ContextsService createContextsService() {
-        return new ContextsService(createPolarisService(), httpClient);
+        return new ContextsService(createPolarisService(), httpClient.getPolarisServerUrl());
     }
 
     public IntLogger getLogger() {

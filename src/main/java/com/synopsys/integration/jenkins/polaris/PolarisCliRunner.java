@@ -46,8 +46,8 @@ public class PolarisCliRunner {
     private final JenkinsRemotingService jenkinsRemotingService;
     private final JenkinsConfigService jenkinsConfigService;
 
-    public PolarisCliRunner(PolarisCliArgumentService polarisCliArgumentService, PolarisEnvironmentService polarisEnvironmentService,
-        PolarisPhoneHomeService polarisPhoneHomeService, JenkinsRemotingService jenkinsRemotingService, JenkinsConfigService jenkinsConfigService) {
+    public PolarisCliRunner(PolarisCliArgumentService polarisCliArgumentService, PolarisEnvironmentService polarisEnvironmentService, PolarisPhoneHomeService polarisPhoneHomeService,
+        JenkinsRemotingService jenkinsRemotingService, JenkinsConfigService jenkinsConfigService) {
         this.polarisCliArgumentService = polarisCliArgumentService;
         this.polarisEnvironmentService = polarisEnvironmentService;
         this.polarisPhoneHomeService = polarisPhoneHomeService;

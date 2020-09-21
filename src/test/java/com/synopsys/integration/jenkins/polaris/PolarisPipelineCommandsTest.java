@@ -25,12 +25,14 @@ public class PolarisPipelineCommandsTest {
     private JenkinsIntLogger logger;
     private PolarisCliRunner mockedCliRunner;
     private PolarisIssueChecker mockedIssueChecker;
+    private ChangeSetFileCreator mockedChangeSetFileCreator;
 
     @BeforeEach
     public void setUpMocks() {
-        logger = new JenkinsIntLogger(null);
+        logger = JenkinsIntLogger.logToStandardOut();
         mockedCliRunner = Mockito.mock(PolarisCliRunner.class);
         mockedIssueChecker = Mockito.mock(PolarisIssueChecker.class);
+        mockedChangeSetFileCreator = Mockito.mock(ChangeSetFileCreator.class);
     }
 
     @Test
@@ -42,8 +44,8 @@ public class PolarisPipelineCommandsTest {
         }
 
         try {
-            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
-            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true);
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true, null);
 
             assertEquals(STATUS_CODE_SUCCESS, actualExitCode);
         } catch (Exception e) {
@@ -59,8 +61,8 @@ public class PolarisPipelineCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
-        assertThrows(IOException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true));
+        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+        assertThrows(IOException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true, null));
     }
 
     @Test
@@ -72,8 +74,8 @@ public class PolarisPipelineCommandsTest {
         }
 
         try {
-            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
-            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true);
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, true, null);
 
             assertEquals(STATUS_CODE_FAILURE, actualExitCode);
         } catch (Exception e) {
@@ -89,8 +91,8 @@ public class PolarisPipelineCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
-        assertThrows(PolarisIntegrationException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false));
+        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+        assertThrows(PolarisIntegrationException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, null));
     }
 
     @Test
@@ -102,7 +104,7 @@ public class PolarisPipelineCommandsTest {
         }
 
         try {
-            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
             int actualIssueCount = polarisPipelineCommands.checkForIssues(JOB_TIMEOUT_IN_MINUTES, true);
 
             assertEquals(NO_ISSUES, actualIssueCount);
@@ -120,7 +122,7 @@ public class PolarisPipelineCommandsTest {
         }
 
         try {
-            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
             int actualIssueCount = polarisPipelineCommands.checkForIssues(JOB_TIMEOUT_IN_MINUTES, true);
 
             assertEquals(SOME_ISSUES, actualIssueCount);
@@ -137,7 +139,7 @@ public class PolarisPipelineCommandsTest {
             fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
         }
 
-        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedCliRunner, mockedIssueChecker);
+        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
         assertThrows(PolarisIntegrationException.class, () -> polarisPipelineCommands.checkForIssues(JOB_TIMEOUT_IN_MINUTES, false));
     }
 

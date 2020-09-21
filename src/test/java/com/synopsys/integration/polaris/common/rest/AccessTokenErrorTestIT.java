@@ -13,13 +13,12 @@ import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 
 public class AccessTokenErrorTestIT {
     @Test
     public void unauthorizedTest() throws IntegrationException {
         AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, new HttpUrl("http://www.blackducksoftware.com"), "garbage token",
-            new Gson(), new UrlSupport(), new AuthenticationSupport(new UrlSupport()));
+            new Gson(), new AuthenticationSupport());
 
         String authHeader = "Authorization";
         HttpUriRequest request = Mockito.mock(HttpUriRequest.class);

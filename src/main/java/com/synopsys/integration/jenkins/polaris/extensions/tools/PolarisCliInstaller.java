@@ -52,7 +52,7 @@ public class PolarisCliInstaller extends ToolInstaller {
 
     @Override
     public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener log) throws IOException, InterruptedException {
-        JenkinsIntLogger jenkinsIntLogger = new JenkinsIntLogger(log);
+        JenkinsIntLogger jenkinsIntLogger = JenkinsIntLogger.logToListener(log);
 
         VirtualChannel virtualChannel = node.getChannel();
 

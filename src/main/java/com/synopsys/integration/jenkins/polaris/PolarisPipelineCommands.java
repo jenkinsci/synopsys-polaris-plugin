@@ -26,20 +26,27 @@ import java.io.IOException;
 
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 
 public class PolarisPipelineCommands {
     private final JenkinsIntLogger logger;
+    private final ChangeSetFileCreator changeSetFileCreator;
     private final PolarisCliRunner polarisCliRunner;
     private final PolarisIssueChecker polarisIssueCounter;
 
-    public PolarisPipelineCommands(JenkinsIntLogger jenkinsIntLogger, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
+    public PolarisPipelineCommands(JenkinsIntLogger jenkinsIntLogger, ChangeSetFileCreator changeSetFileCreator, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
         this.logger = jenkinsIntLogger;
+        this.changeSetFileCreator = changeSetFileCreator;
         this.polarisCliRunner = polarisCliRunner;
         this.polarisIssueCounter = polarisIssueCounter;
     }
 
-    public int runPolarisCli(String polarisCliName, String polarisCliArgumentString, Boolean returnStatus) throws IntegrationException, InterruptedException, IOException {
+    public int runPolarisCli(String polarisCliName, String polarisCliArgumentString, Boolean returnStatus, CreateChangeSetFile createChangeSetFile) throws IntegrationException, InterruptedException, IOException {
+        if (createChangeSetFile != null) {
+            changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+        }
+
         int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, polarisCliArgumentString);
 
         if (exitCode > 0) {

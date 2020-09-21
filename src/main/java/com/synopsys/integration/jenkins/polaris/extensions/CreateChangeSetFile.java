@@ -1,5 +1,5 @@
 /**
- * synopsys-coverity
+ * synopsys-polaris
  *
  * Copyright (c) 2020 Synopsys, Inc.
  *
@@ -25,9 +25,7 @@ package com.synopsys.integration.jenkins.polaris.extensions;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import com.synopsys.integration.jenkins.ChangeSetFilter;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
@@ -75,10 +73,6 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
 
     public String getChangeSetExclusionPatterns() {
         return changeSetExclusionPatterns;
-    }
-
-    public ChangeSetFilter createChangeSetFilter() {
-        return new ChangeSetFilter(new JenkinsIntLogger(null), changeSetExclusionPatterns, changeSetInclusionPatterns);
     }
 
     @Override

@@ -27,24 +27,31 @@ import java.util.Optional;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.freestyle.WaitForIssues;
 import com.synopsys.integration.jenkins.service.JenkinsBuildService;
 
 public class PolarisFreestyleCommands {
     private final JenkinsIntLogger logger;
     private final JenkinsBuildService jenkinsBuildService;
+    private final ChangeSetFileCreator changeSetFileCreator;
     private final PolarisCliRunner polarisCliRunner;
     private final PolarisIssueChecker polarisIssueCounter;
 
-    public PolarisFreestyleCommands(JenkinsIntLogger jenkinsIntLogger, JenkinsBuildService jenkinsBuildService, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
+    public PolarisFreestyleCommands(JenkinsIntLogger jenkinsIntLogger, JenkinsBuildService jenkinsBuildService, ChangeSetFileCreator changeSetFileCreator, PolarisCliRunner polarisCliRunner, PolarisIssueChecker polarisIssueCounter) {
         this.logger = jenkinsIntLogger;
         this.jenkinsBuildService = jenkinsBuildService;
+        this.changeSetFileCreator = changeSetFileCreator;
         this.polarisCliRunner = polarisCliRunner;
         this.polarisIssueCounter = polarisIssueCounter;
     }
 
-    public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, WaitForIssues waitForIssues) {
+    public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, CreateChangeSetFile createChangeSetFile, WaitForIssues waitForIssues) {
         try {
+            if (createChangeSetFile != null) {
+                changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+            }
+
             int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, polarisArgumentString);
             if (exitCode > 0) {
                 jenkinsBuildService.markBuildFailed("Polaris failed with exit code: " + exitCode);

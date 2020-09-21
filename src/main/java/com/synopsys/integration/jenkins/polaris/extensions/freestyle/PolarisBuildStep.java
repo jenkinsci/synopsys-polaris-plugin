@@ -34,6 +34,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
@@ -58,6 +59,11 @@ public class PolarisBuildStep extends Builder {
     @Nullable
     @HelpMarkdown("The command line arguments to pass to the Synopsys Polaris CLI")
     private String polarisArguments;
+
+    @Nullable
+    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
+                      + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
+    private CreateChangeSetFile createChangeSetFile;
 
     @Nullable
     @HelpMarkdown("Check this box to wait for Polaris CLI jobs to complete and set the build status based on issues discovered")
@@ -99,6 +105,16 @@ public class PolarisBuildStep extends Builder {
         this.waitForIssues = waitForIssues;
     }
 
+    @Nullable
+    public CreateChangeSetFile getCreateChangeSetFile() {
+        return createChangeSetFile;
+    }
+
+    @DataBoundSetter
+    public void setCreateChangeSetFile(@Nullable CreateChangeSetFile createChangeSetFile) {
+        this.createChangeSetFile = createChangeSetFile;
+    }
+
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
@@ -112,7 +128,7 @@ public class PolarisBuildStep extends Builder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PolarisCommandsFactory.fromPostBuild(build, launcher, listener)
-            .runPolarisCliAndCheckForIssues(polarisCliName, polarisArguments, waitForIssues);
+            .runPolarisCliAndCheckForIssues(polarisCliName, polarisArguments, createChangeSetFile, waitForIssues);
 
         return true;
     }

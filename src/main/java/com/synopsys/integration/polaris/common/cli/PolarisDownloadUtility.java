@@ -69,8 +69,8 @@ public class PolarisDownloadUtility {
         this.polarisServerUrl = polarisServerUrl;
         installDirectory = new File(downloadTargetDirectory, PolarisDownloadUtility.POLARIS_CLI_INSTALL_DIRECTORY);
 
-        boolean directoriesCreated = installDirectory.mkdirs();
-        if (!directoriesCreated || !installDirectory.exists() || !installDirectory.isDirectory() || !installDirectory.canWrite()) {
+        installDirectory.mkdirs();
+        if (!installDirectory.exists() || !installDirectory.isDirectory() || !installDirectory.canWrite()) {
             throw new IllegalArgumentException("The provided directory must exist and be writable.");
         }
     }

@@ -39,7 +39,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 
 public class PolarisServiceTest {
     public static String PAGE_ONE_OFFSET = "0";
@@ -48,7 +47,6 @@ public class PolarisServiceTest {
     public static String PAGE_FOUR_OFFSET = "3";
 
     private final HttpUrl BASE_URL = new HttpUrl("https://google.com");
-    private final UrlSupport urlSupport = new UrlSupport();
 
     public PolarisServiceTest() throws IntegrationException {
     }
@@ -90,19 +88,20 @@ public class PolarisServiceTest {
 
     @Test
     public void executeGetRequestTestIT() throws IntegrationException {
-        String baseUrl = System.getenv(AccessTokenPolarisHttpClientTestIT.ENV_POLARIS_URL);
+        String testPolarisUrl = System.getenv(AccessTokenPolarisHttpClientTestIT.ENV_POLARIS_URL);
         String accessToken = System.getenv(AccessTokenPolarisHttpClientTestIT.ENV_POLARIS_ACCESS_TOKEN);
 
-        assumeTrue(StringUtils.isNotBlank(baseUrl));
+        assumeTrue(StringUtils.isNotBlank(testPolarisUrl));
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
+        HttpUrl testPolarisHttpUrl = new HttpUrl(testPolarisUrl);
         Gson gson = new Gson();
         IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(logger, 100, ProxyInfo.NO_PROXY_INFO, new HttpUrl(baseUrl), accessToken, gson, urlSupport, new AuthenticationSupport(urlSupport));
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(logger, 100, ProxyInfo.NO_PROXY_INFO, new HttpUrl(testPolarisUrl), accessToken, gson, new AuthenticationSupport());
 
         PolarisService polarisService = new PolarisService(httpClient, new PolarisJsonTransformer(gson, logger), PolarisRequestFactory.DEFAULT_LIMIT);
 
-        HttpUrl apiHttpUrl = httpClient.appendToPolarisUrl("/api/jobs/jobs");
+        HttpUrl apiHttpUrl = testPolarisHttpUrl.appendRelativeUrl("/api/jobs/jobs");
 
         PolarisPagedResourceResponse<PolarisResource<JobAttributes>> jobsResponse = polarisService.executePagedRequest(apiHttpUrl, JobAttributes.class, 0, 1);
         List<PolarisResource<JobAttributes>> jobsList = jobsResponse.getData();
@@ -114,15 +113,15 @@ public class PolarisServiceTest {
     @ParameterizedTest
     @MethodSource("createGetAllMockData")
     public void testGetAll(Map<String, String> offsetsToResults, int pageSize, int expectedTotal) throws IntegrationException {
-        HttpUrl requestUri = urlSupport.appendRelativeUrl(BASE_URL, "/api/jobs/jobs");
+        HttpUrl apiHttpUrl = BASE_URL.appendRelativeUrl("/api/jobs/jobs");
 
         AccessTokenPolarisHttpClient polarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
-        mockClientBehavior(polarisHttpClient, requestUri, offsetsToResults, "jobs_no_more_results.json");
+        mockClientBehavior(polarisHttpClient, apiHttpUrl, offsetsToResults, "jobs_no_more_results.json");
 
         PolarisJsonTransformer polarisJsonTransformer = new PolarisJsonTransformer(new Gson(), new PrintStreamIntLogger(System.out, LogLevel.INFO));
         PolarisService polarisService = new PolarisService(polarisHttpClient, polarisJsonTransformer, pageSize);
         try {
-            List<PolarisResource<JobAttributes>> allPagesResponse = polarisService.getAll(requestUri, JobAttributes.class);
+            List<PolarisResource<JobAttributes>> allPagesResponse = polarisService.getAll(apiHttpUrl, JobAttributes.class);
             assertEquals(expectedTotal, allPagesResponse.size());
         } catch (IntegrationException e) {
             fail("Mocked response caused PolarisService::GetAllResponses to throw an unexpected IntegrationException, which should never happen in this test.", e);

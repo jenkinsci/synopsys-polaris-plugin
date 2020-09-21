@@ -41,7 +41,6 @@ import com.synopsys.integration.rest.client.AuthenticatingIntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 
 public class AccessTokenPolarisHttpClient extends AuthenticatingIntHttpClient {
     private static final String AUTHENTICATION_SPEC = "api/auth/authenticate";
@@ -51,17 +50,15 @@ public class AccessTokenPolarisHttpClient extends AuthenticatingIntHttpClient {
     private static final String ACCESS_TOKEN_REQUEST_CONTENT_TYPE = "application/x-www-form-urlencoded";
 
     private final Gson gson;
-    private final UrlSupport urlSupport;
     private final AuthenticationSupport authenticationSupport;
     private final HttpUrl baseUrl;
     private final String accessToken;
 
-    public AccessTokenPolarisHttpClient(IntLogger logger, int timeout, ProxyInfo proxyInfo, HttpUrl baseUrl, String accessToken, Gson gson, UrlSupport urlSupport, AuthenticationSupport authenticationSupport) {
+    public AccessTokenPolarisHttpClient(IntLogger logger, int timeout, ProxyInfo proxyInfo, HttpUrl baseUrl, String accessToken, Gson gson, AuthenticationSupport authenticationSupport) {
         super(logger, timeout, false, proxyInfo);
         this.baseUrl = baseUrl;
         this.accessToken = accessToken;
         this.gson = gson;
-        this.urlSupport = urlSupport;
         this.authenticationSupport = authenticationSupport;
 
         if (StringUtils.isBlank(accessToken)) {
@@ -97,21 +94,12 @@ public class AccessTokenPolarisHttpClient extends AuthenticatingIntHttpClient {
         RequestBuilder requestBuilder = createRequestBuilder(HttpMethod.POST, headers);
         requestBuilder.setEntity(httpEntity);
 
-        HttpUrl authenticationUrl = urlSupport.appendRelativeUrl(baseUrl, AccessTokenPolarisHttpClient.AUTHENTICATION_SPEC);
+        HttpUrl authenticationUrl = baseUrl.appendRelativeUrl(AccessTokenPolarisHttpClient.AUTHENTICATION_SPEC);
         return authenticationSupport.attemptAuthentication(this, authenticationUrl, requestBuilder);
     }
 
     public HttpUrl getPolarisServerUrl() {
         return baseUrl;
-    }
-
-    public HttpUrl appendToPolarisUrl(String relativeUrl) {
-        try {
-            return urlSupport.appendRelativeUrl(baseUrl, relativeUrl);
-        } catch (IntegrationException e) {
-            //TODO if supporting this library is important, we should do better
-            throw new RuntimeException(String.format("Can't combine the base url %s with relative url %s.", baseUrl.string(), relativeUrl));
-        }
     }
 
 }
