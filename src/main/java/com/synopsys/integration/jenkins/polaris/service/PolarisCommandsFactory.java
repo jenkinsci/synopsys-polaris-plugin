@@ -39,7 +39,6 @@ import com.synopsys.integration.jenkins.service.JenkinsFreestyleServicesFactory;
 import com.synopsys.integration.jenkins.service.JenkinsRemotingService;
 import com.synopsys.integration.jenkins.service.JenkinsScmService;
 import com.synopsys.integration.jenkins.service.JenkinsServicesFactory;
-import com.synopsys.integration.jenkins.wrapper.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
 import com.synopsys.integration.polaris.common.cli.PolarisCliResponseUtility;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfig;
@@ -65,8 +64,6 @@ public class PolarisCommandsFactory {
     // These fields are lazily initialized; within this class use the suppliers instead of referencing the fields directly
     private JenkinsIntLogger _logger = null;
     private final Supplier<JenkinsIntLogger> initializedLogger = this::getOrCreateLogger;
-    private JenkinsVersionHelper _jenkinsVersionHelper = null;
-    private final ThrowingSupplier<JenkinsVersionHelper, AbortException> initializedJenkinsVersionHelper = this::getOrCreateJenkinsVersionHelper;
 
     private PolarisCommandsFactory(JenkinsWrapper jenkinsWrapper, EnvVars envVars, TaskListener listener) {
         this.validatedJenkinsWrapper = () -> validateJenkinsWrapper(jenkinsWrapper);
@@ -107,20 +104,28 @@ public class PolarisCommandsFactory {
     }
 
     public PolarisIssueChecker createPolarisIssueCounter(JenkinsConfigService jenkinsConfigService, JenkinsRemotingService jenkinsRemotingService) throws AbortException {
-        return new PolarisIssueChecker(createPolarisCliIssueCountService(jenkinsConfigService), jenkinsRemotingService);
+        return new PolarisIssueChecker(initializedLogger.get(), createPolarisCliIssueCountService(jenkinsConfigService), jenkinsRemotingService, validatedJenkinsWrapper.get().getVersionHelper());
     }
 
     public PolarisCliRunner createPolarisCliRunner(JenkinsConfigService jenkinsConfigService, JenkinsRemotingService jenkinsRemotingService) throws AbortException {
-        return new PolarisCliRunner(createPolarisCliArgumentService(), createPolarisEnvironmentService(), createPolarisPhoneHomeService(jenkinsConfigService), jenkinsRemotingService, jenkinsConfigService);
+        JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
+        return new PolarisCliRunner(initializedLogger.get(),
+            createPolarisCliArgumentService(),
+            createPolarisEnvironmentService(),
+            createPolarisPhoneHomeService(jenkinsConfigService),
+            jenkinsRemotingService,
+            jenkinsConfigService,
+            jenkinsWrapper.getCredentialsHelper(),
+            jenkinsWrapper.getProxyHelper(),
+            jenkinsWrapper.getVersionHelper());
     }
 
     public ChangeSetFileCreator createChangeSetFileCreator(JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
         return new ChangeSetFileCreator(jenkinsRemotingService, jenkinsScmService);
     }
 
-    private PolarisEnvironmentService createPolarisEnvironmentService() throws AbortException {
-        JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
-        return new PolarisEnvironmentService(initializedLogger.get(), initializedJenkinsVersionHelper.get(), jenkinsWrapper.getCredentialsHelper(), jenkinsWrapper.getProxyHelper(), envVars);
+    private PolarisEnvironmentService createPolarisEnvironmentService() {
+        return new PolarisEnvironmentService(envVars);
     }
 
     private PolarisCliArgumentService createPolarisCliArgumentService() {
@@ -139,8 +144,9 @@ public class PolarisCommandsFactory {
     private PolarisPhoneHomeService createPolarisPhoneHomeService(JenkinsConfigService jenkinsConfigService) throws AbortException {
         PolarisServicesFactory polarisServicesFactory = createPolarisServicesFactory(jenkinsConfigService);
         ContextsService contextsService = polarisServicesFactory.createContextsService();
+        JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
 
-        return new PolarisPhoneHomeService(initializedLogger.get(), initializedJenkinsVersionHelper.get(), contextsService, polarisServicesFactory.getHttpClient());
+        return new PolarisPhoneHomeService(initializedLogger.get(), jenkinsWrapper.getVersionHelper(), contextsService, polarisServicesFactory.getHttpClient());
     }
 
     private JenkinsIntLogger getOrCreateLogger() {
@@ -158,15 +164,6 @@ public class PolarisCommandsFactory {
         JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
         PolarisServerConfig polarisServerConfig = polarisGlobalConfig.getPolarisServerConfig(jenkinsWrapper.getCredentialsHelper(), jenkinsWrapper.getProxyHelper());
         return polarisServerConfig.createPolarisServicesFactory(jenkinsIntLogger);
-    }
-
-    public JenkinsVersionHelper getOrCreateJenkinsVersionHelper() throws AbortException {
-        if (_jenkinsVersionHelper == null) {
-            JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
-            _jenkinsVersionHelper = new JenkinsVersionHelper(jenkinsWrapper);
-        }
-
-        return _jenkinsVersionHelper;
     }
 
     private JenkinsWrapper validateJenkinsWrapper(JenkinsWrapper jenkinsWrapper) throws AbortException {

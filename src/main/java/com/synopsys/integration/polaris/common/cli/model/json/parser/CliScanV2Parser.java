@@ -22,19 +22,20 @@
  */
 package com.synopsys.integration.polaris.common.cli.model.json.parser;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
 import com.synopsys.integration.polaris.common.cli.model.json.v2.CliScanV2;
 import com.synopsys.integration.polaris.common.cli.model.json.v2.ToolInfoV2;
+import com.synopsys.integration.rest.HttpUrl;
 
 public class CliScanV2Parser extends CliScanParser<CliScanV2> {
     public CliScanV2Parser(Gson gson) {
@@ -47,30 +48,38 @@ public class CliScanV2Parser extends CliScanParser<CliScanV2> {
         };
     }
 
-    public CliCommonResponseModel fromCliScan(JsonObject versionlessModel) {
+    public CliCommonResponseModel fromCliScan(JsonObject versionlessModel) throws IntegrationException {
         CliScanV2 cliScanV2 = fromJson(versionlessModel);
 
         CliCommonResponseModel cliCommonResponseModel = createResponseModel(cliScanV2.issueSummary, cliScanV2.projectInfo, cliScanV2.scanInfo);
 
-        List<CommonToolInfo> tools = new ArrayList<>();
-        Optional.ofNullable(cliScanV2.tools)
-            .orElse(Collections.emptyList())
-            .stream()
-            .forEach(tool -> fromToolInfoV2(tool, tools::add));
+        List<CommonToolInfo> tools = Optional.ofNullable(cliScanV2.tools)
+                                         .orElse(Collections.emptyList())
+                                         .stream()
+                                         .map(this::fromToolInfoV2)
+                                         .filter(Optional::isPresent)
+                                         .map(Optional::get)
+                                         .collect(Collectors.toList());
 
         cliCommonResponseModel.setTools(tools);
 
         return cliCommonResponseModel;
     }
 
-    private void fromToolInfoV2(ToolInfoV2 toolInfoV2, Consumer<CommonToolInfo> consumer) {
+    private Optional<CommonToolInfo> fromToolInfoV2(ToolInfoV2 toolInfoV2) {
         if (toolInfoV2 != null) {
-            CommonToolInfo commonToolInfo = createCommonToolInfo(toolInfoV2);
-            commonToolInfo.setToolName(toolInfoV2.toolName);
-            commonToolInfo.setIssueApiUrl(toolInfoV2.issueApiUrl);
+            try {
+                CommonToolInfo commonToolInfo = createCommonToolInfo(toolInfoV2);
+                commonToolInfo.setToolName(toolInfoV2.toolName);
+                commonToolInfo.setIssueApiUrl(new HttpUrl(toolInfoV2.issueApiUrl));
 
-            consumer.accept(commonToolInfo);
+                return Optional.of(commonToolInfo);
+            } catch (IntegrationException ignored) {
+
+            }
         }
+
+        return Optional.empty();
     }
 
 }

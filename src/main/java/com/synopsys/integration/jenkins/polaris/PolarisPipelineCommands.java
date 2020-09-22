@@ -43,11 +43,12 @@ public class PolarisPipelineCommands {
     }
 
     public int runPolarisCli(String polarisCliName, String polarisCliArgumentString, Boolean returnStatus, CreateChangeSetFile createChangeSetFile) throws IntegrationException, InterruptedException, IOException {
+        String changeSetFilePath = null;
         if (createChangeSetFile != null) {
-            changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+            changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
         }
 
-        int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, polarisCliArgumentString);
+        int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisCliArgumentString);
 
         if (exitCode > 0) {
             String errorMsg = "Polaris failed with exit code: " + exitCode;

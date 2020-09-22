@@ -48,11 +48,12 @@ public class PolarisFreestyleCommands {
 
     public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, CreateChangeSetFile createChangeSetFile, WaitForIssues waitForIssues) {
         try {
+            String changeSetFilePath = null;
             if (createChangeSetFile != null) {
-                changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+                changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
             }
 
-            int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, polarisArgumentString);
+            int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisArgumentString);
             if (exitCode > 0) {
                 jenkinsBuildService.markBuildFailed("Polaris failed with exit code: " + exitCode);
             }

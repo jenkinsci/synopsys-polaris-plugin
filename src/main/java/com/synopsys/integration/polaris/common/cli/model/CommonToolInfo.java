@@ -24,19 +24,21 @@ package com.synopsys.integration.polaris.common.cli.model;
 
 import java.util.Optional;
 
+import com.synopsys.integration.rest.HttpUrl;
+
 public class CommonToolInfo {
     private String toolName;
     private String toolVersion;
     private String jobId;
-    private String jobStatusUrl;
+    private HttpUrl jobStatusUrl;
     private String jobStatus;
-    private String issueApiUrl;
+    private HttpUrl issueApiUrl;
 
     public String getToolName() {
         return toolName;
     }
 
-    public void setToolName(final String toolName) {
+    public void setToolName(String toolName) {
         this.toolName = toolName;
     }
 
@@ -44,7 +46,7 @@ public class CommonToolInfo {
         return toolVersion;
     }
 
-    public void setToolVersion(final String toolVersion) {
+    public void setToolVersion(String toolVersion) {
         this.toolVersion = toolVersion;
     }
 
@@ -52,15 +54,15 @@ public class CommonToolInfo {
         return jobId;
     }
 
-    public void setJobId(final String jobId) {
+    public void setJobId(String jobId) {
         this.jobId = jobId;
     }
 
-    public String getJobStatusUrl() {
+    public HttpUrl getJobStatusUrl() {
         return jobStatusUrl;
     }
 
-    public void setJobStatusUrl(final String jobStatusUrl) {
+    public void setJobStatusUrl(HttpUrl jobStatusUrl) {
         this.jobStatusUrl = jobStatusUrl;
     }
 
@@ -68,15 +70,15 @@ public class CommonToolInfo {
         return jobStatus;
     }
 
-    public void setJobStatus(final String jobStatus) {
+    public void setJobStatus(String jobStatus) {
         this.jobStatus = jobStatus;
     }
 
-    public Optional<String> getIssueApiUrl() {
+    public Optional<HttpUrl> getIssueApiUrl() {
         return Optional.ofNullable(issueApiUrl);
     }
 
-    public void setIssueApiUrl(final String issueApiUrl) {
+    public void setIssueApiUrl(HttpUrl issueApiUrl) {
         this.issueApiUrl = issueApiUrl;
     }
 
