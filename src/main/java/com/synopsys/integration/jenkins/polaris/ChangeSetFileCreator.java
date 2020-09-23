@@ -49,20 +49,24 @@ public class ChangeSetFileCreator {
         // ArrayLists are serializable, Lists are not. -- rotte SEP 2020
         ArrayList<String> changedFiles = new ArrayList<>(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
 
-        return jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(changedFiles));
+        String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
+
+        return jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
     }
 
     private static class CreateChangeSetFileAndGetRemotePath extends MasterToSlaveCallable<String, IOException> {
         private static final long serialVersionUID = -8708849449533708805L;
         private final ArrayList<String> changedFiles;
+        private final String remoteWorkspacePath;
 
-        public CreateChangeSetFileAndGetRemotePath(ArrayList<String> changedFiles) {
+        public CreateChangeSetFileAndGetRemotePath(String remoteWorkspacePath, ArrayList<String> changedFiles) {
+            this.remoteWorkspacePath = remoteWorkspacePath;
             this.changedFiles = changedFiles;
         }
 
         @Override
         public String call() throws IOException {
-            Path changeSetFile = Paths.get("changeSetFiles.txt");
+            Path changeSetFile = Paths.get(remoteWorkspacePath).resolve("changeSetFiles.txt");
             Files.write(changeSetFile, changedFiles);
 
             return changeSetFile.toRealPath().toString();

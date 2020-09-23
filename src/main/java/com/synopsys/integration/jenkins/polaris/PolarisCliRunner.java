@@ -97,7 +97,8 @@ public class PolarisCliRunner {
 
             OperatingSystemType operatingSystemType = jenkinsRemotingService.getRemoteOperatingSystemType();
             List<String> tokenizedPolarisArguments = jenkinsRemotingService.tokenizeArgumentString(polarisArgumentString);
-            List<String> polarisArguments = polarisCliArgumentService.finalizePolarisCliArguments(operatingSystemType, pathToPolarisCli, tokenizedPolarisArguments);
+            List<String> tokenizedResolvedArguments = jenkinsRemotingService.resolveEnvironmentVariables(intEnvironmentVariables, tokenizedPolarisArguments);
+            List<String> polarisArguments = polarisCliArgumentService.finalizePolarisCliArguments(operatingSystemType, pathToPolarisCli, tokenizedResolvedArguments);
 
             return jenkinsRemotingService.launch(intEnvironmentVariables, polarisArguments);
         } finally {
