@@ -64,7 +64,7 @@ public class PolarisCliInstaller extends ToolInstaller {
         Optional<PolarisGlobalConfig> possiblePolarisGlobalConfig = jenkinsConfigService.getGlobalConfiguration(PolarisGlobalConfig.class);
 
         if (!possiblePolarisGlobalConfig.isPresent()) {
-            throw new AbortPolarisCliInstallException(tool, "No Polaris global config was found. Please check your system config.");
+            throw new AbortPolarisCliInstallException(tool, "No Polaris Software Integrity Platform global configuration was found. Please check your system config.");
         }
 
         PolarisGlobalConfig polarisGlobalConfig = possiblePolarisGlobalConfig.get();
@@ -85,7 +85,7 @@ public class PolarisCliInstaller extends ToolInstaller {
             String polarisCliRemotePath = virtualChannel.call(findOrInstallPolarisCli);
             return new FilePath(virtualChannel, polarisCliRemotePath);
         } catch (IntegrationException ex) {
-            throw new IOException("Polaris CLI was not correctly installed.", ex);
+            throw new IOException("Polaris Software Integrity Platform CLI was not correctly installed.", ex);
         }
     }
 
@@ -93,7 +93,7 @@ public class PolarisCliInstaller extends ToolInstaller {
     public static final class DescriptorImpl extends ToolInstallerDescriptor<PolarisCliInstaller> {
         @Override
         public String getDisplayName() {
-            return "Install from Polaris";
+            return "Install from Polaris Software Integrity Platform";
         }
 
         @Override

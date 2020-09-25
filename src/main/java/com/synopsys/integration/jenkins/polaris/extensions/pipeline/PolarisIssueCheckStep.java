@@ -52,7 +52,7 @@ import hudson.model.TaskListener;
 import jenkins.scm.RunWithSCM;
 
 public class PolarisIssueCheckStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Check for issues in Polaris found by a previous execution of the CLI";
+    public static final String DISPLAY_NAME = "Check for issues in the Polaris Software Integrity Platform found by a previous execution of the CLI";
     public static final String PIPELINE_NAME = "polarisIssueCheck";
     private static final long serialVersionUID = -2698425344634481146L;
 
@@ -61,7 +61,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
     private Boolean returnIssueCount;
 
     @Nullable
-    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete when the Polaris CLI is executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
+    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris Software Integrity Platform CLI to complete when executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
     private Integer jobTimeoutInMinutes;
 
     @DataBoundConstructor
