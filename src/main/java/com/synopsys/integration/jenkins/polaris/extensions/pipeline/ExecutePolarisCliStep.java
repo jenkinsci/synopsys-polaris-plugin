@@ -58,7 +58,7 @@ import hudson.util.ListBoxModel;
 import jenkins.scm.RunWithSCM;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Execute Synopsys Polaris CLI";
+    public static final String DISPLAY_NAME = "Execute Synopsys Polaris Software Integrity Platform CLI";
     public static final String PIPELINE_NAME = "polaris";
     private static final long serialVersionUID = -2698425344634481146L;
 
@@ -103,7 +103,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     }
 
     @Nullable
-    public Boolean getReturnIssueCount() {
+    public Boolean getReturnStatus() {
         if (!Boolean.TRUE.equals(returnStatus)) {
             return null;
         }

@@ -50,14 +50,14 @@ import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
 
 public class PolarisBuildStep extends Builder {
-    public static final String DISPLAY_NAME = "Synopsys Polaris";
+    public static final String DISPLAY_NAME = "Synopsys Polaris Software Integrity Platform static analysis";
 
     @Nullable
-    @HelpMarkdown("The Polaris CLI installation to execute")
+    @HelpMarkdown("The CLI installation to execute")
     private String polarisCliName;
 
     @Nullable
-    @HelpMarkdown("The command line arguments to pass to the Synopsys Polaris CLI")
+    @HelpMarkdown("The command line arguments to pass to the CLI")
     private String polarisArguments;
 
     @Nullable
@@ -66,7 +66,7 @@ public class PolarisBuildStep extends Builder {
     private CreateChangeSetFile createChangeSetFile;
 
     @Nullable
-    @HelpMarkdown("Check this box to wait for Polaris CLI jobs to complete and set the build status based on issues discovered")
+    @HelpMarkdown("Check this box to wait for CLI jobs to complete and set the build status based on issues discovered")
     private WaitForIssues waitForIssues;
 
     @DataBoundConstructor

@@ -1,16 +1,16 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
-    <f:section title="Synopsys Polaris">
-        <f:entry field="polarisUrl" title="Polaris URL">
+    <f:section title="Synopsys Polaris Software Integrity Platform">
+        <f:entry field="polarisUrl" title="URL">
             <f:textbox/>
         </f:entry>
-        <f:entry field="polarisCredentialsId" title="Polaris credentials">
+        <f:entry field="polarisCredentialsId" title="Credentials">
             <c:select/>
         </f:entry>
         <f:advanced>
-            <f:entry field="polarisTimeout" title="Polaris connection timeout">
+            <f:entry field="polarisTimeout" title="Connection timeout">
                 <f:textbox clazz="required number" checkmethod="post"/>
             </f:entry>
         </f:advanced>
-        <f:validateButton method="testPolarisConnection" title="Test connection to Polaris" progress="" with="polarisUrl,polarisCredentialsId,polarisTimeout,trustPolarisCertificates"/>
+        <f:validateButton method="testPolarisConnection" title="Test connection" progress="" with="polarisUrl,polarisCredentialsId,polarisTimeout,trustPolarisCertificates"/>
     </f:section>
 </j:jelly>
