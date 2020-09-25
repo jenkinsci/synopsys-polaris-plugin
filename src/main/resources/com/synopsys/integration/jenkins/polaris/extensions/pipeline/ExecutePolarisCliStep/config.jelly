@@ -1,8 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:entry field="polarisCli" title="Polaris CLI Installation">
+    <f:entry field="polarisCli" title="CLI Installation">
         <f:select/>
     </f:entry>
-    <f:entry field="arguments" title="Polaris Arguments">
+    <f:entry field="arguments" title="Arguments">
         <f:textarea/>
     </f:entry>
     <f:entry field="returnStatus" title="Return status code">
@@ -18,6 +18,9 @@
             </f:entry>
             <f:entry field="changeSetExclusionPatterns" title="Change set exclusion patterns">
                 <f:textbox id="changeSetExclusionPatterns"/>
+            </f:entry>
+            <f:entry field="skipIfEmpty" title="Skip static analysis if the change set is empty">
+                <f:checkbox/>
             </f:entry>
         </j:scope>
     </f:optionalBlock>

@@ -48,9 +48,15 @@ public class PolarisFreestyleCommands {
 
     public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, CreateChangeSetFile createChangeSetFile, WaitForIssues waitForIssues) {
         try {
+            boolean skipIfEmpty = createChangeSetFile != null && (createChangeSetFile.getSkipIfEmpty() == null || Boolean.TRUE.equals(createChangeSetFile.getSkipIfEmpty()));
             String changeSetFilePath = null;
             if (createChangeSetFile != null) {
-                changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+                changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns(), skipIfEmpty);
+            }
+
+            if (skipIfEmpty && changeSetFilePath == null) {
+                logger.info("The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.");
+                return;
             }
 
             int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisArgumentString);

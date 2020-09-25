@@ -29,21 +29,24 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.synopsys.integration.jenkins.ChangeSetFilter;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.service.JenkinsRemotingService;
 import com.synopsys.integration.jenkins.service.JenkinsScmService;
 
 import jenkins.security.MasterToSlaveCallable;
 
 public class ChangeSetFileCreator {
+    private final JenkinsIntLogger logger;
     private final JenkinsRemotingService jenkinsRemotingService;
     private final JenkinsScmService jenkinsScmService;
 
-    public ChangeSetFileCreator(JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
+    public ChangeSetFileCreator(JenkinsIntLogger logger, JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
+        this.logger = logger;
         this.jenkinsRemotingService = jenkinsRemotingService;
         this.jenkinsScmService = jenkinsScmService;
     }
 
-    public String createChangeSetFile(String exclusionPatterns, String inclusionPatterns) throws IOException, InterruptedException {
+    public String createChangeSetFile(String exclusionPatterns, String inclusionPatterns, boolean skipIfempty) throws IOException, InterruptedException {
         ChangeSetFilter changeSetFilter = jenkinsScmService.newChangeSetFilter().excludeMatching(exclusionPatterns).includeMatching(inclusionPatterns);
 
         // ArrayLists are serializable, Lists are not. -- rotte SEP 2020
@@ -51,7 +54,15 @@ public class ChangeSetFileCreator {
 
         String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
 
-        return jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
+        String changeSetFilePath;
+        if (changedFiles.size() == 0 && skipIfempty) {
+            logger.info("The change set file could not be created because the jenkins change set was empty.");
+            changeSetFilePath = null;
+        } else {
+            changeSetFilePath = jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
+        }
+
+        return changeSetFilePath;
     }
 
     private static class CreateChangeSetFileAndGetRemotePath extends MasterToSlaveCallable<String, IOException> {

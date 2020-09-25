@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.jenkins.polaris.extensions;
 
+import javax.annotation.Nullable;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -61,6 +63,10 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
                       + "| test.java | test.????? | No               |")
     private final String changeSetInclusionPatterns;
 
+    @Nullable
+    @HelpMarkdown("Skips Polaris Software Integrity Platform static analysis if nothing is included in the change set. Defaults to true.")
+    private Boolean skipIfEmpty;
+
     @DataBoundConstructor
     public CreateChangeSetFile(String changeSetExclusionPatterns, String changeSetInclusionPatterns) {
         this.changeSetExclusionPatterns = changeSetExclusionPatterns;
@@ -78,6 +84,17 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl) super.getDescriptor();
+    }
+
+    public Boolean getSkipIfEmpty() {
+        if (Boolean.FALSE.equals(skipIfEmpty)) {
+            return skipIfEmpty;
+        }
+        return null;
+    }
+
+    public void setSkipIfEmpty(Boolean skipIfEmpty) {
+        this.skipIfEmpty = skipIfEmpty;
     }
 
     @Extension
