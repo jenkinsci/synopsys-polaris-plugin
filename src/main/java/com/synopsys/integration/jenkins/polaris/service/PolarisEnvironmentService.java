@@ -27,42 +27,25 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
-import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
-import com.synopsys.integration.jenkins.wrapper.JenkinsVersionHelper;
-import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
+import com.synopsys.integration.jenkins.polaris.PolarisJenkinsEnvironmentVariable;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.util.IntEnvironmentVariables;
 
-import jenkins.model.GlobalConfiguration;
-
 public class PolarisEnvironmentService {
-    private final JenkinsIntLogger logger;
-    private final SynopsysCredentialsHelper credentialsHelper;
-    private final JenkinsProxyHelper proxyHelper;
     private final Map<String, String> environmentVariables;
-    private final JenkinsVersionHelper versionHelper;
 
-    public PolarisEnvironmentService(JenkinsIntLogger logger, JenkinsVersionHelper versionHelper, SynopsysCredentialsHelper credentialsHelper, JenkinsProxyHelper proxyHelper, Map<String, String> environmentVariables) {
-        this.logger = logger;
-        this.versionHelper = versionHelper;
-        this.credentialsHelper = credentialsHelper;
-        this.proxyHelper = proxyHelper;
+    public PolarisEnvironmentService(Map<String, String> environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 
-    public IntEnvironmentVariables createPolarisEnvironment() throws PolarisIntegrationException {
+    public IntEnvironmentVariables createPolarisEnvironment(String changeSetFileRemotePath, PolarisServerConfigBuilder polarisServerConfigBuilder) throws PolarisIntegrationException {
         IntEnvironmentVariables intEnvironmentVariables = IntEnvironmentVariables.empty();
         intEnvironmentVariables.putAll(environmentVariables);
 
-        PolarisGlobalConfig polarisGlobalConfig = GlobalConfiguration.all().get(PolarisGlobalConfig.class);
-        if (polarisGlobalConfig == null) {
-            throw new PolarisIntegrationException("No Polaris system configuration could be found, please check your system configuration.");
+        if (StringUtils.isNotBlank(changeSetFileRemotePath)) {
+            intEnvironmentVariables.put(PolarisJenkinsEnvironmentVariable.CHANGE_SET_FILE_PATH.stringValue(), changeSetFileRemotePath);
         }
-
-        PolarisServerConfigBuilder polarisServerConfigBuilder = polarisGlobalConfig.getPolarisServerConfigBuilder(credentialsHelper, proxyHelper);
 
         polarisServerConfigBuilder.getProperties()
             .forEach((builderPropertyKey, propertyValue) -> acceptIfNotNull(intEnvironmentVariables::put, builderPropertyKey.getKey(), propertyValue));
@@ -72,11 +55,6 @@ public class PolarisEnvironmentService {
         } catch (IllegalArgumentException ex) {
             throw new PolarisIntegrationException("There is a problem with your Polaris system configuration", ex);
         }
-
-        String logMessage = versionHelper.getPluginVersion("synopsys-polaris")
-                                .map(version -> String.format("Running Synopsys Polaris for Jenkins version %s", version))
-                                .orElse("Running Synopsys Polaris for Jenkins");
-        logger.info(logMessage);
 
         return intEnvironmentVariables;
     }

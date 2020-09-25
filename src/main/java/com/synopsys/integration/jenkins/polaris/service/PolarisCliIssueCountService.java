@@ -24,8 +24,6 @@ package com.synopsys.integration.jenkins.polaris.service;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.polaris.common.cli.PolarisCliResponseUtility;
@@ -67,24 +65,23 @@ public class PolarisCliIssueCountService {
             throw new PolarisIntegrationException(STEP_EXCEPTION_PREFIX + "Job timeout must be a positive integer if the Polaris CLI is being run without -w");
         }
 
-        String issueApiUrl = Optional.ofNullable(scanInfo)
-                                 .map(CommonScanInfo::getIssueApiUrl)
-                                 .filter(StringUtils::isNotBlank)
-                                 .orElseThrow(() -> new PolarisIntegrationException(
-                                     "Synopsys Polaris for Jenkins cannot find the total issue count or issue api url in the cli-scan.json. Please ensure that you are using a supported version of the Polaris CLI."
-                                 ));
+        HttpUrl issueApiUrl = Optional.ofNullable(scanInfo)
+                                  .map(CommonScanInfo::getIssueApiUrl)
+                                  .orElseThrow(() -> new PolarisIntegrationException(
+                                      "Synopsys Polaris for Jenkins cannot find the total issue count or issue api url in the cli-scan.json. Please ensure that you are using a supported version of the Polaris CLI."
+                                  ));
 
         logger.debug("Found issue api url, polling for job status");
 
         for (CommonToolInfo tool : polarisCliResponseModel.getTools()) {
-            String jobStatusUrl = tool.getJobStatusUrl();
+            HttpUrl jobStatusUrl = tool.getJobStatusUrl();
             if (jobStatusUrl == null) {
                 throw new PolarisIntegrationException(STEP_EXCEPTION_PREFIX + "tool with name " + tool.getToolName() + " has no jobStatusUrl");
             }
-            jobService.waitForJobStateIsCompletedOrDieByUrl(new HttpUrl(jobStatusUrl), jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
+            jobService.waitForJobStateIsCompletedOrDieByUrl(jobStatusUrl, jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
         }
 
-        return countService.getTotalIssueCountFromIssueApiUrl(new HttpUrl(issueApiUrl));
+        return countService.getTotalIssueCountFromIssueApiUrl(issueApiUrl);
     }
 
 }

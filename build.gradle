@@ -9,7 +9,7 @@ plugins {
 
 group = 'org.jenkins-ci.plugins'
 version = '1.0.1-SNAPSHOT'
-description = 'Allows users to run Polaris static analysis in their builds'
+description = 'Allows users to run Polaris Software Integrity Platform static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
 apply from: 'docs.gradle'
@@ -24,7 +24,7 @@ artifactory {
 jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
     coreVersion = '2.150.3'
-    displayName = 'Synopsys Polaris Plugin'
+    displayName = 'Synopsys Polaris Software Integrity Platform Plugin'
     url = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
     gitHubUrl = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
 
@@ -43,7 +43,7 @@ jenkinsPlugin {
 dependencies {
     annotationProcessor 'com.synopsys.integration:jenkins-annotation-processor:0.0.1'
 
-    implementation 'com.synopsys.integration:jenkins-common:0.3.1'
+    implementation 'com.synopsys.integration:jenkins-common:0.3.2-SNAPSHOT'
 
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'

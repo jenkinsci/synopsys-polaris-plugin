@@ -69,7 +69,6 @@ import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 
 public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServerConfig> {
     public static final String SWIP_CONFIG_DIRECTORY_DEFAULT = ".swip";
@@ -92,10 +91,9 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
     public static final int DEFAULT_TIMEOUT_SECONDS = 120;
 
     private final BuilderProperties builderProperties;
-    private final UrlSupport urlSupport = new UrlSupport();
     private IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
     private Gson gson = new Gson();
-    private AuthenticationSupport authenticationSupport = new AuthenticationSupport(urlSupport);
+    private AuthenticationSupport authenticationSupport = new AuthenticationSupport();
 
     public PolarisServerConfigBuilder() {
         Set<BuilderPropertyKey> propertyKeys = new HashSet<>();
@@ -121,7 +119,7 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
         } catch (IntegrationException e) {
         }
 
-        return new PolarisServerConfig(polarisURL, getTimeoutInSeconds(), getAccessToken(), getProxyInfo(), gson, urlSupport, authenticationSupport);
+        return new PolarisServerConfig(polarisURL, getTimeoutInSeconds(), getAccessToken(), getProxyInfo(), gson, authenticationSupport);
     }
 
     private ProxyInfo getProxyInfo() {

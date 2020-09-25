@@ -1,4 +1,4 @@
-package com.synopsys.integration.jenkins.polaris.workflow;
+package com.synopsys.integration.jenkins.polaris.extensions.tools;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.tools.FindOrInstallPolarisCli;
 import com.synopsys.integration.polaris.common.cli.PolarisDownloadUtility;
 
 // If env var TEST_POLARIS_URL is set, testInstall() downloads the Polaris CLI from that Polaris server

@@ -47,8 +47,7 @@ public class PolarisPhoneHomeService {
     private final ContextsService contextsService;
     private final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient;
 
-    public PolarisPhoneHomeService(JenkinsIntLogger logger, JenkinsVersionHelper jenkinsVersionHelper, ContextsService contextsService,
-        AccessTokenPolarisHttpClient accessTokenPolarisHttpClient) {
+    public PolarisPhoneHomeService(JenkinsIntLogger logger, JenkinsVersionHelper jenkinsVersionHelper, ContextsService contextsService, AccessTokenPolarisHttpClient accessTokenPolarisHttpClient) {
         this.logger = logger;
         this.jenkinsVersionHelper = jenkinsVersionHelper;
         this.contextsService = contextsService;

@@ -28,20 +28,19 @@ import java.util.Optional;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.api.PolarisResource;
 import com.synopsys.integration.polaris.common.api.model.ContextAttributes;
-import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class ContextsService {
     private final PolarisService polarisService;
-    private final AccessTokenPolarisHttpClient polarisHttpClient;
+    private final HttpUrl polarisServerUrl;
 
-    public ContextsService(PolarisService polarisService, AccessTokenPolarisHttpClient polarisHttpClient) {
+    public ContextsService(PolarisService polarisService, HttpUrl polarisServerUrl) {
         this.polarisService = polarisService;
-        this.polarisHttpClient = polarisHttpClient;
+        this.polarisServerUrl = polarisServerUrl;
     }
 
     public List<PolarisResource<ContextAttributes>> getAllContexts() throws IntegrationException {
-        HttpUrl httpUrl = polarisHttpClient.appendToPolarisUrl("/api/auth/contexts");
+        HttpUrl httpUrl = polarisServerUrl.appendRelativeUrl("/api/auth/contexts");
         return polarisService.getAll(httpUrl, ContextAttributes.class);
     }
 

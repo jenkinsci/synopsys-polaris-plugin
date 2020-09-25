@@ -43,6 +43,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
@@ -54,9 +55,10 @@ import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
+import jenkins.scm.RunWithSCM;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Execute Synopsys Polaris CLI";
+    public static final String DISPLAY_NAME = "Execute Synopsys Polaris Software Integrity Platform CLI";
     public static final String PIPELINE_NAME = "polaris";
     private static final long serialVersionUID = -2698425344634481146L;
 
@@ -71,11 +73,17 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     @HelpMarkdown("If true (checked), returns the status code of the Polaris CLI run instead of throwing an exception")
     private Boolean returnStatus;
 
+    @Nullable
+    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
+                      + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
+    private CreateChangeSetFile createChangeSetFile;
+
     @DataBoundConstructor
     public ExecutePolarisCliStep(String arguments) {
         this.arguments = arguments;
     }
 
+    @Nullable
     public String getPolarisCli() {
         return polarisCli;
     }
@@ -95,7 +103,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     }
 
     @Nullable
-    public Boolean getReturnIssueCount() {
+    public Boolean getReturnStatus() {
         if (!Boolean.TRUE.equals(returnStatus)) {
             return null;
         }
@@ -105,6 +113,16 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     @DataBoundSetter
     public void setReturnStatus(Boolean returnStatus) {
         this.returnStatus = returnStatus;
+    }
+
+    @Nullable
+    public CreateChangeSetFile getCreateChangeSetFile() {
+        return createChangeSetFile;
+    }
+
+    @DataBoundSetter
+    public void setCreateChangeSetFile(@Nullable CreateChangeSetFile createChangeSetFile) {
+        this.createChangeSetFile = createChangeSetFile;
     }
 
     @Symbol(PIPELINE_NAME)
@@ -153,6 +171,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         private final transient FilePath workspace;
         private final transient Launcher launcher;
         private final transient Node node;
+        private final transient RunWithSCM<?, ?> run;
 
         protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
@@ -161,12 +180,13 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
             workspace = context.get(FilePath.class);
             launcher = context.get(Launcher.class);
             node = context.get(Node.class);
+            run = context.get(RunWithSCM.class);
         }
 
         @Override
         protected Integer run() throws Exception {
-            return PolarisCommandsFactory.fromPipeline(listener, envVars, launcher, node, workspace)
-                       .runPolarisCli(polarisCli, arguments, returnStatus);
+            return PolarisCommandsFactory.fromPipeline(listener, envVars, launcher, node, run, workspace)
+                       .runPolarisCli(polarisCli, arguments, returnStatus, createChangeSetFile);
         }
     }
 }

@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
 import com.synopsys.integration.polaris.common.cli.model.json.v1.CliScanV1;
@@ -46,7 +47,7 @@ public class CliScanV1Parser extends CliScanParser<CliScanV1> {
     }
 
     @Override
-    public CliCommonResponseModel fromCliScan(JsonObject versionlessModel) {
+    public CliCommonResponseModel fromCliScan(JsonObject versionlessModel) throws IntegrationException {
         CliScanV1 cliScanV1 = fromJson(versionlessModel);
         CliCommonResponseModel cliCommonResponseModel = createResponseModel(cliScanV1.issueSummary, cliScanV1.projectInfo, cliScanV1.scanInfo);
 
@@ -61,7 +62,7 @@ public class CliScanV1Parser extends CliScanParser<CliScanV1> {
 
     }
 
-    private void fromToolInfoV1(ToolInfoV1 toolInfoV1, String toolName, Consumer<CommonToolInfo> consumer) {
+    private void fromToolInfoV1(ToolInfoV1 toolInfoV1, String toolName, Consumer<CommonToolInfo> consumer) throws IntegrationException {
         if (toolInfoV1 != null) {
             CommonToolInfo commonToolInfo = createCommonToolInfo(toolInfoV1);
             commonToolInfo.setToolName(toolName);

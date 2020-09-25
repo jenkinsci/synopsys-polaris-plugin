@@ -20,7 +20,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 
 public class AccessTokenPolarisHttpClientTestIT {
     public static final String ENV_POLARIS_URL = "TEST_POLARIS_URL";
@@ -41,7 +40,7 @@ public class AccessTokenPolarisHttpClientTestIT {
         assumeTrue(StringUtils.isNotBlank(url));
         baseUrl = new HttpUrl(url);
         accessToken = System.getenv(AccessTokenPolarisHttpClientTestIT.ENV_POLARIS_ACCESS_TOKEN);
-        authenticationSupport = new AuthenticationSupport(new UrlSupport());
+        authenticationSupport = new AuthenticationSupport();
         gson = new Gson();
     }
 
@@ -49,11 +48,10 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void validRequestTest() throws IntegrationException, IOException {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
-            authenticationSupport);
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, authenticationSupport);
 
-        HttpUrl requestUrl = httpClient.appendToPolarisUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);
-        Request request = new Request.Builder().method(HttpMethod.GET).url(requestUrl).mimeType(AccessTokenPolarisHttpClientTestIT.VALID_MIME_TYPE).build();
+        HttpUrl requestUrl = baseUrl.appendRelativeUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);
+        Request request = new Request.Builder().method(HttpMethod.GET).url(requestUrl).acceptMimeType(AccessTokenPolarisHttpClientTestIT.VALID_MIME_TYPE).build();
         try (Response response = httpClient.execute(request)) {
             assertTrue(response.isStatusCodeSuccess(), "Status code was not in the SUCCESS range");
             System.out.println(response.getContentString());
@@ -64,8 +62,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void testSuccessConnectionResult() {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
-            authenticationSupport);
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, authenticationSupport);
         ConnectionResult connectionResult = httpClient.attemptConnection();
         assertTrue(connectionResult.isSuccess());
     }
@@ -74,7 +71,7 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void testFailureConnectionResult() {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken + "make it bad", gson, new UrlSupport(),
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken + "make it bad", gson,
             authenticationSupport);
         ConnectionResult connectionResult = httpClient.attemptConnection();
         assertTrue(connectionResult.isFailure());
@@ -84,11 +81,10 @@ public class AccessTokenPolarisHttpClientTestIT {
     public void invalidMimeTypeTest() throws IntegrationException, IOException {
         assumeTrue(StringUtils.isNotBlank(accessToken));
 
-        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, new UrlSupport(),
-            authenticationSupport);
+        AccessTokenPolarisHttpClient httpClient = new AccessTokenPolarisHttpClient(new PrintStreamIntLogger(System.out, LogLevel.INFO), 300, ProxyInfo.NO_PROXY_INFO, baseUrl, accessToken, gson, authenticationSupport);
 
-        HttpUrl requestUrl = httpClient.appendToPolarisUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);
-        Request request = new Request.Builder().method(HttpMethod.GET).url(requestUrl).mimeType(AccessTokenPolarisHttpClientTestIT.INVALID_MIME_TYPE).build();
+        HttpUrl requestUrl = baseUrl.appendRelativeUrl(AccessTokenPolarisHttpClientTestIT.VALID_SPEC);
+        Request request = new Request.Builder().method(HttpMethod.GET).url(requestUrl).acceptMimeType(AccessTokenPolarisHttpClientTestIT.INVALID_MIME_TYPE).build();
         try (Response response = httpClient.execute(request)) {
             assertTrue(response.isStatusCodeError(), "Status code was not an error");
         }

@@ -29,8 +29,6 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -55,6 +53,7 @@ import org.xml.sax.SAXException;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.wrapper.JenkinsProxyHelper;
 import com.synopsys.integration.jenkins.wrapper.JenkinsWrapper;
 import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
@@ -80,7 +79,6 @@ import jenkins.util.xml.XMLUtils;
 @Extension
 public class PolarisGlobalConfig extends GlobalConfiguration implements Serializable {
     private static final long serialVersionUID = 1903218683598310994L;
-    private transient final Logger logger = Logger.getLogger(PolarisGlobalConfig.class.getName());
 
     @HelpMarkdown("Provide the URL that lets you access your Polaris server.")
     private String polarisUrl;
@@ -255,7 +253,8 @@ public class PolarisGlobalConfig extends GlobalConfiguration implements Serializ
         try {
             return getNodeValue(doc, tagName).map(Integer::valueOf);
         } catch (NumberFormatException ignored) {
-            logger.log(Level.WARNING, "Could not parse node " + tagName + ", provided value is not a valid integer. Using default value.");
+            JenkinsIntLogger logger = JenkinsIntLogger.logToStandardOut();
+            logger.warn("Could not parse node " + tagName + ", provided value is not a valid integer. Using default value.");
             return Optional.empty();
         }
     }

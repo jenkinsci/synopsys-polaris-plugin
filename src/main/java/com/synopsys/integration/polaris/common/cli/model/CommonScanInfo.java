@@ -22,16 +22,18 @@
  */
 package com.synopsys.integration.polaris.common.cli.model;
 
+import com.synopsys.integration.rest.HttpUrl;
+
 public class CommonScanInfo {
     private String cliVersion;
     private String scanTime;
-    private String issueApiUrl;
+    private HttpUrl issueApiUrl;
 
     public String getCliVersion() {
         return cliVersion;
     }
 
-    public void setCliVersion(final String cliVersion) {
+    public void setCliVersion(String cliVersion) {
         this.cliVersion = cliVersion;
     }
 
@@ -39,15 +41,15 @@ public class CommonScanInfo {
         return scanTime;
     }
 
-    public void setScanTime(final String scanTime) {
+    public void setScanTime(String scanTime) {
         this.scanTime = scanTime;
     }
 
-    public String getIssueApiUrl() {
+    public HttpUrl getIssueApiUrl() {
         return issueApiUrl;
     }
 
-    public void setIssueApiUrl(final String issueApiUrl) {
+    public void setIssueApiUrl(HttpUrl issueApiUrl) {
         this.issueApiUrl = issueApiUrl;
     }
 

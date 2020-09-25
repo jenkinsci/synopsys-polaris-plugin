@@ -24,13 +24,13 @@ package com.synopsys.integration.polaris.common.cli.model.json;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.cli.PolarisCliResponseVersion;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.json.parser.CliScanParser;
 import com.synopsys.integration.polaris.common.cli.model.json.parser.CliScanUnsupportedParser;
 import com.synopsys.integration.polaris.common.cli.model.json.parser.CliScanV1Parser;
 import com.synopsys.integration.polaris.common.cli.model.json.parser.CliScanV2Parser;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 
 public class CliCommonResponseAdapter {
     private final Gson gson;
@@ -39,7 +39,7 @@ public class CliCommonResponseAdapter {
         this.gson = gson;
     }
 
-    public CliCommonResponseModel fromJson(String versionString, PolarisCliResponseVersion polarisCliResponseVersion, JsonObject versionlessModel) throws PolarisIntegrationException {
+    public CliCommonResponseModel fromJson(String versionString, PolarisCliResponseVersion polarisCliResponseVersion, JsonObject versionlessModel) throws IntegrationException {
         CliScanParser<? extends CliScanResponse> cliScanParser = new CliScanUnsupportedParser(gson, versionString);
 
         int majorVersion = polarisCliResponseVersion.getMajor();

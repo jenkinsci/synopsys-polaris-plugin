@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.json.CliCommonResponseAdapter;
@@ -76,16 +77,16 @@ public class PolarisCliResponseUtility {
         try (BufferedReader reader = Files.newBufferedReader(pathToJson)) {
             logger.debug("Attempting to retrieve CliCommonResponseModel from " + pathToJson.toString());
             return getPolarisCliResponseModelFromJsonObject(gson.fromJson(reader, JsonObject.class));
-        } catch (IOException e) {
+        } catch (IOException | IntegrationException e) {
             throw new PolarisIntegrationException("There was a problem parsing the Polaris CLI response json at " + pathToJson.toString(), e);
         }
     }
 
-    public CliCommonResponseModel getPolarisCliResponseModelFromString(String rawPolarisCliResponse) throws PolarisIntegrationException {
+    public CliCommonResponseModel getPolarisCliResponseModelFromString(String rawPolarisCliResponse) throws IntegrationException {
         return getPolarisCliResponseModelFromJsonObject(gson.fromJson(rawPolarisCliResponse, JsonObject.class));
     }
 
-    public CliCommonResponseModel getPolarisCliResponseModelFromJsonObject(JsonObject versionlessModel) throws PolarisIntegrationException {
+    public CliCommonResponseModel getPolarisCliResponseModelFromJsonObject(JsonObject versionlessModel) throws IntegrationException {
         String versionString = versionlessModel.get("version").getAsString();
         PolarisCliResponseVersion polarisCliResponseVersion = PolarisCliResponseVersion.parse(versionString)
                                                                   .orElseThrow(() -> new PolarisIntegrationException("Version " + versionString + " is not a valid version of cli-scan.json"));

@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.CommonIssueSummary;
 import com.synopsys.integration.polaris.common.cli.model.CommonProjectInfo;
@@ -37,7 +38,7 @@ import com.synopsys.integration.polaris.common.cli.model.json.v1.IssueSummaryV1;
 import com.synopsys.integration.polaris.common.cli.model.json.v1.ProjectInfoV1;
 import com.synopsys.integration.polaris.common.cli.model.json.v1.ScanInfoV1;
 import com.synopsys.integration.polaris.common.cli.model.json.v1.ToolInfoV1;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
+import com.synopsys.integration.rest.HttpUrl;
 
 public abstract class CliScanParser<T extends CliScanResponse> {
     private final Gson gson;
@@ -48,13 +49,13 @@ public abstract class CliScanParser<T extends CliScanResponse> {
 
     public abstract TypeToken<T> getTypeToken();
 
-    public abstract CliCommonResponseModel fromCliScan(JsonObject versionlessModel) throws PolarisIntegrationException;
+    public abstract CliCommonResponseModel fromCliScan(JsonObject versionlessModel) throws IntegrationException;
 
     protected T fromJson(JsonObject jsonObject) {
         return gson.fromJson(jsonObject, getTypeToken().getType());
     }
 
-    protected CliCommonResponseModel createResponseModel(IssueSummaryV1 issueSummary, ProjectInfoV1 projectInfo, ScanInfoV1 scanInfo) {
+    protected CliCommonResponseModel createResponseModel(IssueSummaryV1 issueSummary, ProjectInfoV1 projectInfo, ScanInfoV1 scanInfo) throws IntegrationException {
         CliCommonResponseModel cliCommonResponseModel = new CliCommonResponseModel();
 
         populateIssueSummary(issueSummary, cliCommonResponseModel::setIssueSummary);
@@ -63,10 +64,10 @@ public abstract class CliScanParser<T extends CliScanResponse> {
         return cliCommonResponseModel;
     }
 
-    protected void populateScanInfo(ScanInfoV1 scanInfoV1, Consumer<CommonScanInfo> consumer) {
+    protected void populateScanInfo(ScanInfoV1 scanInfoV1, Consumer<CommonScanInfo> consumer) throws IntegrationException {
         CommonScanInfo commonScanInfo = new CommonScanInfo();
         commonScanInfo.setCliVersion(scanInfoV1.cliVersion);
-        commonScanInfo.setIssueApiUrl(scanInfoV1.issueApiUrl);
+        commonScanInfo.setIssueApiUrl(new HttpUrl(scanInfoV1.issueApiUrl));
         commonScanInfo.setScanTime(scanInfoV1.scanTime);
 
         consumer.accept(commonScanInfo);
@@ -81,22 +82,22 @@ public abstract class CliScanParser<T extends CliScanResponse> {
         consumer.accept(commonProjectInfo);
     }
 
-    protected void populateIssueSummary(IssueSummaryV1 issueSummaryV1, Consumer<CommonIssueSummary> consumer) {
+    protected void populateIssueSummary(IssueSummaryV1 issueSummaryV1, Consumer<CommonIssueSummary> consumer) throws IntegrationException {
         if (null != issueSummaryV1) {
             CommonIssueSummary commonIssueSummary = new CommonIssueSummary();
             commonIssueSummary.setIssuesBySeverity(issueSummaryV1.issuesBySeverity);
-            commonIssueSummary.setSummaryUrl(issueSummaryV1.summaryUrl);
+            commonIssueSummary.setSummaryUrl(new HttpUrl(issueSummaryV1.summaryUrl));
             commonIssueSummary.setTotalIssueCount(issueSummaryV1.total);
 
             consumer.accept(commonIssueSummary);
         }
     }
 
-    protected CommonToolInfo createCommonToolInfo(ToolInfoV1 toolInfoV1) {
+    protected CommonToolInfo createCommonToolInfo(ToolInfoV1 toolInfoV1) throws IntegrationException {
         CommonToolInfo commonToolInfo = new CommonToolInfo();
         commonToolInfo.setJobId(toolInfoV1.jobId);
         commonToolInfo.setJobStatus(toolInfoV1.jobStatus);
-        commonToolInfo.setJobStatusUrl(toolInfoV1.jobStatusUrl);
+        commonToolInfo.setJobStatusUrl(new HttpUrl(toolInfoV1.jobStatusUrl));
         commonToolInfo.setToolVersion(toolInfoV1.toolVersion);
         return commonToolInfo;
     }

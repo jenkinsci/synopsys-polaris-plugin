@@ -53,7 +53,6 @@ import com.synopsys.integration.polaris.common.service.PolarisServicesFactory;
 import com.synopsys.integration.rest.HttpUrl;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.support.AuthenticationSupport;
-import com.synopsys.integration.rest.support.UrlSupport;
 import com.synopsys.integration.util.Stringable;
 
 public class PolarisServerConfig extends Stringable implements Buildable {
@@ -62,16 +61,14 @@ public class PolarisServerConfig extends Stringable implements Buildable {
     private final String accessToken;
     private final ProxyInfo proxyInfo;
     private final Gson gson;
-    private final UrlSupport urlSupport;
     private final AuthenticationSupport authenticationSupport;
 
-    public PolarisServerConfig(HttpUrl polarisUrl, int timeoutSeconds, String accessToken, ProxyInfo proxyInfo, Gson gson, UrlSupport urlSupport, AuthenticationSupport authenticationSupport) {
+    public PolarisServerConfig(HttpUrl polarisUrl, int timeoutSeconds, String accessToken, ProxyInfo proxyInfo, Gson gson, AuthenticationSupport authenticationSupport) {
         this.polarisUrl = polarisUrl;
         this.timeoutSeconds = timeoutSeconds;
         this.accessToken = accessToken;
         this.proxyInfo = proxyInfo;
         this.gson = gson;
-        this.urlSupport = urlSupport;
         this.authenticationSupport = authenticationSupport;
     }
 
@@ -80,7 +77,7 @@ public class PolarisServerConfig extends Stringable implements Buildable {
     }
 
     public AccessTokenPolarisHttpClient createPolarisHttpClient(IntLogger logger) {
-        return new AccessTokenPolarisHttpClient(logger, timeoutSeconds, proxyInfo, polarisUrl, accessToken, gson, urlSupport, authenticationSupport);
+        return new AccessTokenPolarisHttpClient(logger, timeoutSeconds, proxyInfo, polarisUrl, accessToken, gson, authenticationSupport);
     }
 
     public PolarisServicesFactory createPolarisServicesFactory(IntLogger logger) {

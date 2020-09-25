@@ -20,39 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.cli.model;
+package com.synopsys.integration.jenkins.polaris;
 
-import java.util.Map;
+public enum PolarisJenkinsEnvironmentVariable {
+    CHANGE_SET_FILE_PATH("CHANGE_SET_FILE_PATH");
 
-import com.synopsys.integration.rest.HttpUrl;
+    private final String environmentVariable;
 
-public class CommonIssueSummary {
-    private Map<String, Integer> issuesBySeverity;
-    private HttpUrl summaryUrl;
-    private Integer totalIssueCount;
-
-    public Map<String, Integer> getIssuesBySeverity() {
-        return issuesBySeverity;
+    PolarisJenkinsEnvironmentVariable(String environmentVariable) {
+        this.environmentVariable = environmentVariable;
     }
 
-    public void setIssuesBySeverity(Map<String, Integer> issuesBySeverity) {
-        this.issuesBySeverity = issuesBySeverity;
-    }
-
-    public HttpUrl getSummaryUrl() {
-        return summaryUrl;
-    }
-
-    public void setSummaryUrl(HttpUrl summaryUrl) {
-        this.summaryUrl = summaryUrl;
-    }
-
-    public Integer getTotalIssueCount() {
-        return totalIssueCount;
-    }
-
-    public void setTotalIssueCount(Integer totalIssueCount) {
-        this.totalIssueCount = totalIssueCount;
+    public String stringValue() {
+        return environmentVariable;
     }
 
 }
