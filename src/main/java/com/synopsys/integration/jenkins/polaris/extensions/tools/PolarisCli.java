@@ -72,7 +72,7 @@ public class PolarisCli extends ToolInstallation implements NodeSpecific<Polaris
     public static final class DescriptorImpl extends ToolDescriptor<PolarisCli> {
         @Override
         public String getDisplayName() {
-            return "Polaris CLI";
+            return "Polaris Software Integrity Platform CLI";
         }
 
         @Override

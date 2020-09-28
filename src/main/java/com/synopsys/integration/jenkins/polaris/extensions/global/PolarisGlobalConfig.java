@@ -80,10 +80,10 @@ import jenkins.util.xml.XMLUtils;
 public class PolarisGlobalConfig extends GlobalConfiguration implements Serializable {
     private static final long serialVersionUID = 1903218683598310994L;
 
-    @HelpMarkdown("Provide the URL that lets you access your Polaris server.")
+    @HelpMarkdown("Provide the URL that lets you access the Polaris Software Integrity Platform.")
     private String polarisUrl;
 
-    @HelpMarkdown("Choose the Access Token from the list to authenticate to the Polaris server.\r\n"
+    @HelpMarkdown("Choose the Access Token from the list to authenticate to the Polaris Software Integrity Platform.  \r\n"
                       + "If the credentials you are looking for are not in the list then you can add them with the Add button")
     private String polarisCredentialsId;
 
