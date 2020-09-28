@@ -22,31 +22,17 @@
  */
 package com.synopsys.integration.polaris.common.api.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.annotations.SerializedName;
 import com.synopsys.integration.polaris.common.api.PolarisAttributes;
 import com.synopsys.integration.polaris.common.api.PolarisResponse;
 
 public class JobAttributes extends PolarisResponse implements PolarisAttributes {
-    private static final long serialVersionUID = -7775735940473228894L;
-    @SerializedName("details")
-    private HashMap<String, Object> details = null;
-
+    private static final long serialVersionUID = 2618385287180907810L;
     @SerializedName("failureInfo")
     private FailureInfo failureInfo = null;
 
     @SerializedName("status")
     private JobStatus status = null;
-
-    public Map<String, Object> getDetails() {
-        return details;
-    }
-
-    public void setDetails(Map<String, Object> details) {
-        this.details = new HashMap<>(details);
-    }
 
     public FailureInfo getFailureInfo() {
         return failureInfo;
