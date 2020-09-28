@@ -22,5 +22,7 @@
  */
 package com.synopsys.integration.polaris.common.api;
 
-public interface PolarisAttributes {
+import java.io.Serializable;
+
+public interface PolarisAttributes extends Serializable {
 }

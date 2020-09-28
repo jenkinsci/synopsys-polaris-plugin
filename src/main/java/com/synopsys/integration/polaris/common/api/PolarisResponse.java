@@ -27,6 +27,7 @@ import java.io.Serializable;
 import com.synopsys.integration.util.Stringable;
 
 public class PolarisResponse extends Stringable implements Serializable {
+    private static final long serialVersionUID = 1968298547235080384L;
     private String json;
 
     public PolarisResponse() {
