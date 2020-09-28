@@ -59,6 +59,14 @@ public class PolarisEnvironmentService {
         return intEnvironmentVariables;
     }
 
+    public IntEnvironmentVariables getInitialEnvironment() {
+        IntEnvironmentVariables intEnvironmentVariables = IntEnvironmentVariables.empty();
+
+        intEnvironmentVariables.putAll(environmentVariables);
+
+        return intEnvironmentVariables;
+    }
+
     private void acceptIfNotNull(BiConsumer<String, String> environmentPutter, String key, String value) {
         if (StringUtils.isNoneBlank(key, value)) {
             environmentPutter.accept(key, value);

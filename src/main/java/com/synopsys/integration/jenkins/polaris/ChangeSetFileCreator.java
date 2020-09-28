@@ -28,10 +28,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.jenkins.ChangeSetFilter;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.jenkins.polaris.service.PolarisEnvironmentService;
 import com.synopsys.integration.jenkins.service.JenkinsRemotingService;
 import com.synopsys.integration.jenkins.service.JenkinsScmService;
+import com.synopsys.integration.util.IntEnvironmentVariables;
 
 import jenkins.security.MasterToSlaveCallable;
 
@@ -39,11 +43,13 @@ public class ChangeSetFileCreator {
     private final JenkinsIntLogger logger;
     private final JenkinsRemotingService jenkinsRemotingService;
     private final JenkinsScmService jenkinsScmService;
+    private final PolarisEnvironmentService polarisEnvironmentService;
 
-    public ChangeSetFileCreator(JenkinsIntLogger logger, JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
+    public ChangeSetFileCreator(JenkinsIntLogger logger, JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService, PolarisEnvironmentService polarisEnvironmentService) {
         this.logger = logger;
         this.jenkinsRemotingService = jenkinsRemotingService;
         this.jenkinsScmService = jenkinsScmService;
+        this.polarisEnvironmentService = polarisEnvironmentService;
     }
 
     public String createChangeSetFile(String exclusionPatterns, String inclusionPatterns) throws IOException, InterruptedException {
@@ -64,7 +70,10 @@ public class ChangeSetFileCreator {
             logger.info("The change set file could not be created because the jenkins change set was empty.");
             changeSetFilePath = null;
         } else {
-            changeSetFilePath = jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
+            IntEnvironmentVariables environment = polarisEnvironmentService.getInitialEnvironment();
+            String valueOfChangeSetFilePath = environment.getValue(PolarisJenkinsEnvironmentVariable.CHANGE_SET_FILE_PATH.stringValue());
+
+            changeSetFilePath = jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(valueOfChangeSetFilePath, remoteWorkspacePath, changedFiles));
         }
 
         return changeSetFilePath;
@@ -73,16 +82,26 @@ public class ChangeSetFileCreator {
     private static class CreateChangeSetFileAndGetRemotePath extends MasterToSlaveCallable<String, IOException> {
         private static final long serialVersionUID = -8708849449533708805L;
         private final ArrayList<String> changedFiles;
-        private final String remoteWorkspacePath;
+        private final String changeSetFilePath;
+        private final String valueOfChangeSetFilePath;
 
-        public CreateChangeSetFileAndGetRemotePath(String remoteWorkspacePath, ArrayList<String> changedFiles) {
-            this.remoteWorkspacePath = remoteWorkspacePath;
+        public CreateChangeSetFileAndGetRemotePath(String valueOfChangeSetFilePath, String remoteWorkspacePath, ArrayList<String> changedFiles) {
+            this.valueOfChangeSetFilePath = valueOfChangeSetFilePath;
+            this.changeSetFilePath = remoteWorkspacePath;
             this.changedFiles = changedFiles;
         }
 
         @Override
         public String call() throws IOException {
-            Path changeSetFile = Paths.get(remoteWorkspacePath).resolve("changeSetFiles.txt");
+            Path changeSetFile;
+            if (StringUtils.isNotBlank(valueOfChangeSetFilePath)) {
+                changeSetFile = Paths.get(valueOfChangeSetFilePath);
+            } else {
+                changeSetFile = Paths.get(changeSetFilePath)
+                                    .resolve(".synopsys")
+                                    .resolve("polaris")
+                                    .resolve("changeSetFiles.txt");
+            }
             Files.write(changeSetFile, changedFiles);
 
             return changeSetFile.toRealPath().toString();

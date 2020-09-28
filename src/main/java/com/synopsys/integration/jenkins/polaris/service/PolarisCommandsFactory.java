@@ -121,7 +121,7 @@ public class PolarisCommandsFactory {
     }
 
     public ChangeSetFileCreator createChangeSetFileCreator(JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
-        return new ChangeSetFileCreator(initializedLogger.get(), jenkinsRemotingService, jenkinsScmService);
+        return new ChangeSetFileCreator(initializedLogger.get(), jenkinsRemotingService, jenkinsScmService, createPolarisEnvironmentService());
     }
 
     private PolarisEnvironmentService createPolarisEnvironmentService() {
