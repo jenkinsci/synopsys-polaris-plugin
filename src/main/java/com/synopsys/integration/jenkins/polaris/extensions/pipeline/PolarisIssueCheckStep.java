@@ -48,8 +48,8 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
+import hudson.model.Run;
 import hudson.model.TaskListener;
-import jenkins.scm.RunWithSCM;
 
 public class PolarisIssueCheckStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Check for issues in Polaris found by a previous execution of the CLI";
@@ -108,7 +108,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
 
         @Override
         public Set<? extends Class<?>> getRequiredContext() {
-            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, RunWithSCM.class, Node.class));
+            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, Run.class, Node.class));
         }
 
         @Override
@@ -131,7 +131,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
         private final transient FilePath workspace;
         private final transient Launcher launcher;
         private final transient Node node;
-        private final transient RunWithSCM<?, ?> run;
+        private final transient Run<?, ?> run;
 
         protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
@@ -140,7 +140,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
             workspace = context.get(FilePath.class);
             launcher = context.get(Launcher.class);
             node = context.get(Node.class);
-            run = context.get(RunWithSCM.class);
+            run = context.get(Run.class);
         }
 
         @Override

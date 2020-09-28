@@ -50,7 +50,12 @@ public class ChangeSetFileCreator {
         ChangeSetFilter changeSetFilter = jenkinsScmService.newChangeSetFilter().excludeMatching(exclusionPatterns).includeMatching(inclusionPatterns);
 
         // ArrayLists are serializable, Lists are not. -- rotte SEP 2020
-        ArrayList<String> changedFiles = new ArrayList<>(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
+        ArrayList<String> changedFiles = new ArrayList<>();
+        try {
+            changedFiles.addAll(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
+        } catch (Exception e) {
+            logger.error("Could not get the jenkins change set: " + e.getMessage());
+        }
 
         String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
 

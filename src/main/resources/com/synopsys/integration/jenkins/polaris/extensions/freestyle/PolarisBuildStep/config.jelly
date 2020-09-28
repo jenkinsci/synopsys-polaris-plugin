@@ -29,7 +29,7 @@
             <f:entry field="changeSetExclusionPatterns" title="Change set exclusion patterns">
                 <f:textbox id="changeSetExclusionPatterns"/>
             </f:entry>
-            <f:entry field="buildStatusOnSkip" title="If the change set is empty, skip analysis and set the build status to">
+            <f:entry field="buildStatusOnSkip" title="When static analysis is skipped because the change set contained no files to analyze">
                 <f:select id="buildStatusOnSkip" default="${instance.defaultBuildStatusOnSkip}"/>
             </f:entry>
         </j:scope>

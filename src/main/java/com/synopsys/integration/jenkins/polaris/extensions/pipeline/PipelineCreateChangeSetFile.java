@@ -22,6 +22,8 @@
  */
 package com.synopsys.integration.jenkins.polaris.extensions.pipeline;
 
+import java.io.Serializable;
+
 import javax.annotation.Nullable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -35,7 +37,8 @@ import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import net.sf.json.JSONObject;
 
-public class PipelineCreateChangeSetFile extends AbstractDescribableImpl<PipelineCreateChangeSetFile> {
+public class PipelineCreateChangeSetFile extends AbstractDescribableImpl<PipelineCreateChangeSetFile> implements Serializable {
+    private static final long serialVersionUID = 3487021835917084100L;
     @Nullable
     @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly excluded from the Jenkins change set.  \r\n"
                       + "The pattern is applied to determine which files will be populated in the change set file, stored at $CHANGE_SET_FILE_PATH.  \r\n"

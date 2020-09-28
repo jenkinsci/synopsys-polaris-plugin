@@ -19,7 +19,7 @@
             <f:entry field="excluding" title="Change set exclusion patterns">
                 <f:textbox id="excluding"/>
             </f:entry>
-            <f:entry field="skipQuietly" title="Skip static analysis without throwing an exception if the change set is empty">
+            <f:entry field="skipQuietly" title="Return -1 when skipping analysis">
                 <f:checkbox/>
             </f:entry>
         </j:scope>

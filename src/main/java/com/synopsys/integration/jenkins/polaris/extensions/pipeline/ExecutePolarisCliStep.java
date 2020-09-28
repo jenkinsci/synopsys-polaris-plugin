@@ -51,10 +51,10 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
-import jenkins.scm.RunWithSCM;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Execute Synopsys Polaris Software Integrity Platform CLI";
@@ -147,7 +147,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
 
         @Override
         public Set<? extends Class<?>> getRequiredContext() {
-            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, Node.class));
+            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, Node.class, Run.class));
         }
 
         @Override
@@ -170,7 +170,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         private final transient FilePath workspace;
         private final transient Launcher launcher;
         private final transient Node node;
-        private final transient RunWithSCM<?, ?> run;
+        private final transient Run<?, ?> run;
 
         protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
@@ -179,7 +179,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
             workspace = context.get(FilePath.class);
             launcher = context.get(Launcher.class);
             node = context.get(Node.class);
-            run = context.get(RunWithSCM.class);
+            run = context.get(Run.class);
         }
 
         @Override
