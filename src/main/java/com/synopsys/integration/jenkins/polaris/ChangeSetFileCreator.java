@@ -46,7 +46,7 @@ public class ChangeSetFileCreator {
         this.jenkinsScmService = jenkinsScmService;
     }
 
-    public String createChangeSetFile(String exclusionPatterns, String inclusionPatterns, boolean skipIfempty) throws IOException, InterruptedException {
+    public String createChangeSetFile(String exclusionPatterns, String inclusionPatterns) throws IOException, InterruptedException {
         ChangeSetFilter changeSetFilter = jenkinsScmService.newChangeSetFilter().excludeMatching(exclusionPatterns).includeMatching(inclusionPatterns);
 
         // ArrayLists are serializable, Lists are not. -- rotte SEP 2020
@@ -55,7 +55,7 @@ public class ChangeSetFileCreator {
         String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
 
         String changeSetFilePath;
-        if (changedFiles.size() == 0 && skipIfempty) {
+        if (changedFiles.size() == 0) {
             logger.info("The change set file could not be created because the jenkins change set was empty.");
             changeSetFilePath = null;
         } else {

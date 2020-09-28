@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
+import com.synopsys.integration.jenkins.polaris.extensions.pipeline.PipelineCreateChangeSetFile;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 
 public class PolarisPipelineCommandsTest {
@@ -30,7 +30,7 @@ public class PolarisPipelineCommandsTest {
     private PolarisCliRunner mockedCliRunner;
     private PolarisIssueChecker mockedIssueChecker;
     private ChangeSetFileCreator mockedChangeSetFileCreator;
-    private CreateChangeSetFile createChangeSetFile;
+    private PipelineCreateChangeSetFile createChangeSetFile;
 
     @BeforeEach
     public void setUpMocks() {
@@ -39,7 +39,9 @@ public class PolarisPipelineCommandsTest {
         mockedIssueChecker = Mockito.mock(PolarisIssueChecker.class);
         mockedChangeSetFileCreator = Mockito.mock(ChangeSetFileCreator.class);
 
-        createChangeSetFile = new CreateChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS);
+        createChangeSetFile = new PipelineCreateChangeSetFile();
+        createChangeSetFile.setExcluding(EXCLUSION_PATTERNS);
+        createChangeSetFile.setIncluding(INCLUSION_PATTERNS);
     }
 
     @Test

@@ -25,8 +25,9 @@ package com.synopsys.integration.jenkins.polaris;
 import java.io.IOException;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.common.IntegrationAbortException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
+import com.synopsys.integration.jenkins.polaris.extensions.pipeline.PipelineCreateChangeSetFile;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 
 public class PolarisPipelineCommands {
@@ -42,16 +43,19 @@ public class PolarisPipelineCommands {
         this.polarisIssueCounter = polarisIssueCounter;
     }
 
-    public int runPolarisCli(String polarisCliName, String polarisCliArgumentString, Boolean returnStatus, CreateChangeSetFile createChangeSetFile) throws IntegrationException, InterruptedException, IOException {
-        boolean skipIfEmpty = createChangeSetFile != null && (createChangeSetFile.getSkipIfEmpty() == null || Boolean.TRUE.equals(createChangeSetFile.getSkipIfEmpty()));
+    public int runPolarisCli(String polarisCliName, String polarisCliArgumentString, Boolean returnStatus, PipelineCreateChangeSetFile createChangeSetFile) throws IntegrationException, InterruptedException, IOException {
         String changeSetFilePath = null;
         if (createChangeSetFile != null) {
-            changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns(), skipIfEmpty);
-        }
-
-        if (skipIfEmpty && changeSetFilePath == null) {
-            logger.info("The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.");
-            return 0;
+            changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getExcluding(), createChangeSetFile.getIncluding());
+            if (changeSetFilePath == null) {
+                String skipMessage = "The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.";
+                if (Boolean.TRUE.equals(createChangeSetFile.getSkipQuietly())) {
+                    logger.info(skipMessage);
+                    return -1;
+                } else {
+                    throw new IntegrationAbortException(skipMessage);
+                }
+            }
         }
 
         int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisCliArgumentString);

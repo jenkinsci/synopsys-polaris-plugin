@@ -34,7 +34,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
@@ -63,7 +62,7 @@ public class PolarisBuildStep extends Builder {
     @Nullable
     @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
                       + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
-    private CreateChangeSetFile createChangeSetFile;
+    private FreestyleCreateChangeSetFile createChangeSetFile;
 
     @Nullable
     @HelpMarkdown("Check this box to wait for CLI jobs to complete and set the build status based on issues discovered")
@@ -106,12 +105,12 @@ public class PolarisBuildStep extends Builder {
     }
 
     @Nullable
-    public CreateChangeSetFile getCreateChangeSetFile() {
+    public FreestyleCreateChangeSetFile getCreateChangeSetFile() {
         return createChangeSetFile;
     }
 
     @DataBoundSetter
-    public void setCreateChangeSetFile(@Nullable CreateChangeSetFile createChangeSetFile) {
+    public void setCreateChangeSetFile(@Nullable FreestyleCreateChangeSetFile createChangeSetFile) {
         this.createChangeSetFile = createChangeSetFile;
     }
 

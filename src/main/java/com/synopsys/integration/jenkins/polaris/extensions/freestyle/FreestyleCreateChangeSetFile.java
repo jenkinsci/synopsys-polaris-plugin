@@ -20,21 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.jenkins.polaris.extensions;
+package com.synopsys.integration.jenkins.polaris.extensions.freestyle;
 
 import javax.annotation.Nullable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
+import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
+import com.synopsys.integration.jenkins.extensions.JenkinsSelectBoxEnum;
 
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
+import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 
-public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSetFile> {
+public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<FreestyleCreateChangeSetFile> {
+    @Nullable
     @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly excluded from the Jenkins change set.  \r\n"
                       + "The pattern is applied to determine which files will be populated in the change set file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
                       + "If blank, will exclude none.  \r\n"
@@ -47,8 +52,9 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
                       + "| test.java | test.*     | Yes              |\r\n"
                       + "| test.java | test.????  | Yes              |\r\n"
                       + "| test.java | test.????? | No               |")
-    private final String changeSetExclusionPatterns;
+    private String changeSetExclusionPatterns;
 
+    @Nullable
     @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly included from the Jenkins change set.  \r\n"
                       + "The pattern is applied to determine which files will be populated in the change set file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
                       + "If blank, will include all. \r\n"
@@ -61,24 +67,49 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
                       + "| test.java | test.*     | Yes              |\r\n"
                       + "| test.java | test.????  | Yes              |\r\n"
                       + "| test.java | test.????? | No               |")
-    private final String changeSetInclusionPatterns;
+    private String changeSetInclusionPatterns;
 
     @Nullable
-    @HelpMarkdown("Skips Polaris Software Integrity Platform static analysis if nothing is included in the change set. Defaults to true.")
-    private Boolean skipIfEmpty;
+    @HelpMarkdown("The action to take when static analysis is skipped because the change set contained no files to analyze. Defaults to \"Mark the build as Unstable\".")
+    private ChangeBuildStatusTo buildStatusOnSkip;
 
     @DataBoundConstructor
-    public CreateChangeSetFile(String changeSetExclusionPatterns, String changeSetInclusionPatterns) {
-        this.changeSetExclusionPatterns = changeSetExclusionPatterns;
-        this.changeSetInclusionPatterns = changeSetInclusionPatterns;
+    public FreestyleCreateChangeSetFile() {
+        // do nothing
     }
 
+    @Nullable
+    public ChangeBuildStatusTo getBuildStatusOnSkip() {
+        return buildStatusOnSkip;
+    }
+
+    @DataBoundSetter
+    public void setBuildStatusOnSkip(ChangeBuildStatusTo buildStatusOnSkip) {
+        this.buildStatusOnSkip = buildStatusOnSkip;
+    }
+
+    public ChangeBuildStatusTo getDefaultBuildStatusOnSkip() {
+        return ChangeBuildStatusTo.UNSTABLE;
+    }
+
+    @Nullable
+    public String getChangeSetExclusionPatterns() {
+        return changeSetExclusionPatterns;
+    }
+
+    @DataBoundSetter
+    public void setChangeSetExclusionPatterns(@Nullable String changeSetExclusionPatterns) {
+        this.changeSetExclusionPatterns = changeSetExclusionPatterns;
+    }
+
+    @Nullable
     public String getChangeSetInclusionPatterns() {
         return changeSetInclusionPatterns;
     }
 
-    public String getChangeSetExclusionPatterns() {
-        return changeSetExclusionPatterns;
+    @DataBoundSetter
+    public void setChangeSetInclusionPatterns(@Nullable String changeSetInclusionPatterns) {
+        this.changeSetInclusionPatterns = changeSetInclusionPatterns;
     }
 
     @Override
@@ -86,21 +117,10 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
         return (DescriptorImpl) super.getDescriptor();
     }
 
-    public Boolean getSkipIfEmpty() {
-        if (Boolean.FALSE.equals(skipIfEmpty)) {
-            return skipIfEmpty;
-        }
-        return null;
-    }
-
-    public void setSkipIfEmpty(Boolean skipIfEmpty) {
-        this.skipIfEmpty = skipIfEmpty;
-    }
-
     @Extension
-    public static class DescriptorImpl extends Descriptor<CreateChangeSetFile> {
+    public static class DescriptorImpl extends Descriptor<FreestyleCreateChangeSetFile> {
         public DescriptorImpl() {
-            super(CreateChangeSetFile.class);
+            super(FreestyleCreateChangeSetFile.class);
             load();
         }
 
@@ -109,6 +129,10 @@ public class CreateChangeSetFile extends AbstractDescribableImpl<CreateChangeSet
             req.bindJSON(this, formData);
             save();
             return super.configure(req, formData);
+        }
+
+        public ListBoxModel doFillBuildStatusOnSkipItems() {
+            return JenkinsSelectBoxEnum.toListBoxModel(ChangeBuildStatusTo.values());
         }
 
     }

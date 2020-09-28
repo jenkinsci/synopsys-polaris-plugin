@@ -13,13 +13,13 @@
             <j:set var="descriptor" value="${descriptor.getPropertyType(instance,'createChangeSetFile').getApplicableDescriptors().get(0)}"/>
             <j:set var="instance" value="${instance.createChangeSetFile}"/>
             <j:set var="it" value="${it.createChangeSetFile}"/>
-            <f:entry field="changeSetInclusionPatterns" title="Change set inclusion patterns">
-                <f:textbox id="changeSetInclusionPatterns"/>
+            <f:entry field="including" title="Change set inclusion patterns">
+                <f:textbox id="including"/>
             </f:entry>
-            <f:entry field="changeSetExclusionPatterns" title="Change set exclusion patterns">
-                <f:textbox id="changeSetExclusionPatterns"/>
+            <f:entry field="excluding" title="Change set exclusion patterns">
+                <f:textbox id="excluding"/>
             </f:entry>
-            <f:entry field="skipIfEmpty" title="Skip static analysis if the change set is empty">
+            <f:entry field="skipQuietly" title="Skip static analysis without throwing an exception if the change set is empty">
                 <f:checkbox/>
             </f:entry>
         </j:scope>
