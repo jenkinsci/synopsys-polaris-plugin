@@ -54,8 +54,8 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Node;
+import hudson.model.Run;
 import hudson.model.TaskListener;
-import jenkins.scm.RunWithSCM;
 
 public class PolarisCommandsFactory {
     private final EnvVars envVars;
@@ -88,7 +88,7 @@ public class PolarisCommandsFactory {
         return new PolarisFreestyleCommands(polarisCommandsFactory.getOrCreateLogger(), jenkinsBuildService, changeSetFileCreator, polarisCliRunner, polarisIssueCounter);
     }
 
-    public static PolarisPipelineCommands fromPipeline(TaskListener listener, EnvVars envVars, Launcher launcher, Node node, RunWithSCM<?, ?> run, FilePath workspace) throws AbortException {
+    public static PolarisPipelineCommands fromPipeline(TaskListener listener, EnvVars envVars, Launcher launcher, Node node, Run<?, ?> run, FilePath workspace) throws AbortException {
         PolarisCommandsFactory polarisCommandsFactory = new PolarisCommandsFactory(JenkinsWrapper.initializeFromJenkinsJVM(), envVars, listener);
         JenkinsServicesFactory jenkinsServicesFactory = new JenkinsServicesFactory(polarisCommandsFactory.getOrCreateLogger(), envVars, launcher, listener, node, run, workspace);
 
@@ -121,7 +121,7 @@ public class PolarisCommandsFactory {
     }
 
     public ChangeSetFileCreator createChangeSetFileCreator(JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
-        return new ChangeSetFileCreator(jenkinsRemotingService, jenkinsScmService);
+        return new ChangeSetFileCreator(initializedLogger.get(), jenkinsRemotingService, jenkinsScmService);
     }
 
     private PolarisEnvironmentService createPolarisEnvironmentService() {

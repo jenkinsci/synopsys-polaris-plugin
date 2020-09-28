@@ -20,9 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.polaris.common.api;
+package com.synopsys.integration.jenkins.common;
 
-import java.io.Serializable;
+import hudson.AbortException;
 
-public interface PolarisAttributes extends Serializable {
+public class IntegrationAbortException extends AbortException {
+    private static final long serialVersionUID = 4947006408980692375L;
+
+    public IntegrationAbortException() {
+        super();
+    }
+
+    public IntegrationAbortException(String message) {
+        super(message);
+    }
 }

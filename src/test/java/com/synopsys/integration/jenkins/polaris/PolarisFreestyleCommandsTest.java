@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
+import com.synopsys.integration.jenkins.polaris.extensions.freestyle.FreestyleCreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.freestyle.WaitForIssues;
 import com.synopsys.integration.jenkins.service.JenkinsBuildService;
 
@@ -33,7 +33,7 @@ public class PolarisFreestyleCommandsTest {
     private JenkinsBuildService mockedBuildService;
     private ChangeSetFileCreator mockedChangeSetFileCreator;
     private WaitForIssues waitForIssues;
-    private CreateChangeSetFile createChangeSetFile;
+    private FreestyleCreateChangeSetFile createChangeSetFile;
 
     @BeforeEach
     public void setUpMocks() {
@@ -47,11 +47,20 @@ public class PolarisFreestyleCommandsTest {
         waitForIssues.setBuildStatusForIssues(ChangeBuildStatusTo.FAILURE);
         waitForIssues.setJobTimeoutInMinutes(JOB_TIMEOUT_IN_MINUTES);
 
-        createChangeSetFile = new CreateChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS);
+        createChangeSetFile = new FreestyleCreateChangeSetFile();
+        createChangeSetFile.setChangeSetExclusionPatterns(EXCLUSION_PATTERNS);
+        createChangeSetFile.setChangeSetInclusionPatterns(INCLUSION_PATTERNS);
     }
 
     @Test
     public void testPreserveNullTimeout() throws Throwable {
+        try {
+            Mockito.when(mockedCliRunner.runPolarisCli(POLARIS_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS)).thenReturn(STATUS_CODE_SUCCESS);
+            Mockito.when(mockedChangeSetFileCreator.createChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS)).thenReturn(CHANGE_SET_FILE_PATH);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
+        }
+
         waitForIssues.setJobTimeoutInMinutes(null);
 
         PolarisFreestyleCommands polarisFreestyleCommands = new PolarisFreestyleCommands(logger, mockedBuildService, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);

@@ -43,7 +43,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.synopsys.integration.jenkins.annotations.HelpMarkdown;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.PolarisCommandsFactory;
 
@@ -52,10 +51,10 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Node;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
-import jenkins.scm.RunWithSCM;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
     public static final String DISPLAY_NAME = "Execute Synopsys Polaris Software Integrity Platform CLI";
@@ -76,7 +75,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     @Nullable
     @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
                       + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
-    private CreateChangeSetFile createChangeSetFile;
+    private PipelineCreateChangeSetFile createChangeSetFile;
 
     @DataBoundConstructor
     public ExecutePolarisCliStep(String arguments) {
@@ -116,12 +115,12 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     }
 
     @Nullable
-    public CreateChangeSetFile getCreateChangeSetFile() {
+    public PipelineCreateChangeSetFile getCreateChangeSetFile() {
         return createChangeSetFile;
     }
 
     @DataBoundSetter
-    public void setCreateChangeSetFile(@Nullable CreateChangeSetFile createChangeSetFile) {
+    public void setCreateChangeSetFile(@Nullable PipelineCreateChangeSetFile createChangeSetFile) {
         this.createChangeSetFile = createChangeSetFile;
     }
 
@@ -148,7 +147,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
 
         @Override
         public Set<? extends Class<?>> getRequiredContext() {
-            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, Node.class));
+            return new HashSet<>(Arrays.asList(TaskListener.class, EnvVars.class, FilePath.class, Launcher.class, Node.class, Run.class));
         }
 
         @Override
@@ -171,7 +170,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
         private final transient FilePath workspace;
         private final transient Launcher launcher;
         private final transient Node node;
-        private final transient RunWithSCM<?, ?> run;
+        private final transient Run<?, ?> run;
 
         protected Execution(@Nonnull StepContext context) throws InterruptedException, IOException {
             super(context);
@@ -180,7 +179,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
             workspace = context.get(FilePath.class);
             launcher = context.get(Launcher.class);
             node = context.get(Node.class);
-            run = context.get(RunWithSCM.class);
+            run = context.get(Run.class);
         }
 
         @Override

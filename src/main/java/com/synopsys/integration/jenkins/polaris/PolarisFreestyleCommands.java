@@ -27,7 +27,7 @@ import java.util.Optional;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.jenkins.extensions.ChangeBuildStatusTo;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
-import com.synopsys.integration.jenkins.polaris.extensions.CreateChangeSetFile;
+import com.synopsys.integration.jenkins.polaris.extensions.freestyle.FreestyleCreateChangeSetFile;
 import com.synopsys.integration.jenkins.polaris.extensions.freestyle.WaitForIssues;
 import com.synopsys.integration.jenkins.service.JenkinsBuildService;
 
@@ -46,11 +46,18 @@ public class PolarisFreestyleCommands {
         this.polarisIssueCounter = polarisIssueCounter;
     }
 
-    public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, CreateChangeSetFile createChangeSetFile, WaitForIssues waitForIssues) {
+    public void runPolarisCliAndCheckForIssues(String polarisCliName, String polarisArgumentString, FreestyleCreateChangeSetFile createChangeSetFile, WaitForIssues waitForIssues) {
         try {
             String changeSetFilePath = null;
             if (createChangeSetFile != null) {
                 changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
+                if (changeSetFilePath == null) {
+                    ChangeBuildStatusTo changeBuildStatusTo = createChangeSetFile.getBuildStatusOnSkip() != null ? createChangeSetFile.getBuildStatusOnSkip() : createChangeSetFile.getDefaultBuildStatusOnSkip();
+                    logger.warn("The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.");
+                    logger.warn("Performing configured skip action: " + changeBuildStatusTo.getDisplayName());
+                    jenkinsBuildService.markBuildAs(changeBuildStatusTo);
+                    return;
+                }
             }
 
             int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisArgumentString);

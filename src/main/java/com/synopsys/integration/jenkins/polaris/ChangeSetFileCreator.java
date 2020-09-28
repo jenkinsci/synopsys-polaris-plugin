@@ -29,16 +29,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.synopsys.integration.jenkins.ChangeSetFilter;
+import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.service.JenkinsRemotingService;
 import com.synopsys.integration.jenkins.service.JenkinsScmService;
 
 import jenkins.security.MasterToSlaveCallable;
 
 public class ChangeSetFileCreator {
+    private final JenkinsIntLogger logger;
     private final JenkinsRemotingService jenkinsRemotingService;
     private final JenkinsScmService jenkinsScmService;
 
-    public ChangeSetFileCreator(JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
+    public ChangeSetFileCreator(JenkinsIntLogger logger, JenkinsRemotingService jenkinsRemotingService, JenkinsScmService jenkinsScmService) {
+        this.logger = logger;
         this.jenkinsRemotingService = jenkinsRemotingService;
         this.jenkinsScmService = jenkinsScmService;
     }
@@ -47,11 +50,24 @@ public class ChangeSetFileCreator {
         ChangeSetFilter changeSetFilter = jenkinsScmService.newChangeSetFilter().excludeMatching(exclusionPatterns).includeMatching(inclusionPatterns);
 
         // ArrayLists are serializable, Lists are not. -- rotte SEP 2020
-        ArrayList<String> changedFiles = new ArrayList<>(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
+        ArrayList<String> changedFiles = new ArrayList<>();
+        try {
+            changedFiles.addAll(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
+        } catch (Exception e) {
+            logger.error("Could not get the jenkins change set: " + e.getMessage());
+        }
 
         String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
 
-        return jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
+        String changeSetFilePath;
+        if (changedFiles.size() == 0) {
+            logger.info("The change set file could not be created because the jenkins change set was empty.");
+            changeSetFilePath = null;
+        } else {
+            changeSetFilePath = jenkinsRemotingService.call(new CreateChangeSetFileAndGetRemotePath(remoteWorkspacePath, changedFiles));
+        }
+
+        return changeSetFilePath;
     }
 
     private static class CreateChangeSetFileAndGetRemotePath extends MasterToSlaveCallable<String, IOException> {
