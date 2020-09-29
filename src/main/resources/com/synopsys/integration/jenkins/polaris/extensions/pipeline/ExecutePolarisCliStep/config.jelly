@@ -19,7 +19,7 @@
             <f:entry field="excluding" title="Change set exclusion patterns">
                 <f:textbox id="excluding"/>
             </f:entry>
-            <f:entry field="skipQuietly" title="Return -1 when skipping analysis">
+            <f:entry field="returnSkipCode" title="Return -1 when skipping analysis">
                 <f:checkbox/>
             </f:entry>
         </j:scope>

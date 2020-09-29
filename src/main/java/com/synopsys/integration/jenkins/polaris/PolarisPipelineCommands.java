@@ -49,7 +49,7 @@ public class PolarisPipelineCommands {
             changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getExcluding(), createChangeSetFile.getIncluding());
             if (changeSetFilePath == null) {
                 String skipMessage = "The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.";
-                if (Boolean.TRUE.equals(createChangeSetFile.getSkipQuietly())) {
+                if (Boolean.TRUE.equals(createChangeSetFile.getReturnSkipCode())) {
                     logger.info(skipMessage);
                     return -1;
                 } else {
@@ -75,13 +75,15 @@ public class PolarisPipelineCommands {
     public int checkForIssues(Integer jobTimeoutInMinutes, Boolean returnIssueCount) throws InterruptedException, IntegrationException, IOException {
         int issueCount = polarisIssueCounter.getPolarisIssueCount(jobTimeoutInMinutes);
 
+        String defectMessage = String.format("[Polaris] Found %s total issues.", issueCount);
         if (issueCount > 0) {
-            String defectMessage = String.format("[Polaris] Found %s total issues.", issueCount);
             if (Boolean.TRUE.equals(returnIssueCount)) {
                 logger.error(defectMessage);
             } else {
                 throw new PolarisIntegrationException(defectMessage);
             }
+        } else {
+            logger.info(defectMessage);
         }
 
         return issueCount;

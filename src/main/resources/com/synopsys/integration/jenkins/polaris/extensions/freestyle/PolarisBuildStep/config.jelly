@@ -30,7 +30,7 @@
                 <f:textbox id="changeSetExclusionPatterns"/>
             </f:entry>
             <f:entry field="buildStatusOnSkip" title="When static analysis is skipped because the change set contained no files to analyze">
-                <f:select id="buildStatusOnSkip" default="${instance.defaultBuildStatusOnSkip}"/>
+                <f:select id="buildStatusOnSkip" default="${descriptor.getDefaultBuildStatusOnSkip()}"/>
             </f:entry>
         </j:scope>
     </f:optionalBlock>

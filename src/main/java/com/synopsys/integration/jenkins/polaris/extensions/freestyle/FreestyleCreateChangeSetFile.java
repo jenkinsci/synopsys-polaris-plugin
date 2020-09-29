@@ -88,10 +88,6 @@ public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<Freest
         this.buildStatusOnSkip = buildStatusOnSkip;
     }
 
-    public ChangeBuildStatusTo getDefaultBuildStatusOnSkip() {
-        return ChangeBuildStatusTo.UNSTABLE;
-    }
-
     @Nullable
     public String getChangeSetExclusionPatterns() {
         return changeSetExclusionPatterns;
@@ -129,6 +125,10 @@ public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<Freest
             req.bindJSON(this, formData);
             save();
             return super.configure(req, formData);
+        }
+
+        public ChangeBuildStatusTo getDefaultBuildStatusOnSkip() {
+            return ChangeBuildStatusTo.UNSTABLE;
         }
 
         public ListBoxModel doFillBuildStatusOnSkipItems() {

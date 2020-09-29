@@ -71,7 +71,7 @@ public class PipelineCreateChangeSetFile extends AbstractDescribableImpl<Pipelin
 
     @Nullable
     @HelpMarkdown("If true (checked), returns -1 instead of throwing a IntegrationAbortException when static analysis is skipped because the change set contained no files to analyze.")
-    private Boolean skipQuietly;
+    private Boolean returnSkipCode;
 
     @DataBoundConstructor
     public PipelineCreateChangeSetFile() {
@@ -104,16 +104,16 @@ public class PipelineCreateChangeSetFile extends AbstractDescribableImpl<Pipelin
     }
 
     @Nullable
-    public Boolean getSkipQuietly() {
-        if (Boolean.TRUE.equals(skipQuietly)) {
-            return skipQuietly;
+    public Boolean getReturnSkipCode() {
+        if (Boolean.TRUE.equals(returnSkipCode)) {
+            return returnSkipCode;
         }
         return null;
     }
 
     @DataBoundSetter
-    public void setSkipQuietly(Boolean skipQuietly) {
-        this.skipQuietly = skipQuietly;
+    public void setReturnSkipCode(Boolean returnSkipCode) {
+        this.returnSkipCode = returnSkipCode;
     }
 
     @Extension

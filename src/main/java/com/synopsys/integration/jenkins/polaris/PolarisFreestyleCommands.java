@@ -52,8 +52,8 @@ public class PolarisFreestyleCommands {
             if (createChangeSetFile != null) {
                 changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getChangeSetExclusionPatterns(), createChangeSetFile.getChangeSetInclusionPatterns());
                 if (changeSetFilePath == null) {
-                    ChangeBuildStatusTo changeBuildStatusTo = createChangeSetFile.getBuildStatusOnSkip() != null ? createChangeSetFile.getBuildStatusOnSkip() : createChangeSetFile.getDefaultBuildStatusOnSkip();
-                    logger.warn("The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.");
+                    ChangeBuildStatusTo changeBuildStatusTo = createChangeSetFile.getBuildStatusOnSkip() != null ? createChangeSetFile.getBuildStatusOnSkip() : createChangeSetFile.getDescriptor().getDefaultBuildStatusOnSkip();
+                    logger.warn("The Jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.");
                     logger.warn("Performing configured skip action: " + changeBuildStatusTo.getDisplayName());
                     jenkinsBuildService.markBuildAs(changeBuildStatusTo);
                     return;
