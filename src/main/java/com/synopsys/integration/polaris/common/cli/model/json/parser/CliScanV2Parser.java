@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -71,7 +73,9 @@ public class CliScanV2Parser extends CliScanParser<CliScanV2> {
             try {
                 CommonToolInfo commonToolInfo = createCommonToolInfo(toolInfoV2);
                 commonToolInfo.setToolName(toolInfoV2.toolName);
-                commonToolInfo.setIssueApiUrl(new HttpUrl(toolInfoV2.issueApiUrl));
+                if (StringUtils.isNotBlank(toolInfoV2.issueApiUrl)) {
+                    commonToolInfo.setIssueApiUrl(new HttpUrl(toolInfoV2.issueApiUrl));
+                }
 
                 return Optional.of(commonToolInfo);
             } catch (IntegrationException ignored) {

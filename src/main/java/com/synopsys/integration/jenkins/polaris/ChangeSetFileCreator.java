@@ -102,6 +102,7 @@ public class ChangeSetFileCreator {
                                     .resolve("polaris")
                                     .resolve("changeSetFiles.txt");
             }
+            Files.createDirectories(changeSetFile.getParent());
             Files.write(changeSetFile, changedFiles);
 
             return changeSetFile.toRealPath().toString();
