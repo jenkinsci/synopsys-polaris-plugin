@@ -20,7 +20,7 @@
                 <f:textbox id="excluding"/>
             </f:entry>
             <f:entry field="returnSkipCode" title="Return -1 when skipping analysis">
-                <f:checkbox/>
+                <f:checkbox default="true"/>
             </f:entry>
         </j:scope>
     </f:optionalBlock>

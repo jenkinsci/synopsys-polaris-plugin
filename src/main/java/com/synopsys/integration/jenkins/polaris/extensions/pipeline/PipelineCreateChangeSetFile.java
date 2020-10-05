@@ -105,7 +105,7 @@ public class PipelineCreateChangeSetFile extends AbstractDescribableImpl<Pipelin
 
     @Nullable
     public Boolean getReturnSkipCode() {
-        if (Boolean.TRUE.equals(returnSkipCode)) {
+        if (Boolean.FALSE.equals(returnSkipCode)) {
             return returnSkipCode;
         }
         return null;
