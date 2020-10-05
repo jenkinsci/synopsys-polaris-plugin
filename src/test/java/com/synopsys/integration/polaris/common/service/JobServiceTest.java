@@ -46,7 +46,7 @@ public class JobServiceTest {
     @Test
     public void testGetJobByUrlOsra() throws IntegrationException {
         AccessTokenPolarisHttpClient polarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
-        HttpUrl opsraApi = new HttpUrl("https://polaris.synopsys.example.com/api/tds-sca/v0/bdio/progress?scan-id=5ed9ed6e-f9b7-4ea8-8255-ec6104f72437");
+        HttpUrl opsraApi = new HttpUrl("https://polaris.synopsys.example.com/api/tds-sca/v0/bdio/status?scan-id=5ed9ed6e-f9b7-4ea8-8255-ec6104f72437");
         mockClientBehavior(polarisHttpClient, opsraApi, "osra_status.json");
 
         PolarisJsonTransformer polarisJsonTransformer = new PolarisJsonTransformer(new Gson(), new PrintStreamIntLogger(System.out, LogLevel.INFO));
@@ -56,8 +56,8 @@ public class JobServiceTest {
         PolarisResource<JobAttributes> jobResource = jobService.getJobByUrl(opsraApi);
         JobStatus jobStatus = jobResource.getAttributes().getStatus();
 
-        assertEquals(Integer.valueOf(100), jobStatus.getProgress());
-        assertEquals(JobStatus.StateEnum.COMPLETED, jobStatus.getState());
+        assertEquals(Integer.valueOf(97), jobStatus.getProgress());
+        assertEquals(JobStatus.StateEnum.RUNNING, jobStatus.getState());
     }
 
     private void mockClientBehavior(AccessTokenPolarisHttpClient polarisHttpClient, HttpUrl uri, String results) {

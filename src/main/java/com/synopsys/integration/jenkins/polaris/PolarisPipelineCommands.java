@@ -83,7 +83,7 @@ public class PolarisPipelineCommands {
                 throw new PolarisIntegrationException(defectMessage);
             }
         } else {
-            logger.info(defectMessage);
+            logger.alwaysLog(defectMessage);
         }
 
         return issueCount;
