@@ -60,14 +60,14 @@ public class ChangeSetFileCreator {
         try {
             changedFiles.addAll(jenkinsScmService.getFilePathsFromChangeSet(changeSetFilter));
         } catch (Exception e) {
-            logger.error("Could not get the Jenkins change set: " + e.getMessage());
+            logger.error("Could not get the Jenkins-provided SCM changeset: " + e.getMessage());
         }
 
         String remoteWorkspacePath = jenkinsRemotingService.getRemoteWorkspacePath();
 
         String changeSetFilePath;
         if (changedFiles.size() == 0) {
-            logger.info("The change set file could not be created because the Jenkins change set was empty.");
+            logger.info("The changeset file could not be created because the Jenkins-provided SCM changeset contained no files to analyze.");
             changeSetFilePath = null;
         } else {
             IntEnvironmentVariables environment = polarisEnvironmentService.getInitialEnvironment();

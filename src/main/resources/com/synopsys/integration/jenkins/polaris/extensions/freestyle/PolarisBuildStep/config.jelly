@@ -18,18 +18,18 @@
             </f:entry>
         </f:advanced>
     </f:optionalBlock>
-    <f:optionalBlock checked="${instance.createChangeSetFile != null}" field="createChangeSetFile" title="Populate change set in file at $CHANGE_SET_FILE_PATH for analysis">
+    <f:optionalBlock checked="${instance.createChangeSetFile != null}" field="createChangeSetFile" title="Populate SCM changeset in file at $CHANGE_SET_FILE_PATH for incremental analysis">
         <j:scope>
             <j:set var="descriptor" value="${descriptor.getPropertyType(instance,'createChangeSetFile').getApplicableDescriptors().get(0)}"/>
             <j:set var="instance" value="${instance.createChangeSetFile}"/>
             <j:set var="it" value="${it.createChangeSetFile}"/>
-            <f:entry field="changeSetInclusionPatterns" title="Change set inclusion patterns">
+            <f:entry field="changeSetInclusionPatterns" title="Changeset inclusion patterns">
                 <f:textbox id="changeSetInclusionPatterns"/>
             </f:entry>
-            <f:entry field="changeSetExclusionPatterns" title="Change set exclusion patterns">
+            <f:entry field="changeSetExclusionPatterns" title="Changeset exclusion patterns">
                 <f:textbox id="changeSetExclusionPatterns"/>
             </f:entry>
-            <f:entry field="buildStatusOnSkip" title="When static analysis is skipped because the change set contained no files to analyze">
+            <f:entry field="buildStatusOnSkip" title="When static analysis is skipped because the changeset contained no files to analyze">
                 <f:select id="buildStatusOnSkip" default="${descriptor.getDefaultBuildStatusOnSkip()}"/>
             </f:entry>
         </j:scope>

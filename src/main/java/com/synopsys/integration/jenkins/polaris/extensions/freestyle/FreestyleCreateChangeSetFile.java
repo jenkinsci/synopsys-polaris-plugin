@@ -40,8 +40,8 @@ import net.sf.json.JSONObject;
 
 public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<FreestyleCreateChangeSetFile> {
     @Nullable
-    @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly excluded from the Jenkins change set.  \r\n"
-                      + "The pattern is applied to determine which files will be populated in the change set file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
+    @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly excluded from the Jenkins-provided SCM changeset.  \r\n"
+                      + "The pattern is applied to determine which files will be populated in the changeset file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
                       + "If blank, will exclude none.  \r\n"
                       + "Examples:\r\n"
                       + "\r\n"
@@ -55,8 +55,8 @@ public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<Freest
     private String changeSetExclusionPatterns;
 
     @Nullable
-    @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly included from the Jenkins change set.  \r\n"
-                      + "The pattern is applied to determine which files will be populated in the change set file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
+    @HelpMarkdown("Specify a comma separated list of filename patterns that you would like to explicitly included Jenkins-provided SCM changeset.  \r\n"
+                      + "The pattern is applied to determine which files will be populated in the changeset file, stored at $CHANGE_SET_FILE_PATH.  \r\n"
                       + "If blank, will include all. \r\n"
                       + "Examples:\r\n"
                       + "\r\n"
@@ -70,7 +70,7 @@ public class FreestyleCreateChangeSetFile extends AbstractDescribableImpl<Freest
     private String changeSetInclusionPatterns;
 
     @Nullable
-    @HelpMarkdown("The action to take when static analysis is skipped because the change set contained no files to analyze. Defaults to \"Mark the build as Unstable\".")
+    @HelpMarkdown("The action to take when static analysis is skipped because the changeset contained no files to analyze. Defaults to \"Mark the build as Unstable\".")
     private ChangeBuildStatusTo buildStatusOnSkip;
 
     @DataBoundConstructor

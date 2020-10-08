@@ -49,7 +49,7 @@ import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
 
 public class PolarisBuildStep extends Builder {
-    public static final String DISPLAY_NAME = "Synopsys Polaris Software Integrity Platform static analysis";
+    public static final String DISPLAY_NAME = "Polaris Software Integrity Platform";
 
     @Nullable
     @HelpMarkdown("The CLI installation to execute")
@@ -60,7 +60,7 @@ public class PolarisBuildStep extends Builder {
     private String polarisArguments;
 
     @Nullable
-    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
+    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm changeset.  \r\n"
                       + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
     private FreestyleCreateChangeSetFile createChangeSetFile;
 

@@ -57,11 +57,11 @@ import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Execute Synopsys Polaris Software Integrity Platform CLI";
+    public static final String DISPLAY_NAME = "Execute Polaris Software Integrity Platform CLI";
     public static final String PIPELINE_NAME = "polaris";
     private static final long serialVersionUID = -2698425344634481146L;
 
-    @HelpMarkdown("The command line arguments to pass to the Synopsys Polaris CLI")
+    @HelpMarkdown("The command line arguments to pass to the Polaris CLI")
     private final String arguments;
 
     @Nullable
@@ -73,7 +73,7 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     private Boolean returnStatus;
 
     @Nullable
-    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided scm change set.  \r\n"
+    @HelpMarkdown("Creates a file at $CHANGE_SET_FILE_PATH (by default, the workspace directory) containing a list of files generated from the Jenkins-provided SCM changeset.  \r\n"
                       + "Used for Incremental analysis (--incremental) as the file containing the list of changed files for analysis.")
     private PipelineCreateChangeSetFile createChangeSetFile;
 

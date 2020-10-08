@@ -48,7 +48,7 @@ public class PolarisPipelineCommands {
         if (createChangeSetFile != null) {
             changeSetFilePath = changeSetFileCreator.createChangeSetFile(createChangeSetFile.getExcluding(), createChangeSetFile.getIncluding());
             if (changeSetFilePath == null) {
-                String skipMessage = "The jenkins change set was empty. Skipping Polaris Software Integrity Platform static analysis.";
+                String skipMessage = "The changeset contained no files to analyze. Skipping Polaris Software Integrity Platform static analysis.";
                 if (Boolean.FALSE.equals(createChangeSetFile.getReturnSkipCode())) {
                     throw new IntegrationAbortException(skipMessage);
                 } else {
