@@ -37,7 +37,7 @@ import com.synopsys.integration.polaris.common.service.JobService;
 import com.synopsys.integration.rest.HttpUrl;
 
 public class PolarisCliIssueCountService {
-    public static final String STEP_EXCEPTION_PREFIX = "Issue count for most recent Polaris Analysis could not be determined: ";
+    public static final String STEP_EXCEPTION_PREFIX = "Issue count for most recent Polaris Software Integrity Platform analysis could not be determined: ";
     private final JenkinsIntLogger logger;
     private final CountService countService;
     private final JobService jobService;
@@ -68,7 +68,7 @@ public class PolarisCliIssueCountService {
         HttpUrl issueApiUrl = Optional.ofNullable(scanInfo)
                                   .map(CommonScanInfo::getIssueApiUrl)
                                   .orElseThrow(() -> new PolarisIntegrationException(
-                                      "Synopsys Polaris for Jenkins cannot find the total issue count or issue api url in the cli-scan.json. Please ensure that you are using a supported version of the Polaris CLI."
+                                      "Polaris Software Integrity Platform for Jenkins cannot find the total issue count or issue api url in the cli-scan.json. Please ensure that you are using a supported version of the Polaris CLI."
                                   ));
 
         logger.debug("Found issue api url, polling for job status");

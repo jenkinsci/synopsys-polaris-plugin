@@ -144,13 +144,13 @@ public class PolarisServerConfigBuilder extends IntegrationBuilder<PolarisServer
     @Override
     protected void validate(BuilderStatus builderStatus) {
         if (StringUtils.isBlank(getUrl())) {
-            builderStatus.addErrorMessage("The Polaris url must be specified.");
+            builderStatus.addErrorMessage("The Polaris Software Integrity Platform url must be specified.");
         } else {
             try {
                 URL blackDuckURL = new URL(getUrl());
                 blackDuckURL.toURI();
             } catch (MalformedURLException | URISyntaxException e) {
-                builderStatus.addErrorMessage(String.format("The provided Polaris url (%s) is not a valid URL.", getUrl()));
+                builderStatus.addErrorMessage(String.format("The provided Polaris Software Integrity Platform url (%s) is not a valid URL.", getUrl()));
             }
         }
 

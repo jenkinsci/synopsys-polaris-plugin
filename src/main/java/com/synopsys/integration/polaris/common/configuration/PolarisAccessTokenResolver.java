@@ -67,7 +67,7 @@ public class PolarisAccessTokenResolver {
             }
         }
 
-        logger.warn("The access token file was not set explicitly, so it must be configured in a Polaris home directory.");
+        logger.warn("The access token file was not set explicitly, so it must be configured in a Polaris Software Integrity Platform home directory.");
         File polarisHomeDirectory = null;
         if (StringUtils.isNotBlank(polarisHome)) {
             polarisHomeDirectory = new File(polarisHome);
@@ -80,7 +80,7 @@ public class PolarisAccessTokenResolver {
         }
 
         if (null == polarisHomeDirectory || !polarisHomeDirectory.exists() || !polarisHomeDirectory.isDirectory()) {
-            String errorMessage = "A valid Polaris home directory could not be found.";
+            String errorMessage = "A valid Polaris Software Integrity Platform home directory could not be found.";
             logger.error(errorMessage);
             builderStatus.addErrorMessage(errorMessage);
             return Optional.empty();

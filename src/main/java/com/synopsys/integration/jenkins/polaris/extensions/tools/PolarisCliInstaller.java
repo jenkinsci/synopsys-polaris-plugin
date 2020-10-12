@@ -85,7 +85,7 @@ public class PolarisCliInstaller extends ToolInstaller {
             String polarisCliRemotePath = virtualChannel.call(findOrInstallPolarisCli);
             return new FilePath(virtualChannel, polarisCliRemotePath);
         } catch (IntegrationException ex) {
-            throw new IOException("Polaris Software Integrity Platform CLI was not correctly installed.", ex);
+            throw new IOException("Polaris CLI was not correctly installed.", ex);
         }
     }
 

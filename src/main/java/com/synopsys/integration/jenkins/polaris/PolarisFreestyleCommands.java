@@ -62,7 +62,7 @@ public class PolarisFreestyleCommands {
 
             int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisArgumentString);
             if (exitCode > 0) {
-                jenkinsBuildService.markBuildFailed("Polaris failed with exit code: " + exitCode);
+                jenkinsBuildService.markBuildFailed("Polaris CLI failed with exit code: " + exitCode);
             }
 
             if (waitForIssues != null) {
@@ -71,7 +71,7 @@ public class PolarisFreestyleCommands {
 
                 int issueCount = polarisIssueCounter.getPolarisIssueCount(waitForIssues.getJobTimeoutInMinutes());
 
-                logger.alwaysLog("Polaris Issue Check");
+                logger.alwaysLog("Polaris Software Integrity Platform Issue Check");
                 logger.alwaysLog("Build state for issues: " + buildStatusToSet.getDisplayName());
                 logger.alwaysLog(String.format("Found %s issues", issueCount));
                 if (issueCount > 0) {

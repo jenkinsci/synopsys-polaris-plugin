@@ -158,7 +158,9 @@ public class PolarisCommandsFactory {
 
     private PolarisServicesFactory createPolarisServicesFactory(JenkinsConfigService jenkinsConfigService) throws AbortException {
         PolarisGlobalConfig polarisGlobalConfig = jenkinsConfigService.getGlobalConfiguration(PolarisGlobalConfig.class)
-                                                      .orElseThrow(() -> new AbortException("Polaris cannot be executed: No Polaris global configuration detected in the Jenkins system configuration."));
+                                                      .orElseThrow(
+                                                          () -> new AbortException(
+                                                              "Polaris Software Integrity Platform for Jenkins cannot be executed: No Polaris Software Integrity Platform global configuration detected in the Jenkins system configuration."));
 
         JenkinsIntLogger jenkinsIntLogger = getOrCreateLogger();
         JenkinsWrapper jenkinsWrapper = validatedJenkinsWrapper.get();
@@ -171,7 +173,7 @@ public class PolarisCommandsFactory {
             return jenkinsWrapper;
         }
 
-        throw new AbortException("Polaris cannot be executed: The Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
+        throw new AbortException("Polaris Software Integrity Platform for Jenkins cannot be executed: The Jenkins instance was not started, was already shut down, or is not reachable from this JVM.");
     }
 
 }

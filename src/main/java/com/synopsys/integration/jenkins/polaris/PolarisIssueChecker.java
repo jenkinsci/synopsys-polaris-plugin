@@ -48,8 +48,8 @@ public class PolarisIssueChecker {
 
     public int getPolarisIssueCount(Integer jobTimeoutInMinutes) throws IOException, InterruptedException, IntegrationException {
         String logMessage = versionHelper.getPluginVersion("synopsys-polaris")
-                                .map(version -> String.format("Running Synopsys Polaris for Jenkins version %s", version))
-                                .orElse("Running Synopsys Polaris for Jenkins");
+                                .map(version -> String.format("Running Polaris Software Integrity Plaform for Jenkins version %s", version))
+                                .orElse("Running Polaris Software Integrity Plaform for Jenkins");
         logger.info(logMessage);
 
         Long jobTimeoutInSeconds = Optional.ofNullable(jobTimeoutInMinutes)

@@ -77,7 +77,7 @@ public class JobService {
                     errorMessageBuilder.append(String.format(" because: %s", failureInfo.getUserFriendlyFailureReason()));
                 }
             }
-            errorMessageBuilder.append("\r\nCheck the job status in Polaris for more details.");
+            errorMessageBuilder.append("\r\nCheck the job status in the Polaris Software Integrity Platform for more details.");
 
             throw new PolarisIntegrationException(errorMessageBuilder.toString());
         }

@@ -61,7 +61,7 @@ public class PolarisPipelineCommands {
         int exitCode = polarisCliRunner.runPolarisCli(polarisCliName, changeSetFilePath, polarisCliArgumentString);
 
         if (exitCode > 0) {
-            String errorMsg = "Polaris failed with exit code: " + exitCode;
+            String errorMsg = "Polaris Software Integrity Platform failed with exit code: " + exitCode;
             if (Boolean.TRUE.equals(returnStatus)) {
                 logger.error(errorMsg);
             } else {
