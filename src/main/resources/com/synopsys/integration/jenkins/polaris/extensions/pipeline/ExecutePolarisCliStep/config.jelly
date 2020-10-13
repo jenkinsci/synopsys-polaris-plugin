@@ -1,27 +1,29 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:entry field="polarisCli" title="CLI Installation">
+    <f:entry field="polarisCli" title="Polaris CLI Installation">
         <f:select/>
     </f:entry>
-    <f:entry field="arguments" title="Arguments">
+    <f:entry field="arguments" title="Polaris CLI Arguments">
         <f:textarea/>
     </f:entry>
     <f:entry field="returnStatus" title="Return status code">
         <f:checkbox/>
     </f:entry>
-    <f:optionalBlock checked="${instance.createChangeSetFile != null}" field="createChangeSetFile" title="Populate SCM changeset in file at $CHANGE_SET_FILE_PATH for incremental analysis">
-        <j:scope>
-            <j:set var="descriptor" value="${descriptor.getPropertyType(instance,'createChangeSetFile').getApplicableDescriptors().get(0)}"/>
-            <j:set var="instance" value="${instance.createChangeSetFile}"/>
-            <j:set var="it" value="${it.createChangeSetFile}"/>
-            <f:entry field="including" title="Changeset inclusion patterns">
-                <f:textbox id="including"/>
-            </f:entry>
-            <f:entry field="excluding" title="Changeset exclusion patterns">
-                <f:textbox id="excluding"/>
-            </f:entry>
-            <f:entry field="returnSkipCode" title="Return -1 when skipping analysis">
-                <f:checkbox default="true"/>
-            </f:entry>
-        </j:scope>
-    </f:optionalBlock>
+    <f:entry description="Note: Incremental analysis is intended as a Limited Customer Availabilty (LCA) feature and is subject to change.">
+        <f:optionalBlock checked="${instance.createChangeSetFile != null}" field="createChangeSetFile" title="Populate SCM changeset in file at $CHANGE_SET_FILE_PATH for incremental analysis">
+            <j:scope>
+                <j:set var="descriptor" value="${descriptor.getPropertyType(instance,'createChangeSetFile').getApplicableDescriptors().get(0)}"/>
+                <j:set var="instance" value="${instance.createChangeSetFile}"/>
+                <j:set var="it" value="${it.createChangeSetFile}"/>
+                <f:entry field="including" title="Changeset inclusion patterns">
+                    <f:textbox id="including"/>
+                </f:entry>
+                <f:entry field="excluding" title="Changeset exclusion patterns">
+                    <f:textbox id="excluding"/>
+                </f:entry>
+                <f:entry field="returnSkipCode" title="Return -1 when skipping analysis">
+                    <f:checkbox default="true"/>
+                </f:entry>
+            </j:scope>
+        </f:optionalBlock>
+    </f:entry>
 </j:jelly>

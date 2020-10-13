@@ -14,4 +14,5 @@ Additional releases are available here: https://updates.jenkins-ci.org/download/
 All plugin releases are also available on the [Synopsys public artifactory](https://sig-repo.synopsys.com/webapp/#/artifacts/browse/tree/General/bds-integrations-release/org/jenkins-ci/plugins/synopsys-polaris)
 
 # Documentation
-The documentation is located [here](https://jenkinsci.github.io/synopsys-polaris-plugin/latest/).
+The documentation is located [here](https://synopsys.atlassian.net/wiki/spaces/INTDOCS/pages/475922472/Polaris+Software+Integrity+Platform+for+Jenkins+Integration).
+ 
