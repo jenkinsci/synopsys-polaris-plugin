@@ -25,13 +25,13 @@ package com.synopsys.integration.jenkins.polaris.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
+import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.util.OperatingSystemType;
 
 public class PolarisCliArgumentService {
-    private final JenkinsIntLogger logger;
+    private final IntLogger logger;
 
-    public PolarisCliArgumentService(JenkinsIntLogger logger) {
+    public PolarisCliArgumentService(IntLogger logger) {
         this.logger = logger;
     }
 
