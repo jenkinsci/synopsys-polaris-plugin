@@ -29,6 +29,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
 import com.synopsys.integration.jenkins.polaris.service.GetPathToPolarisCli;
@@ -83,7 +84,7 @@ public class PolarisCliRunner {
             Optional<PolarisCli> polarisCliWithName = jenkinsConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, polarisCliName);
 
             if (!polarisCliWithName.isPresent()) {
-                throw new PolarisIntegrationException("Polaris Software Integrity Plaform cannot be executed: No Polaris Cli with the name " + polarisCliName + " could be found in the global tool configuration.");
+                throw new JenkinsUserFriendlyException("[ERROR] Polaris Software Integrity Plaform cannot be executed: No Polaris CLI Installation with the name " + polarisCliName + " could be found in the global tool configuration.");
             }
 
             PolarisCli polarisCli = polarisCliWithName.get();
@@ -98,8 +99,8 @@ public class PolarisCliRunner {
             String polarisCliHome = polarisCli.getHome();
 
             if (StringUtils.isBlank(polarisCliHome)) {
-                throw new PolarisIntegrationException(
-                    "[ERROR] The Polaris CLI installation home could not be determined for the configured Polaris CLI. Please ensure that this installation is correctly configured in the Global Tool Configuration.");
+                throw new JenkinsUserFriendlyException(
+                    "[ERROR] Polaris Software Integrity Plaform cannot be executed: The Polaris CLI installation home could not be determined for the configured Polaris CLI. Please ensure that this installation is correctly configured in the global tool configuration.");
             }
 
             String pathToPolarisCli = jenkinsRemotingService.call(new GetPathToPolarisCli(polarisCliHome));

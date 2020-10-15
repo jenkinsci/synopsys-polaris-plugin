@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.pipeline.PipelineCreateChangeSetFile;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
@@ -18,6 +19,7 @@ public class PolarisPipelineCommandsTest {
     private static final String POLARIS_CLI_NAME = "polarisCliName";
     private static final String POLARIS_ARGUMENTS = "polarisArguments";
     private static final String CHANGE_SET_FILE_PATH = "path/to/changeSetFile.txt";
+    private static final int STATUS_CODE_SKIP = -1;
     private static final int STATUS_CODE_SUCCESS = 0;
     private static final int STATUS_CODE_FAILURE = 1;
     private static final int NO_ISSUES = 0;
@@ -105,7 +107,62 @@ public class PolarisPipelineCommandsTest {
         }
 
         PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
-        assertThrows(PolarisIntegrationException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, createChangeSetFile));
+        assertThrows(JenkinsUserFriendlyException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, createChangeSetFile));
+    }
+
+    @Test
+    public void testExecutePolarisCliPipelineSkipDoNotReturnCode() {
+        try {
+            Mockito.when(mockedCliRunner.runPolarisCli(POLARIS_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS)).thenReturn(STATUS_CODE_FAILURE);
+            Mockito.when(mockedChangeSetFileCreator.createChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS)).thenReturn(null);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
+        }
+
+        createChangeSetFile.setReturnSkipCode(Boolean.FALSE);
+
+        PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+        assertThrows(JenkinsUserFriendlyException.class, () -> polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, createChangeSetFile));
+    }
+
+    @Test
+    public void testExecutePolarisCliPipelineSkipReturnCode() {
+        try {
+            Mockito.when(mockedCliRunner.runPolarisCli(POLARIS_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS)).thenReturn(STATUS_CODE_FAILURE);
+            Mockito.when(mockedChangeSetFileCreator.createChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS)).thenReturn(null);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
+        }
+
+        createChangeSetFile.setReturnSkipCode(Boolean.TRUE);
+
+        try {
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, createChangeSetFile);
+
+            assertEquals(STATUS_CODE_SKIP, actualExitCode);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred.", e);
+        }
+    }
+
+    @Test
+    public void testExecutePolarisCliPipelineSkipDefaultBehavior() {
+        try {
+            Mockito.when(mockedCliRunner.runPolarisCli(POLARIS_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS)).thenReturn(STATUS_CODE_FAILURE);
+            Mockito.when(mockedChangeSetFileCreator.createChangeSetFile(EXCLUSION_PATTERNS, INCLUSION_PATTERNS)).thenReturn(null);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred when preparing the test for setup. Please correct the test code.", e);
+        }
+
+        try {
+            PolarisPipelineCommands polarisPipelineCommands = new PolarisPipelineCommands(logger, mockedChangeSetFileCreator, mockedCliRunner, mockedIssueChecker);
+            int actualExitCode = polarisPipelineCommands.runPolarisCli(POLARIS_CLI_NAME, POLARIS_ARGUMENTS, false, createChangeSetFile);
+
+            assertEquals(STATUS_CODE_SKIP, actualExitCode);
+        } catch (Exception e) {
+            fail("An unexpected exception occurred.", e);
+        }
     }
 
     @Test

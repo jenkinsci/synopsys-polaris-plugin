@@ -25,7 +25,7 @@ package com.synopsys.integration.jenkins.polaris;
 import java.io.IOException;
 
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.jenkins.common.IntegrationAbortException;
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.pipeline.PipelineCreateChangeSetFile;
 import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
@@ -50,7 +50,7 @@ public class PolarisPipelineCommands {
             if (changeSetFilePath == null) {
                 String skipMessage = "The changeset contained no files to analyze. Skipping Polaris Software Integrity Platform static analysis.";
                 if (Boolean.FALSE.equals(createChangeSetFile.getReturnSkipCode())) {
-                    throw new IntegrationAbortException(skipMessage);
+                    throw new JenkinsUserFriendlyException(skipMessage);
                 } else {
                     logger.info(skipMessage);
                     return -1;
@@ -65,7 +65,7 @@ public class PolarisPipelineCommands {
             if (Boolean.TRUE.equals(returnStatus)) {
                 logger.error(errorMsg);
             } else {
-                throw new PolarisIntegrationException(errorMsg);
+                throw new JenkinsUserFriendlyException(errorMsg);
             }
         }
 

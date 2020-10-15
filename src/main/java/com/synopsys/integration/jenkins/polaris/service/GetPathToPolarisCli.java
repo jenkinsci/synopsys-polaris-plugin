@@ -28,12 +28,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.util.OperatingSystemType;
 
 import jenkins.security.MasterToSlaveCallable;
 
-public class GetPathToPolarisCli extends MasterToSlaveCallable<String, PolarisIntegrationException> {
+public class GetPathToPolarisCli extends MasterToSlaveCallable<String, JenkinsUserFriendlyException> {
     private static final long serialVersionUID = -8823365241230615671L;
     private final String polarisCliHome;
 
@@ -42,7 +42,7 @@ public class GetPathToPolarisCli extends MasterToSlaveCallable<String, PolarisIn
     }
 
     @Override
-    public String call() throws PolarisIntegrationException {
+    public String call() throws JenkinsUserFriendlyException {
         Path homePath = Paths.get(polarisCliHome);
         Path binPath = homePath.resolve("bin");
 
@@ -57,7 +57,7 @@ public class GetPathToPolarisCli extends MasterToSlaveCallable<String, PolarisIn
             return swipCli.get();
         }
 
-        throw new PolarisIntegrationException("The Polaris CLI could not be found in " + binPath.toString() + " on this node. Please verify the cli exists there and is executable.");
+        throw new JenkinsUserFriendlyException("The Polaris CLI could not be found in " + binPath.toString() + " on this node. Please verify the cli exists there and is executable.");
     }
 
     private Optional<String> checkFile(OperatingSystemType operatingSystemType, Path binPath, String filePrefix) {

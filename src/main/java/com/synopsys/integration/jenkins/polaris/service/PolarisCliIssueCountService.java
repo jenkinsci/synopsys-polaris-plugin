@@ -25,13 +25,13 @@ package com.synopsys.integration.jenkins.polaris.service;
 import java.util.Optional;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.polaris.common.cli.PolarisCliResponseUtility;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.CommonIssueSummary;
 import com.synopsys.integration.polaris.common.cli.model.CommonScanInfo;
 import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.service.CountService;
 import com.synopsys.integration.polaris.common.service.JobService;
 import com.synopsys.integration.rest.HttpUrl;
@@ -50,7 +50,7 @@ public class PolarisCliIssueCountService {
         this.polarisCliResponseUtility = polarisCliResponseUtility;
     }
 
-    public Integer getIssueCount(long jobTimeoutInSeconds, String cliCommonResponseModelJson) throws IntegrationException, InterruptedException {
+    public Integer getIssueCount(long jobTimeoutInSeconds, String cliCommonResponseModelJson) throws IntegrationException, JenkinsUserFriendlyException, InterruptedException {
         CliCommonResponseModel polarisCliResponseModel = polarisCliResponseUtility.getPolarisCliResponseModelFromString(cliCommonResponseModelJson);
 
         Optional<CommonIssueSummary> issueSummary = polarisCliResponseModel.getIssueSummary();
@@ -62,12 +62,12 @@ public class PolarisCliIssueCountService {
         }
 
         if (jobTimeoutInSeconds < 1) {
-            throw new PolarisIntegrationException(STEP_EXCEPTION_PREFIX + "Job timeout must be a positive integer if the Polaris CLI is being run without -w");
+            throw new JenkinsUserFriendlyException(STEP_EXCEPTION_PREFIX + "Job timeout must be a positive integer if the Polaris CLI is being run without -w");
         }
 
         HttpUrl issueApiUrl = Optional.ofNullable(scanInfo)
                                   .map(CommonScanInfo::getIssueApiUrl)
-                                  .orElseThrow(() -> new PolarisIntegrationException(
+                                  .orElseThrow(() -> new JenkinsUserFriendlyException(
                                       "Polaris Software Integrity Platform for Jenkins cannot find the total issue count or issue api url in the cli-scan.json. Please ensure that you are using a supported version of the Polaris CLI."
                                   ));
 
@@ -76,7 +76,7 @@ public class PolarisCliIssueCountService {
         for (CommonToolInfo tool : polarisCliResponseModel.getTools()) {
             HttpUrl jobStatusUrl = tool.getJobStatusUrl();
             if (jobStatusUrl == null) {
-                throw new PolarisIntegrationException(STEP_EXCEPTION_PREFIX + "tool with name " + tool.getToolName() + " has no jobStatusUrl");
+                throw new JenkinsUserFriendlyException(STEP_EXCEPTION_PREFIX + "tool with name " + tool.getToolName() + " has no jobStatusUrl");
             }
             jobService.waitForJobStateIsCompletedOrDieByUrl(jobStatusUrl, jobTimeoutInSeconds, JobService.DEFAULT_WAIT_INTERVAL);
         }

@@ -18,7 +18,7 @@
             </f:entry>
         </f:advanced>
     </f:optionalBlock>
-    <f:entry description="Note: Incremental analysis is intended as a Limited Customer Availabilty (LCA) feature and is subject to change.">
+    <f:entry description="Note: Incremental Analysis is in Limited Customer Availability (LCA). Please verify with your Synopsys representative before using it.">
         <f:optionalBlock checked="${instance.createChangeSetFile != null}" field="createChangeSetFile" title="Populate SCM changeset in file at $CHANGE_SET_FILE_PATH for incremental analysis">
             <j:scope>
                 <j:set var="descriptor" value="${descriptor.getPropertyType(instance,'createChangeSetFile').getApplicableDescriptors().get(0)}"/>

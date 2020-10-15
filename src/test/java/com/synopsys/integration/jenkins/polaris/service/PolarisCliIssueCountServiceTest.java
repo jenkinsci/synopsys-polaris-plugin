@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.polaris.common.cli.PolarisCliResponseUtility;
 import com.synopsys.integration.polaris.common.cli.model.CliCommonResponseModel;
 import com.synopsys.integration.polaris.common.cli.model.CommonIssueSummary;
 import com.synopsys.integration.polaris.common.cli.model.CommonScanInfo;
 import com.synopsys.integration.polaris.common.cli.model.CommonToolInfo;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 import com.synopsys.integration.polaris.common.service.CountService;
 import com.synopsys.integration.polaris.common.service.JobService;
 import com.synopsys.integration.rest.HttpUrl;
@@ -134,7 +134,7 @@ public class PolarisCliIssueCountServiceTest {
 
             PolarisCliIssueCountService polarisCliIssueCountService = new PolarisCliIssueCountService(mockedLogger, mockedCountService, mockedJobService, mockedPolarisCliResponseUtility);
 
-            Assertions.assertThrows(PolarisIntegrationException.class, () -> polarisCliIssueCountService.getIssueCount(INVALID_TIMEOUT, MOCK_JSON));
+            Assertions.assertThrows(JenkinsUserFriendlyException.class, () -> polarisCliIssueCountService.getIssueCount(INVALID_TIMEOUT, MOCK_JSON));
         } catch (Exception e) {
             Assertions.fail("An unexpected exception occurred in the test code, it may need to be fixed.", e);
         }
@@ -164,7 +164,7 @@ public class PolarisCliIssueCountServiceTest {
 
             PolarisCliIssueCountService polarisCliIssueCountService = new PolarisCliIssueCountService(mockedLogger, mockedCountService, mockedJobService, mockedPolarisCliResponseUtility);
 
-            Assertions.assertThrows(PolarisIntegrationException.class, () -> polarisCliIssueCountService.getIssueCount(VALID_TIMEOUT, MOCK_JSON));
+            Assertions.assertThrows(JenkinsUserFriendlyException.class, () -> polarisCliIssueCountService.getIssueCount(VALID_TIMEOUT, MOCK_JSON));
         } catch (Exception e) {
             Assertions.fail("An unexpected exception occurred in the test code, it may need to be fixed.", e);
         }

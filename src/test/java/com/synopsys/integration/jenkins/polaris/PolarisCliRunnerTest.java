@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.jenkins.exception.JenkinsUserFriendlyException;
 import com.synopsys.integration.jenkins.extensions.JenkinsIntLogger;
 import com.synopsys.integration.jenkins.polaris.extensions.global.PolarisGlobalConfig;
 import com.synopsys.integration.jenkins.polaris.extensions.tools.PolarisCli;
@@ -26,7 +27,6 @@ import com.synopsys.integration.jenkins.wrapper.JenkinsVersionHelper;
 import com.synopsys.integration.jenkins.wrapper.SynopsysCredentialsHelper;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.polaris.common.configuration.PolarisServerConfigBuilder;
-import com.synopsys.integration.polaris.common.exception.PolarisIntegrationException;
 
 public class PolarisCliRunnerTest {
     public static final String SUCCESSFUL_CLI_NAME = "SuccessfulPolarisCLi";
@@ -100,7 +100,7 @@ public class PolarisCliRunnerTest {
         PolarisCliRunner polarisCliRunner = new PolarisCliRunner(logger, polarisCliArgumentService, polarisEnvironmentService, polarisPhoneHomeService, jenkinsRemotingService, jenkinsConfigService, synopsysCredentialsHelper,
             jenkinsProxyHelper, jenkinsVersionHelper);
 
-        assertThrows(PolarisIntegrationException.class, () -> polarisCliRunner.runPolarisCli(EMPTY_HOME_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
+        assertThrows(JenkinsUserFriendlyException.class, () -> polarisCliRunner.runPolarisCli(EMPTY_HOME_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class PolarisCliRunnerTest {
         PolarisCliRunner polarisCliRunner = new PolarisCliRunner(logger, polarisCliArgumentService, polarisEnvironmentService, polarisPhoneHomeService, jenkinsRemotingService, jenkinsConfigService, synopsysCredentialsHelper,
             jenkinsProxyHelper, jenkinsVersionHelper);
 
-        assertThrows(PolarisIntegrationException.class, () -> polarisCliRunner.runPolarisCli(NULL_HOME_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
+        assertThrows(JenkinsUserFriendlyException.class, () -> polarisCliRunner.runPolarisCli(NULL_HOME_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class PolarisCliRunnerTest {
         PolarisCliRunner polarisCliRunner = new PolarisCliRunner(logger, polarisCliArgumentService, polarisEnvironmentService, polarisPhoneHomeService, jenkinsRemotingService, jenkinsConfigService, synopsysCredentialsHelper,
             jenkinsProxyHelper, jenkinsVersionHelper);
 
-        assertThrows(PolarisIntegrationException.class, () -> polarisCliRunner.runPolarisCli(NONEXISTANT_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
+        assertThrows(JenkinsUserFriendlyException.class, () -> polarisCliRunner.runPolarisCli(NONEXISTANT_CLI_NAME, CHANGE_SET_FILE_PATH, POLARIS_ARGUMENTS));
     }
 
 }
