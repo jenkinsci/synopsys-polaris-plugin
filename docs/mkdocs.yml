@@ -10,7 +10,7 @@
 # To view the docs, you must execute:
 #   At project root: ./gradlew docs
 #   At docs: mkdocs serve --no-livereload
-site_name: Synopsys Polaris for Jenkins
+site_name: Synopsys Polaris Software Integrity Platform for Jenkins
 theme:
   name: 'material'
 docs_dir: 'generated'
