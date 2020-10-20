@@ -37,8 +37,8 @@ chmod +x ${diffOneScript}
 
 mkdir ${oldVersion}
 cd ${oldVersion}
-git clone https://github.com/blackducksoftware/synopsys-detect.git
-cd synopsys-detect
+git clone https://github.com/jenkinsci/synopsys-polaris-plugin.git
+cd synopsys-polaris-plugin
 git checkout tags/${oldVersion}
 
 # Write the header
@@ -47,13 +47,13 @@ git status >> ${intermediateOutputFilePath}
 git show >>${intermediateOutputFilePath}
 echo "" >> ${intermediateOutputFilePath}
 
-./gradlew docs
+./gradlew docs -x test
 
 cd "${workingDir}"
 mkdir ${newVersion}
 cd ${newVersion}
-git clone https://github.com/blackducksoftware/synopsys-detect.git
-cd synopsys-detect
+git clone https://github.com/jenkinsci/synopsys-polaris-plugin.git
+cd synopsys-polaris-plugin
 git checkout tags/${newVersion}
 
 # Write the header
@@ -62,7 +62,7 @@ git status >> ${intermediateOutputFilePath}
 git show >>${intermediateOutputFilePath}
 echo "" >> ${intermediateOutputFilePath}
 
-./gradlew docs
+./gradlew docs -x test
 cd docs/generated
 
 # Do the diffing
