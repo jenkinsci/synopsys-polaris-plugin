@@ -82,11 +82,18 @@ public class PolarisServerConfigBuilderTest {
 
     @Test
     public void testResolveAccessTokenFromUserHome() throws IOException {
-        Path testUserHome = Files.createTempDirectory("polarisBuilder_userhome");
-        File polarisHome = new File(testUserHome.toFile(), ".swip");
+        Path testUserHomePath = Files.createTempDirectory("polarisBuilder_userhome");
+        File testUserHome = testUserHomePath.toFile();
+        testUserHome.deleteOnExit();
+
+        File polarisHome = new File(testUserHome, PolarisServerConfigBuilder.SWIP_CONFIG_DIRECTORY_DEFAULT);
+        polarisHome.deleteOnExit();
         polarisHome.mkdirs();
-        File accessTokenFile = new File(polarisHome, ".access_token");
+
+        File accessTokenFile = new File(polarisHome, PolarisServerConfigBuilder.POLARIS_ACCESS_TOKEN_FILENAME_DEFAULT);
+        accessTokenFile.deleteOnExit();
         accessTokenFile.createNewFile();
+
         FileUtils.writeStringToFile(accessTokenFile, "fake but valid not blank access token", StandardCharsets.UTF_8);
         Map<String, String> properties = new HashMap<>();
         properties.put("user.home", testUserHome.toString());
@@ -100,9 +107,14 @@ public class PolarisServerConfigBuilderTest {
 
     @Test
     public void testResolveAccessTokenFromPolarisHomeEnvVar() throws IOException {
-        Path testPolarisHome = Files.createTempDirectory("polarisBuilder_polarishome");
-        File accessTokenFile = new File(testPolarisHome.toFile(), ".access_token");
+        Path testPolarisHomePath = Files.createTempDirectory("polarisBuilder_polarishome");
+        File testPolarisHome = testPolarisHomePath.toFile();
+        testPolarisHome.deleteOnExit();
+
+        File accessTokenFile = new File(testPolarisHome, PolarisServerConfigBuilder.POLARIS_ACCESS_TOKEN_FILENAME_DEFAULT);
+        accessTokenFile.deleteOnExit();
         accessTokenFile.createNewFile();
+
         FileUtils.writeStringToFile(accessTokenFile, "fake but valid not blank access token", StandardCharsets.UTF_8);
         Map<String, String> properties = new HashMap<>();
         properties.put("polaris.home", testPolarisHome.toString());
@@ -116,8 +128,11 @@ public class PolarisServerConfigBuilderTest {
 
     @Test
     public void testResolveAccessTokenFromFilePath() throws IOException {
-        Path testAccessToken = Files.createTempFile("polarisBuilder_access_token", null);
-        FileUtils.writeStringToFile(testAccessToken.toFile(), "fake but valid not blank access token", StandardCharsets.UTF_8);
+        Path testAccessTokenPath = Files.createTempFile("polarisBuilder_access_token", null);
+        File testAccessToken = testAccessTokenPath.toFile();
+        testAccessToken.deleteOnExit();
+        FileUtils.writeStringToFile(testAccessToken, "fake but valid not blank access token", StandardCharsets.UTF_8);
+
         Map<String, String> properties = new HashMap<>();
         properties.put("polaris.access.token.file", testAccessToken.toString());
 
