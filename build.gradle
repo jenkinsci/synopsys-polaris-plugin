@@ -20,6 +20,11 @@ artifactory {
     }
 }
 
+repositories {
+    maven {url "https://repository.mulesoft.org/nexus/content/repositories/public/"}
+    maven {url "https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/"}
+    maven {url "http://maven.icm.edu.pl/artifactory/repo/"}
+}
 
 jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
@@ -45,9 +50,15 @@ dependencies {
 
     implementation 'com.synopsys.integration:jenkins-common:0.3.4'
 
+    implementation group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.18'
+
     // Must be compatible with the versions declared in Jenkins Common
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.10'
     jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.0'
+
+    implementation (group: 'com.atlassian.jira', name: 'jira-rest-java-client-app', version: '5.2.0') {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
 
     optionalJenkinsPlugins 'org.jenkins-ci.plugins:job-dsl:1.67'
     optionalJenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-job:2.9'
@@ -60,4 +71,22 @@ dependencies {
 
     testCompile group: 'org.jenkins-ci.main', name: 'jenkins-test-harness', version: '2.58'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+}
+configurations.all {
+    resolutionStrategy {
+        force 'xalan:xalan:2.7.2'
+        force 'log4j:log4j:1.2.17-cloudera1'
+        force 'net.minidev:json-smart:2.4.7'
+        force 'org.springframework:spring-jdbc:5.3.13'
+        force 'org.codehaus.groovy:groovy-all:2.5.15'
+        force 'org.acegisecurity:acegi-security:1.0.7-osgi'
+        force 'org.eclipse.jetty:jetty-server:9.4.44.v20210927'
+        force 'org.eclipse.jetty:jetty-servlet:9.4.44.v20210927'
+        force 'org.eclipse.jetty:jetty-webapp:9.4.44.v20210927'
+        force 'org.eclipse.jetty:jetty-xml:9.4.44.v20210927'
+        force 'org.eclipse.jetty:jetty-security:9.4.44.v20210927'
+        force 'org.eclipse.jetty:jetty-http:9.4.44.v20210927'
+        force 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+        force 'commons-beanutils:commons-beanutils:1.9.4-talend'
+    }
 }
