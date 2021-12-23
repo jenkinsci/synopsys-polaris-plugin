@@ -11,7 +11,7 @@ plugins {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '1.2.1'
+version = '1.2.0'
 description = 'Allows users to run Polaris Software Integrity Platform static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
