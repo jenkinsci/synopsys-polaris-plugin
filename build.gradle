@@ -21,10 +21,14 @@ artifactory {
 }
 
 repositories {
-    maven {url "https://repository.mulesoft.org/nexus/content/repositories/public/"}
-    maven {url "https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/"}
-    maven {url "http://maven.icm.edu.pl/artifactory/repo/"}
+    //jcenter is going away,exclude any dependency search https://blog.gradle.org/jcenter-shutdown
+    maven { url "https://repo1.maven.org/maven2/" }
+    maven { url "https://sig-artifactory.internal.synopsys.com/artifactory/ngp-snapshot-local" }
+    maven { url "https://sig-artifactory.internal.synopsys.com/artifactory/plugins-releases" }
+    maven { url "https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/" }
+    maven { url "https://repository.mulesoft.org/nexus/content/repositories/public/" }
 }
+
 
 jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
@@ -88,5 +92,7 @@ configurations.all {
         force 'org.eclipse.jetty:jetty-http:9.4.44.v20210927'
         force 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
         force 'commons-beanutils:commons-beanutils:1.9.4-talend'
+        force 'org.apache.commons:commons-text:1.10.0'
+        force 'org.codehaus.jettison:jettison:1.5.2'
     }
 }

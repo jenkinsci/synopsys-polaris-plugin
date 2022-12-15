@@ -84,14 +84,9 @@ public class PolarisServerConfigBuilderTest {
     public void testResolveAccessTokenFromUserHome() throws IOException {
         Path testUserHome = Files.createTempDirectory("polarisBuilder_userhome");
         File polarisHome = new File(testUserHome.toFile(), ".swip");
+        polarisHome.mkdirs();
         File accessTokenFile = new File(polarisHome, ".access_token");
-
-        polarisHome.deleteOnExit();
-        accessTokenFile.deleteOnExit();
-        testUserHome.toFile().deleteOnExit();
-
-        assertTrue(polarisHome.mkdirs());
-        assertTrue(accessTokenFile.mkdirs());
+        accessTokenFile.createNewFile();
 
         FileUtils.writeStringToFile(accessTokenFile, "fake but valid not blank access token", StandardCharsets.UTF_8);
         Map<String, String> properties = new HashMap<>();
@@ -109,11 +104,6 @@ public class PolarisServerConfigBuilderTest {
         Path testPolarisHome = Files.createTempDirectory("polarisBuilder_polarishome");
         File accessTokenFile = new File(testPolarisHome.toFile(), ".access_token");
 
-        accessTokenFile.deleteOnExit();
-        testUserHome.toFile().deleteOnExit();
-
-        assertTrue(accessTokenFile.mkdirs());
-
         FileUtils.writeStringToFile(accessTokenFile, "fake but valid not blank access token", StandardCharsets.UTF_8);
         Map<String, String> properties = new HashMap<>();
         properties.put("polaris.home", testPolarisHome.toString());
@@ -128,7 +118,6 @@ public class PolarisServerConfigBuilderTest {
     @Test
     public void testResolveAccessTokenFromFilePath() throws IOException {
         Path testAccessToken = Files.createTempFile("polarisBuilder_access_token", null);
-        testAccessToken.toFile().deleteOnExit();
 
         FileUtils.writeStringToFile(testAccessToken.toFile(), "fake but valid not blank access token", StandardCharsets.UTF_8);
         Map<String, String> properties = new HashMap<>();
