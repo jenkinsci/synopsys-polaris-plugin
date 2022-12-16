@@ -62,20 +62,20 @@ public class PolarisCliRunner {
 
         try {
             String logMessage = versionHelper.getPluginVersion("synopsys-polaris")
-                                    .map(version -> String.format("Running Polaris Software Integrity Plaform for Jenkins version %s", version))
-                                    .orElse("Running Polaris Software Integrity Plaform for Jenkins");
+                                    .map(version -> String.format("Running Polaris Software Integrity Platform for Jenkins version %s", version))
+                                    .orElse("Running Polaris Software Integrity Platform for Jenkins");
             logger.info(logMessage);
 
             Optional<PolarisCli> polarisCliWithName = jenkinsConfigService.getInstallationForNodeAndEnvironment(PolarisCli.DescriptorImpl.class, polarisCliName);
 
             if (!polarisCliWithName.isPresent()) {
-                throw new JenkinsUserFriendlyException("[ERROR] Polaris Software Integrity Plaform cannot be executed: No Polaris CLI Installation with the name " + polarisCliName + " could be found in the global tool configuration.");
+                throw new JenkinsUserFriendlyException("[ERROR] Polaris Software Integrity Platform cannot be executed: No Polaris CLI Installation with the name " + polarisCliName + " could be found in the global tool configuration.");
             }
 
             PolarisCli polarisCli = polarisCliWithName.get();
 
             PolarisGlobalConfig polarisGlobalConfig = jenkinsConfigService.getGlobalConfiguration(PolarisGlobalConfig.class)
-                                                          .orElseThrow(() -> new PolarisIntegrationException("No Polaris Software Integrity Plaform for Jenkins system configuration could be found, please check your system configuration."));
+                                                          .orElseThrow(() -> new PolarisIntegrationException("No Polaris Software Integrity Platform for Jenkins system configuration could be found, please check your system configuration."));
 
             PolarisServerConfigBuilder polarisServerConfigBuilder = polarisGlobalConfig.getPolarisServerConfigBuilder(credentialsHelper, proxyHelper);
 
@@ -85,7 +85,7 @@ public class PolarisCliRunner {
 
             if (StringUtils.isBlank(polarisCliHome)) {
                 throw new JenkinsUserFriendlyException(
-                    "[ERROR] Polaris Software Integrity Plaform cannot be executed: The Polaris CLI installation home could not be determined for the configured Polaris CLI. Please ensure that this installation is correctly configured in the global tool configuration.");
+                    "[ERROR] Polaris Software Integrity Platform cannot be executed: The Polaris CLI installation home could not be determined for the configured Polaris CLI. Please ensure that this installation is correctly configured in the global tool configuration.");
             }
 
             String pathToPolarisCli = jenkinsRemotingService.call(new GetPathToPolarisCli(polarisCliHome));
