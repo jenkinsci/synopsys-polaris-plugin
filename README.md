@@ -14,5 +14,4 @@ Additional releases are available here: https://updates.jenkins-ci.org/download/
 All plugin releases are also available on the [Synopsys public artifactory](https://sig-repo.synopsys.com/webapp/#/artifacts/browse/tree/General/bds-integrations-release/org/jenkins-ci/plugins/synopsys-polaris)
 
 # Documentation
-The documentation is located [here](https://community.synopsys.com/s/document-item?bundleId=polaris_ci_integrations&topicId=topics%2Fc_polaris-overview.html&_LANG=enus).
- 
+Documentation for Synopsys Coverity on Polaris plugin for Jenkins can be found at: [Documentation](https://sig-product-docs.synopsys.com/bundle/ci-integrations/page/topics/c_polaris-overview.html)
