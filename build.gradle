@@ -9,7 +9,7 @@ plugins {
 
 group = 'org.jenkins-ci.plugins'
 version = '1.1.0-SIGQA4-SNAPSHOT'
-description = 'Allows users to run Polaris Software Integrity Platform static analysis in their builds'
+description = 'Allows users to run Coverity on Polaris static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
 apply from: 'docs.gradle'
@@ -33,7 +33,7 @@ repositories {
 jenkinsPlugin {
     // Must be compatible with the version declared in Jenkins Common
     coreVersion = '2.150.3'
-    displayName = 'Synopsys Polaris Software Integrity Platform Plugin'
+    displayName = 'Synopsys Coverity on Polaris'
     url = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
     gitHubUrl = 'https://github.com/jenkinsci/synopsys-polaris-plugin'
 

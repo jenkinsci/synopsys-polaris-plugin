@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -78,7 +78,7 @@ public class PolarisCliInstaller extends ToolInstaller {
     public static final class DescriptorImpl extends ToolInstallerDescriptor<PolarisCliInstaller> {
         @Override
         public String getDisplayName() {
-            return "Install from Polaris Software Integrity Platform";
+            return "Install from Coverity on Polaris";
         }
 
         @Override

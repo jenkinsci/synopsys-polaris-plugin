@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -34,7 +34,7 @@ import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
 
 public class PolarisBuildStep extends Builder {
-    public static final String DISPLAY_NAME = "Polaris Software Integrity Platform";
+    public static final String DISPLAY_NAME = "Coverity on Polaris";
 
     @Nullable
     @HelpMarkdown("The CLI installation to execute")

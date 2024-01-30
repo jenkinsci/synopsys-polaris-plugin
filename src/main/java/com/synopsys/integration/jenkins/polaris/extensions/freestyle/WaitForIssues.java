@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -29,7 +29,7 @@ public class WaitForIssues extends AbstractDescribableImpl<WaitForIssues> {
     // jobTimeoutInMinutes must be a Number to guarantee identical functionality between Freestyle and Pipeline StepWorkflows that use GetTotalIssueCount.
     // -- rotte APR 2020
     @Nullable
-    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete when the Polaris CLI is executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
+    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Coverity on Polaris CLI to complete when the Coverity on Polaris CLI is executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
     private Integer jobTimeoutInMinutes;
 
     @DataBoundConstructor

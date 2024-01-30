@@ -1,5 +1,5 @@
 # Overview
-Synopsys Polaris for Jenkins simplifies implementing Polaris static analysis in your Jenkins builds.
+Synopsys Coverity on Polaris for Jenkins simplifies implementing Coverity on Polaris static analysis in your Jenkins builds.
 
 # Build
 [![Build Status](https://travis-ci.org/synopsys-sig/synopsys-polaris-plugin.svg?branch=master)](https://travis-ci.org/jenkinsci/synopsys-polaris-plugin)

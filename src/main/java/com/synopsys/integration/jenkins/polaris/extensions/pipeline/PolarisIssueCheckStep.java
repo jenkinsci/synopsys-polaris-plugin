@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -37,7 +37,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 
 public class PolarisIssueCheckStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Check for issues in the Polaris Software Integrity Platform found by a previous execution of the CLI";
+    public static final String DISPLAY_NAME = "Check for issues in the Coverity on Polaris found by a previous execution of the CLI";
     public static final String PIPELINE_NAME = "polarisIssueCheck";
     private static final long serialVersionUID = -2698425344634481146L;
 
@@ -46,7 +46,7 @@ public class PolarisIssueCheckStep extends Step implements Serializable {
     private Boolean returnIssueCount;
 
     @Nullable
-    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Polaris CLI to complete when executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
+    @HelpMarkdown("The maximum number of minutes to wait for jobs started by the Coverity on Polaris CLI to complete when executed without -w (nonblocking mode). Must be a positive integer, defaults to 30 minutes.")
     private Integer jobTimeoutInMinutes;
 
     @DataBoundConstructor

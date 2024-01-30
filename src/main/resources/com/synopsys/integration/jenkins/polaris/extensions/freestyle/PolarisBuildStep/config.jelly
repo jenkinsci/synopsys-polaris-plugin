@@ -1,8 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:entry field="polarisCliName" title="Polaris CLI Installation">
+    <f:entry field="polarisCliName" title="Coverity on Polaris CLI Installation">
         <f:select/>
     </f:entry>
-    <f:entry field="polarisArguments" title="Polaris CLI Arguments">
+    <f:entry field="polarisArguments" title="Coverity on Polaris CLI Arguments">
         <f:textarea/>
     </f:entry>
     <f:optionalBlock checked="${instance.waitForIssues != null}" field="waitForIssues" title="Wait for Issues">
