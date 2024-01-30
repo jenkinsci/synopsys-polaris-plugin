@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -57,7 +57,7 @@ public class PolarisCli extends ToolInstallation implements NodeSpecific<Polaris
     public static final class DescriptorImpl extends ToolDescriptor<PolarisCli> {
         @Override
         public String getDisplayName() {
-            return "Polaris Software Integrity Platform CLI";
+            return "Coverity on Polaris CLI";
         }
 
         @Override

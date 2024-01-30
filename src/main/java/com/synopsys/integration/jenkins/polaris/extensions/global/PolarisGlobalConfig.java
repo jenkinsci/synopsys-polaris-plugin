@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -65,10 +65,10 @@ import jenkins.util.xml.XMLUtils;
 public class PolarisGlobalConfig extends GlobalConfiguration implements Serializable {
     private static final long serialVersionUID = 1903218683598310994L;
 
-    @HelpMarkdown("Provide the URL that lets you access the Polaris Software Integrity Platform.")
+    @HelpMarkdown("Provide the URL that lets you access the Coverity on Polaris.")
     private String polarisUrl;
 
-    @HelpMarkdown("Choose the Access Token from the list to authenticate to the Polaris Software Integrity Platform.  \r\n"
+    @HelpMarkdown("Choose the Access Token from the list to authenticate to the Coverity on Polaris.  \r\n"
                       + "If the credentials you are looking for are not in the list then you can add them with the Add button")
     private String polarisCredentialsId;
 

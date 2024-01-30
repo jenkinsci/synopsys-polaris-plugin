@@ -1,7 +1,7 @@
 /*
  * synopsys-polaris
  *
- * Copyright (c) 2022 Synopsys, Inc.
+ * Copyright (c) 2024 Synopsys, Inc.
  *
  * Use subject to the terms and conditions of the Synopsys End User Software License and Maintenance Agreement. All rights reserved worldwide.
  */
@@ -42,7 +42,7 @@ import hudson.tools.ToolInstallation;
 import hudson.util.ListBoxModel;
 
 public class ExecutePolarisCliStep extends Step implements Serializable {
-    public static final String DISPLAY_NAME = "Execute Polaris Software Integrity Platform CLI";
+    public static final String DISPLAY_NAME = "Execute Coverity on Polaris CLI";
     public static final String PIPELINE_NAME = "polaris";
     private static final long serialVersionUID = -2698425344634481146L;
 
@@ -50,11 +50,11 @@ public class ExecutePolarisCliStep extends Step implements Serializable {
     private final String arguments;
 
     @Nullable
-    @HelpMarkdown("The Polaris CLI installation to execute")
+    @HelpMarkdown("The Coverity on Polaris CLI installation to execute")
     private String polarisCli;
 
     @Nullable
-    @HelpMarkdown("If true (checked), returns the status code of the Polaris CLI run instead of throwing an exception")
+    @HelpMarkdown("If true (checked), returns the status code of the Coverity on Polaris CLI run instead of throwing an exception")
     private Boolean returnStatus;
 
     @Nullable
