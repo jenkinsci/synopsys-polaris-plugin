@@ -24,6 +24,7 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.response.Response;
 import com.synopsys.integration.util.CleanupZipExpander;
 import com.synopsys.integration.util.OperatingSystemType;
+import org.apache.commons.lang3.SystemUtils;
 
 public class PolarisDownloadUtility {
     public static final Integer DEFAULT_POLARIS_TIMEOUT = 120;
@@ -31,6 +32,7 @@ public class PolarisDownloadUtility {
     public static final String LINUX_DOWNLOAD_URL_FORMAT = "/api/tools/%s_cli-linux64.zip";
     public static final String WINDOWS_DOWNLOAD_URL_FORMAT = "/api/tools/%s_cli-win64.zip";
     public static final String MAC_DOWNLOAD_URL_FORMAT = "/api/tools/%s_cli-macosx.zip";
+    public static final String MAC_ARM_DOWNLOAD_URL_FORMAT = "/api/tools/%s_cli-macos_arm.zip";
 
     public static final String POLARIS_CLI_INSTALL_DIRECTORY = "Polaris_CLI_Installation";
     public static final String VERSION_FILENAME = "polarisVersion.txt";
@@ -147,6 +149,17 @@ public class PolarisDownloadUtility {
 
     public String getDownloadUrlFormat() {
         if (OperatingSystemType.MAC == operatingSystemType) {
+            // If the OS Architecture is Mac non-ARM, the return tool name as "%s_cli-macosx.zip"
+            // If the OS Architecture is Mac ARM architecture, the return tool name as "%s_cli-macos_arm.zip"
+            String os = SystemUtils.OS_NAME.toLowerCase();
+            if (os.contains("mac")) {
+                String arch = SystemUtils.OS_ARCH.toLowerCase();
+                if (arch.startsWith("arm") || arch.startsWith("aarch")) {
+                    return polarisServerUrl + PolarisDownloadUtility.MAC_ARM_DOWNLOAD_URL_FORMAT;
+                } else {
+                    return polarisServerUrl + PolarisDownloadUtility.MAC_DOWNLOAD_URL_FORMAT;
+                }
+            }
             return polarisServerUrl + PolarisDownloadUtility.MAC_DOWNLOAD_URL_FORMAT;
         } else if (OperatingSystemType.WINDOWS == operatingSystemType) {
             return polarisServerUrl + PolarisDownloadUtility.WINDOWS_DOWNLOAD_URL_FORMAT;
