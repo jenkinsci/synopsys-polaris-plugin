@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Optional;
 
+import com.synopsys.integration.polaris.common.configuration.OSArchTask;
+import hudson.FilePath;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 import com.synopsys.integration.exception.IntegrationException;
@@ -151,21 +153,36 @@ public class PolarisDownloadUtility {
         if (OperatingSystemType.MAC == operatingSystemType) {
             // If the OS Architecture is Mac non-ARM, the return tool name as "%s_cli-macosx.zip"
             // If the OS Architecture is Mac ARM architecture, the return tool name as "%s_cli-macos_arm.zip"
-            String os = SystemUtils.OS_NAME.toLowerCase();
-            if (os.contains("mac")) {
-                String arch = SystemUtils.OS_ARCH.toLowerCase();
-                if (arch.startsWith("arm") || arch.startsWith("aarch")) {
-                    return polarisServerUrl + PolarisDownloadUtility.MAC_ARM_DOWNLOAD_URL_FORMAT;
-                } else {
-                    return polarisServerUrl + PolarisDownloadUtility.MAC_DOWNLOAD_URL_FORMAT;
-                }
+            FilePath workspace = new FilePath(new File(installDirectory.getPath()));
+            String arch = getAgentOsArch(workspace);
+            if (arch.startsWith("arm") || arch.startsWith("aarch")) {
+                return polarisServerUrl + PolarisDownloadUtility.MAC_ARM_DOWNLOAD_URL_FORMAT;
+            } else {
+                return polarisServerUrl + PolarisDownloadUtility.MAC_DOWNLOAD_URL_FORMAT;
             }
-            return polarisServerUrl + PolarisDownloadUtility.MAC_DOWNLOAD_URL_FORMAT;
         } else if (OperatingSystemType.WINDOWS == operatingSystemType) {
             return polarisServerUrl + PolarisDownloadUtility.WINDOWS_DOWNLOAD_URL_FORMAT;
         } else {
             return polarisServerUrl + PolarisDownloadUtility.LINUX_DOWNLOAD_URL_FORMAT;
         }
+    }
+
+    private String getAgentOsArch(FilePath workspace) {
+        String arch = null;
+
+        if (workspace.isRemote()) {
+            try {
+                arch = workspace.act(new OSArchTask());
+            } catch (IOException | InterruptedException e) {
+                logger.error("An exception occurred while fetching OS architecture information for the agent node: "
+                        + e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        } else {
+            arch = System.getProperty("os.arch").toLowerCase();
+        }
+
+        return arch;
     }
 
     private File downloadIfModified(File versionFile, String downloadUrlFormat) throws IOException, IntegrationException, ArchiveException {
