@@ -7,7 +7,7 @@ Synopsys Coverity on Polaris for Jenkins simplifies implementing Coverity on Pol
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Where can I get the latest release?
-You can download the latest artifact from the [Synopsys Polaris plugin site](https://plugins.jenkins.io/synopsys-polaris/)
+You can download the latest artifact from the [Synopsys Coverity on Polaris plugin site](https://plugins.jenkins.io/synopsys-polaris/)
 
 Additional releases are available here: https://updates.jenkins-ci.org/download/plugins/synopsys-polaris/
 
