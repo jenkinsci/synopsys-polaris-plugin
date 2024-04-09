@@ -23,7 +23,7 @@ java {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '1.4.0'
+version = '1.4.1-SNAPSHOT'
 description = 'Allows users to run Coverity on Polaris static analysis in their builds'
 
 apply plugin: 'com.synopsys.integration.solution'
