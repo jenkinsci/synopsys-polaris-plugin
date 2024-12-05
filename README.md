@@ -1,3 +1,5 @@
+$${\color{red}IMPORTANT \space NOTE:}$$ **This plugin has been deprecated and will not be maintained. It will not work after Coverity on Polaris 2024.12.0 release. It is recommended that you migrate to our new Black Duck Coverity on Polaris Plugin. Details can be found [here](https://documentation.blackduck.com/bundle/ci-integrations/page/topics/c_pol-plugin-release-notes.html).**
+
 # Overview
 Synopsys Coverity on Polaris for Jenkins simplifies implementing Coverity on Polaris static analysis in your Jenkins builds.
 
